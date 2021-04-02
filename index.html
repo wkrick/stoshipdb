@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>STO Ship DB</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="index.css">
+		<script src="https://unpkg.com/vue@next"></script>
+	</head>
+	<body>
+
+		<div id="app">
+
+			Singularity: <select v-model="faction">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in factionOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+
+			Flanking: <select v-model="flanking">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in flankingOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+
+			<table border="1">
+				<tr>
+					<th>Name</th>
+				</tr>
+				<tr v-for="ship in rows">
+					<td>{{ ship.name }}</td>
+				</tr>
+			</table>
+
+		</div>
+
+
+		<script src="data.js"></script>
+		<script src="index.js"></script>
+	</body>
+</html>
+
+
