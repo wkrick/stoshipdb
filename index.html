@@ -20,6 +20,48 @@
 			</select>
 			<br>
 			
+			Bundle: <select v-model="bundle">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in bundleOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+			
+			Starter: <select v-model="starter">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in starterOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+			
+			Faction: <select v-model="faction">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in factionOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+			
+			Family: <select v-model="family">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in familyOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+			
+			Mastery Package: <select v-model="masterypackage">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in masterypackageOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+			
+			<!-- ########################################## -->
+			
 			Fore Weapons: <select v-model="fore">
 				<option disabled value="">Please select one</option>
 				<option v-for="option in foreOptions" :value="option.value">
@@ -43,6 +85,23 @@
 				</option>
 			</select>
 			<br>
+			
+			Dual Heavy Cannons: <select v-model="dhc">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in dhcOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+
+			Experimental Weapon: <select v-model="exp">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in expOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+			
 
 			Flanking: <select v-model="flanking">
 				<option disabled value="">Please select one</option>
