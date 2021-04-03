@@ -9,108 +9,280 @@
 
 		<div id="app">
 			
-			Name: <input v-model="name" type="text">
-			<br>
-			
-			Source: <select v-model="source">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in sourceOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-			
-			Bundle: <select v-model="bundle">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in bundleOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-			
-			Starter: <select v-model="starter">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in starterOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-			
-			Faction: <select v-model="faction">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in factionOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-			
-			Family: <select v-model="family">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in familyOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-			
-			Mastery Package: <select v-model="masterypackage">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in masterypackageOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-			
-			<!-- ########################################## -->
-			
-			Fore Weapons: <select v-model="fore">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in foreOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-			
-			Aft Weapons: <select v-model="aft">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in aftOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>			
+			<table>
 
-			Fore + Aft Weapons: <select v-model="fa">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in faOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
+				<tr><td>
+					Name:
+				</td><td>
+					<input v-model="name" type="text">
+				</td></tr>
 			
-			Dual Heavy Cannons: <select v-model="dhc">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in dhcOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
-
-			Experimental Weapon: <select v-model="exp">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in expOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
-			<br>
+				<tr><td>
+					Source:
+				</td><td>
+					<select v-model="source">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in sourceOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+				
+				<tr><td>
+					Bundle:
+				</td><td>
+					<select v-model="bundle">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in bundleOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
 			
-
-			Flanking: <select v-model="flanking">
-				<option disabled value="">Please select one</option>
-				<option v-for="option in flankingOptions" :value="option.value">
-					{{ option.text }}
-				</option>
-			</select>
+				<tr><td>
+					Starter:
+				</td><td>
+					<select v-model="starter">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in starterOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Faction:
+				</td><td>
+					<select v-model="faction">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in factionOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Family:
+				</td><td>
+					<select v-model="family">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in familyOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Mastery Package:
+				</td><td>
+					<select v-model="masterypackage">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in masterypackageOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Fore Weapons:
+				</td><td>
+					<select v-model="fore">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in foreOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Aft Weapons:
+				</td><td>
+					<select v-model="aft">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in aftOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+					</td></tr>
+			
+				<tr><td>
+					Fore + Aft Weapons:
+				</td><td>
+					<select v-model="fa">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in faOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Dual Heavy Cannons:
+				</td><td>
+					<select v-model="dhc">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in dhcOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Experimental Weapon:
+				</td><td>
+					<select v-model="exp">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in expOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Hangars:
+				</td><td>
+					<select v-model="hangars">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in hangarsOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Devices:
+				</td><td>
+					<select v-model="dev">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in devOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Fleet Quality:
+				</td><td>
+					<select v-model="fleet">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in fleetOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Tactical Consoles:
+				</td><td>
+					<select v-model="taccons">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in tacconsOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Engineering Consoles:
+				</td><td>
+					<select v-model="engcons">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in engconsOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Science Consoles:
+				</td><td>
+					<select v-model="scicons">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in sciconsOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Universal Consoles:
+				</td><td>
+					<select v-model="unicons">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in uniconsOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Secondary Deflector:
+				</td><td>
+					<select v-model="secdef">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in secdefOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Subtargeting:
+				</td><td>
+					<select v-model="subtargeting">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in subtargetingOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Sensor Analysis:
+				</td><td>
+					<select v-model="sensoranalysis">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in sensoranalysisOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Singularity:
+				</td><td>
+					<select v-model="singularity">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in singularityOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Cloak:
+				</td><td>
+					<select v-model="cloak">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in cloakOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+				<tr><td>
+					Flanking:
+				</td><td>
+					<select v-model="flanking">
+						<option disabled value="">Please select one</option>
+						<option v-for="option in flankingOptions" :value="option.value">
+							{{ option.text }}
+						</option>
+					</select>
+				</td></tr>
+			
+			</table>
 			<br>
-
 			<table border="1">
 				<tr>
 					<th>Name</th>
