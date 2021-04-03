@@ -8,13 +8,41 @@
 	<body>
 
 		<div id="app">
-
-			Faction: <select v-model="faction">
+			
+			Name: <input v-model="name" type="text">
+			<br>
+			
+			Source: <select v-model="source">
 				<option disabled value="">Please select one</option>
-				<option v-for="option in factionOptions" :value="option.value">
+				<option v-for="option in sourceOptions" :value="option.value">
 					{{ option.text }}
 				</option>
 			</select>
+			<br>
+			
+			Fore Weapons: <select v-model="fore">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in foreOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
+			
+			Aft Weapons: <select v-model="aft">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in aftOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>			
+
+			Fore + Aft Weapons: <select v-model="fa">
+				<option disabled value="">Please select one</option>
+				<option v-for="option in faOptions" :value="option.value">
+					{{ option.text }}
+				</option>
+			</select>
+			<br>
 
 			Flanking: <select v-model="flanking">
 				<option disabled value="">Please select one</option>
@@ -22,6 +50,7 @@
 					{{ option.text }}
 				</option>
 			</select>
+			<br>
 
 			<table border="1">
 				<tr>
