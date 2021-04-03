@@ -15,18 +15,16 @@ const app = Vue.createApp({
 			exp: "All",
 			hangars: "All",
 			dev: "All",
-			fleet: "Yes",
+			fleet: "All",
 			taccons: "All",
 			engcons: "All",
 			scicons: "All",
 			unicons: "All",
-
 			secdef: "All",
 			subtargeting: "All",
 			sensoranalysis: "All",
 			singularity: "All",
 			cloak: "All",
-
 			flanking: "All",
 			allShips: data
 		}
