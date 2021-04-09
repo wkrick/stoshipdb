@@ -3,8 +3,12 @@
 		<title>STO Ship DB</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		<link rel="manifest" href="/site.webmanifest">
 		<link rel="stylesheet" href="index.css">
-		<script src="https://unpkg.com/vue@next"></script>
+		<script src="https://unpkg.com/vue@3.0.11/dist/vue.global.prod.js"></script>
 	</head>
 	<body>
 
@@ -286,7 +290,7 @@
 			<br>
 			<table border="1">
 				<tr>
-					<th>Name</th>
+					<th>Ship Name</th>
 				</tr>
 				<tr v-for="ship in rows">
 					<td>{{ ship.name }}</td>
