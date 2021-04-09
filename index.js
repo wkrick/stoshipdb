@@ -8,6 +8,21 @@ const app = Vue.createApp({
 			faction: "Any",
 			family: "Any",
 			masterypackage: "Any",
+			int: "Any",
+			cmd: "Any",
+			pil: "Any",
+			tmp: "Any",
+			mw: "Any",
+			hull: "Any",
+			hmod: "Any",
+			smod: "Any",
+			turn: "Any",
+			imp: "Any",
+			inrt: "Any",
+			wpower: "Any",
+			spower: "Any",
+			epower: "Any",
+			apower: "Any",
 			fa: "Any",
 			fore: "Any",
 			aft: "Any",
@@ -20,6 +35,10 @@ const app = Vue.createApp({
 			engcons: "Any",
 			scicons: "Any",
 			unicons: "Any",
+			weapon: "Any",
+			shield: "Any",
+			engine: "Any",
+			threat: "Any",
 			secdef: "Any",
 			subtargeting: "Any",
 			sensoranalysis: "Any",
@@ -60,6 +79,66 @@ const app = Vue.createApp({
 
 			if (this.masterypackage !== "Any") {
 				ships = ships.filter(ship => ship.masterypackage===this.masterypackage);
+			}
+			
+			if (this.int !== "Any") {
+				ships = ships.filter(ship => ship.int===this.int);
+			}
+
+			if (this.cmd !== "Any") {
+				ships = ships.filter(ship => ship.cmd===this.cmd);
+			}
+
+			if (this.pil !== "Any") {
+				ships = ships.filter(ship => ship.pil===this.pil);
+			}
+
+			if (this.tmp !== "Any") {
+				ships = ships.filter(ship => ship.tmp===this.tmp);
+			}
+
+			if (this.mw !== "Any") {
+				ships = ships.filter(ship => ship.mw===this.mw);
+			}
+
+			if (this.hull !== "Any") {
+				ships = ships.filter(ship => ship.hull===this.hull);
+			}
+
+			if (this.hmod !== "Any") {
+				ships = ships.filter(ship => ship.hmod===this.hmod);
+			}
+
+			if (this.smod !== "Any") {
+				ships = ships.filter(ship => ship.smod===this.smod);
+			}
+
+			if (this.turn !== "Any") {
+				ships = ships.filter(ship => ship.turn===this.turn);
+			}
+
+			if (this.imp !== "Any") {
+				ships = ships.filter(ship => ship.imp===this.imp);
+			}
+
+			if (this.wpower !== "Any") {
+				ships = ships.filter(ship => ship.wpower===this.wpower);
+			}
+
+			if (this.spower !== "Any") {
+				ships = ships.filter(ship => ship.spower===this.spower);
+			}
+
+			if (this.epower !== "Any") {
+				ships = ships.filter(ship => ship.epower===this.epower);
+			}
+
+			if (this.apower !== "Any") {
+				ships = ships.filter(ship => ship.apower===this.apower);
+			}
+
+			if (this.inrt !== "Any") {
+				ships = ships.filter(ship => ship.inrt===this.inrt);
 			}
 
 			if (this.fore !== "Any") {
@@ -108,6 +187,22 @@ const app = Vue.createApp({
 
 			if (this.unicons !== "Any") {
 				ships = ships.filter(ship => ship.unicons===this.unicons);
+			}
+
+			if (this.weapon !== "Any") {
+				ships = ships.filter(ship => ship.weapon===this.weapon);
+			}
+
+			if (this.shield !== "Any") {
+				ships = ships.filter(ship => ship.shield===this.shield);
+			}
+
+			if (this.engine !== "Any") {
+				ships = ships.filter(ship => ship.engine===this.engine);
+			}
+
+			if (this.threat  !== "Any") {
+				ships = ships.filter(ship => ship.threat===this.threat);
 			}
 			
 			if (this.secdef !== "Any") {
@@ -158,6 +253,51 @@ const app = Vue.createApp({
 		masterypackageOptions() {	
 			return this.getOpts("masterypackage");
 		},
+		intOptions() {	
+			return this.getOpts("int");
+		},
+		cmdOptions() {	
+			return this.getOpts("cmd");
+		},
+		pilOptions() {	
+			return this.getOpts("pil");
+		},
+		tmpOptions() {	
+			return this.getOpts("tmp");
+		},
+		mwOptions() {	
+			return this.getOpts("mw");
+		},
+		hullOptions() {	
+			return this.getOpts("hull");
+		},
+		hmodOptions() {	
+			return this.getOpts("hmod");
+		},
+		smodOptions() {	
+			return this.getOpts("smod");
+		},
+		turnOptions() {	
+			return this.getOpts("turn");
+		},
+		impOptions() {	
+			return this.getOpts("imp");
+		},
+		inrtOptions() {	
+			return this.getOpts("inrt");
+		},
+		wpowerOptions() {	
+			return this.getOpts("wpower");
+		},
+		spowerOptions() {	
+			return this.getOpts("spower");
+		},
+		epowerOptions() {	
+			return this.getOpts("epower");
+		},
+		apowerOptions() {	
+			return this.getOpts("apower");
+		},
 		foreOptions() {
 			return this.getOpts("fore");
 		},
@@ -193,6 +333,18 @@ const app = Vue.createApp({
 		},
 		uniconsOptions() {
 			return this.getOpts("unicons");
+		},
+		weaponOptions() {	
+			return this.getOpts("weapon");
+		},
+		shieldOptions() {	
+			return this.getOpts("shield");
+		},
+		engineOptions() {	
+			return this.getOpts("engine");
+		},
+		threatOptions() {	
+			return this.getOpts("threat");
 		},
 		secdefOptions() {
 			return this.getOpts("secdef");

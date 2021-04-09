@@ -14,286 +14,578 @@
 
 		<div id="app">
 			
-			<table>
-
-				<tr><td>
-					Name:
-				</td><td>
-					<input v-model="name" type="text">
-				</td></tr>
+			<table border="1">
+				<tr>
+					<td>
+						Name:
+					</td><td>
+						<input v-model="name" type="text">
+					</td>
+				</tr>
+			</table>
 			
-				<tr><td>
-					Source:
-				</td><td>
-					<select v-model="source">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in sourceOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<br>
+			
+			<table border="1">
+				<tr><th colspan="10">Acquiring</th></tr>
+				<tr>
+					<td>
+						Source:
+					</td><td>
+						<select v-model="source">
+							<option v-for="option in sourceOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td><td>
+						Bundle:
+					</td><td>
+						<select v-model="bundle">
+							<option v-for="option in bundleOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td><td>
+						Starter:
+					</td><td>
+						<select v-model="starter">
+							<option v-for="option in starterOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td><td>
+						Faction:
+					</td><td>
+						<select v-model="faction">
+							<option v-for="option in factionOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td><td>
+						Family:
+					</td><td>
+						<select v-model="family">
+							<option v-for="option in familyOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
 				
-				<tr><td>
-					Bundle:
-				</td><td>
-					<select v-model="bundle">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in bundleOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+				</tr>
+				
+			</table>
 			
-				<tr><td>
-					Starter:
-				</td><td>
-					<select v-model="starter">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in starterOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<br>
 			
-				<tr><td>
-					Faction:
-				</td><td>
-					<select v-model="faction">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in factionOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				<tr><th colspan="12">Ship Role</th></tr>
+				<tr>
+				
+					<td>
+						Mastery Package:
+					</td><td>
+						<select v-model="masterypackage">
+							<option v-for="option in masterypackageOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Int:
+					</td><td>
+						<select v-model="int">
+							<option v-for="option in intOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Cmd:
+					</td><td>
+						<select v-model="cmd">
+							<option v-for="option in cmdOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Pil:
+					</td><td>
+						<select v-model="pil">
+							<option v-for="option in pilOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Tmp:
+					</td><td>
+						<select v-model="tmp">
+							<option v-for="option in tmpOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						MW:
+					</td><td>
+						<select v-model="mw">
+							<option v-for="option in mwOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
 			
-				<tr><td>
-					Family:
-				</td><td>
-					<select v-model="family">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in familyOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+				</tr>
+			</table>
 			
-				<tr><td>
-					Mastery Package:
-				</td><td>
-					<select v-model="masterypackage">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in masterypackageOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<br>
 			
-				<tr><td>
-					Fore Weapons:
-				</td><td>
-					<select v-model="fore">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in foreOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				<tr><th colspan="6">Defense</th></tr>
+				<tr>
+					
+					<td>
+						Hull:
+					</td><td>
+						<select v-model="hull">
+							<option v-for="option in hullOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						H Mod:
+					</td><td>
+						<select v-model="hmod">
+							<option v-for="option in hmodOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						S Mod:
+					</td><td>
+						<select v-model="smod">
+							<option v-for="option in smodOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+			</table>
 			
-				<tr><td>
-					Aft Weapons:
-				</td><td>
-					<select v-model="aft">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in aftOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-					</td></tr>
 			
-				<tr><td>
-					Fore + Aft Weapons:
-				</td><td>
-					<select v-model="fa">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in faOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<br>
 			
-				<tr><td>
-					Dual Heavy Cannons:
-				</td><td>
-					<select v-model="dhc">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in dhcOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				<tr><th colspan="6">Mobility</th></tr>
+				<tr>
+					
+					<td>
+						Turn:
+					</td><td>
+						<select v-model="turn">
+							<option v-for="option in turnOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Imp:
+					</td><td>
+						<select v-model="imp">
+							<option v-for="option in impOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Inrt:
+					</td><td>
+						<select v-model="inrt">
+							<option v-for="option in inrtOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+			</table>
 			
-				<tr><td>
-					Experimental Weapon:
-				</td><td>
-					<select v-model="exp">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in expOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+
+			<br>
 			
-				<tr><td>
-					Hangars:
-				</td><td>
-					<select v-model="hangars">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in hangarsOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				<tr><th colspan="8">Power Bonus</th></tr>
+				<tr>
+					
+					<td>
+						W:
+					</td><td>
+						<select v-model="wpower">
+							<option v-for="option in wpowerOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						S:
+					</td><td>
+						<select v-model="spower">
+							<option v-for="option in spowerOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						E:
+					</td><td>
+						<select v-model="epower">
+							<option v-for="option in epowerOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						A:
+					</td><td>
+						<select v-model="apower">
+							<option v-for="option in apowerOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+			</table>
 			
-				<tr><td>
-					Devices:
-				</td><td>
-					<select v-model="dev">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in devOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<br>
 			
-				<tr><td>
-					Fleet Quality:
-				</td><td>
-					<select v-model="fleet">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in fleetOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				<tr><th colspan="10">Weapons</th></tr>
+				<tr>
+
+					<td>
+						Fore + Aft:
+					</td>
+					<td>
+						<select v-model="fa">
+							<option v-for="option in faOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Fore:
+					</td>
+					<td>
+						<select v-model="fore">
+							<option v-for="option in foreOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Aft:
+					</td>
+					<td>
+						<select v-model="aft">
+							<option v-for="option in aftOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						DHC:
+					</td>
+					<td>
+						<select v-model="dhc">
+							<option v-for="option in dhcOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+									
+					<td>
+						Exp:
+					</td>
+					<td>
+						<select v-model="exp">
+							<option v-for="option in expOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+			</table>
 			
-				<tr><td>
-					Tactical Consoles:
-				</td><td>
-					<select v-model="taccons">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in tacconsOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<br>
 			
-				<tr><td>
-					Engineering Consoles:
-				</td><td>
-					<select v-model="engcons">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in engconsOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				
+				<tr><th colspan="4">Misc Equips</th></tr>
+				<tr>
+
+					<td>
+						Hangars:
+					</td>
+					<td>
+						<select v-model="hangars">
+							<option v-for="option in hangarsOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Devices:
+					</td>
+					<td>
+						<select v-model="dev">
+							<option v-for="option in devOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+				
+			</table>
+
+			<br>
 			
-				<tr><td>
-					Science Consoles:
-				</td><td>
-					<select v-model="scicons">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in sciconsOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				
+				<tr><th colspan="10">Consoles</th></tr>
+				<tr>
+					<td>
+						Fleet Grade:
+					</td>
+					<td>
+						<select v-model="fleet">
+							<option v-for="option in fleetOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Tac:
+					</td>
+					<td>
+						<select v-model="taccons">
+							<option v-for="option in tacconsOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Eng:
+					</td>
+					<td>
+						<select v-model="engcons">
+							<option v-for="option in engconsOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Sci:
+					</td>
+					<td>
+						<select v-model="scicons">
+							<option v-for="option in sciconsOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Uni:
+					</td>
+					<td>
+						<select v-model="unicons">
+							<option v-for="option in uniconsOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+				
+			</table>
+		
+			<br>
 			
-				<tr><td>
-					Universal Consoles:
-				</td><td>
-					<select v-model="unicons">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in uniconsOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				
+				<tr><th colspan="10">Cruiser Commands</th></tr>
+				<tr>
+					
+					<td>
+						Weapon:
+					</td><td>
+						<select v-model="weapon">
+							<option v-for="option in weaponOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Shield:
+					</td><td>
+						<select v-model="shield">
+							<option v-for="option in shieldOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Engine:
+					</td><td>
+						<select v-model="engine">
+							<option v-for="option in engineOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+
+					<td>
+						Threat:
+					</td><td>
+						<select v-model="threat">
+							<option v-for="option in threatOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+				
+			</table>
+
+			<br>
 			
-				<tr><td>
-					Secondary Deflector:
-				</td><td>
-					<select v-model="secdef">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in secdefOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
+				
+				<tr><th colspan="6">Science Vessel</th></tr>
+				<tr>
+					
+					<td>
+						Secondary Deflector:
+					</td>
+					<td>
+						<select v-model="secdef">
+							<option v-for="option in secdefOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Subtargeting:
+					</td>
+					<td>
+						<select v-model="subtargeting">
+							<option v-for="option in subtargetingOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Sensor Analysis:
+					</td>
+					<td>
+						<select v-model="sensoranalysis">
+							<option v-for="option in sensoranalysisOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+					
+				</tr>
+			</table>
+
+
+			<br>
 			
-				<tr><td>
-					Subtargeting:
-				</td><td>
-					<select v-model="subtargeting">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in subtargetingOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+			<table border="1">
 			
-				<tr><td>
-					Sensor Analysis:
-				</td><td>
-					<select v-model="sensoranalysis">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in sensoranalysisOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+				<tr><th colspan="6">Misc</th></tr>
 			
-				<tr><td>
-					Singularity:
-				</td><td>
-					<select v-model="singularity">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in singularityOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
-			
-				<tr><td>
-					Cloak:
-				</td><td>
-					<select v-model="cloak">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in cloakOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
-			
-				<tr><td>
-					Flanking:
-				</td><td>
-					<select v-model="flanking">
-						<option disabled value="">Please select one</option>
-						<option v-for="option in flankingOptions" :value="option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</td></tr>
+				<tr>
+					
+					<td>
+						Singularity:
+					</td>
+					<td>
+						<select v-model="singularity">
+							<option v-for="option in singularityOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Cloak:
+					</td>
+					<td>
+						<select v-model="cloak">
+							<option v-for="option in cloakOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+					<td>
+						Flanking:
+					</td>
+					<td>
+						<select v-model="flanking">
+							<option v-for="option in flankingOptions" :value="option.value">
+								{{ option.text }}
+							</option>
+						</select>
+					</td>
+				
+				</tr>
 			
 			</table>
 			<br>
 			<table border="1">
 				<tr>
 					<th>Ship Name</th>
+					<th>Trait</th>
+					<th>Trait Summary</th>
+					
 				</tr>
 				<tr v-for="ship in rows">
 					<td>{{ ship.name }}</td>
+					<td>{{ ship.trait }}</td>
+					<td>{{ ship.traitsummary }}</td>
 				</tr>
 			</table>
 
