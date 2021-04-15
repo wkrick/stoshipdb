@@ -45,14 +45,22 @@ const app = Vue.createApp({
 			singularity: "Any",
 			cloak: "Any",
 			flanking: "Any",
-			allShips: data
+			newAbilityType: null,
+			newAbilityName: null,
+			newAbilityLevel: null,
+			newAbilityRank: null,
+			abilities: [],
+			nextAbilityId: 1,
+			filteredShipCount: null,
+			allShips: shipdata,
+			allAbilities: abilitydata
 		}
 	},
 	computed: {
 		rows() { // All the rows to be shown
 			
 			var ships = this.allShips;
-
+			
 			if (this.name !== "") {
 				ships = ships.filter(ship => ship.name.toLowerCase().includes(this.name.toLowerCase()));
 			}
@@ -229,9 +237,111 @@ const app = Vue.createApp({
 				ships = ships.filter(ship => ship.flanking===this.flanking);
 			}
 			
-			console.log("ships.length: " + ships.length)
+			if (this.abilities.length > 0) {
+				
+				let abilities = this.getSortedAbilities();
+
+				let filteredShips = [];	
 			
-			//ships.sort((a, b) => (a.name > b.name) ? 1 : -1)
+				for (let i = 0; i < ships.length; i++) {
+				
+					let slots = this.getAbilitySlots(ships[i]);
+					let matches = 0;
+				
+					abilities.forEach( ability => {
+						
+						let found = false;
+
+						if (ability.spec) {
+						
+							if (!found) {
+								// 1: search for non-universal slot with desired spec
+								let result = slots.filter(slot => slot.type !== "Uni" && slot.spec === ability.spec && slot.rank === ability.rank);
+								if (result.length) {
+									found = true;
+									matches++;
+									slots = slots.filter(slot => slot.id !== result[0].id);
+								}
+							}
+						
+							if (!found) {
+								// 2: search for universal slot with desired spec
+								let result = slots.filter(slot => slot.type === "Uni" && slot.spec === ability.spec && slot.rank === ability.rank);
+								if (result.length) {
+									found = true;
+									matches++;
+									slots = slots.filter(slot => slot.id !== result[0].id);
+								}
+							}
+
+						} else { // not a specialization ability
+
+							if (!found) {
+								// 3: search for specific slot type with null spec
+								let result = slots.filter(slot => slot.type === ability.type && slot.spec === null && slot.rank === ability.rank);
+								if (result.length) {
+									found = true;
+									matches++;
+									slots = slots.filter(slot => slot.id !== result[0].id);
+								}
+							}
+							
+							if (!found) {
+								// 4: search for specific slot type with non-null spec
+								let result = slots.filter(slot => slot.type === ability.type && slot.spec !== null && slot.rank === ability.rank);
+								if (result.length) {
+									found = true;
+									matches++;
+									slots = slots.filter(slot => slot.id !== result[0].id);
+								}
+							}
+							
+							if (!found) {
+								// 5: search for universal slot with null spec
+								let result = slots.filter(slot => slot.type === "Uni" && slot.spec === null && slot.rank === ability.rank);
+								if (result.length) {
+
+									// when matching a universal slot the first time, we need to change all the slots in that seat to the type for future searches
+									slots.filter(slot => slot.shipseatid === result[0].shipseatid).forEach(obj => obj.type = ability.type);
+									
+									found = true;
+									matches++;
+									slots = slots.filter(slot => slot.id !== result[0].id);
+								}
+							}
+							
+							if (!found) {
+								// 6: search for universal slot with non-null spec
+								let result = slots.filter(slot => slot.type === "Uni" && slot.spec !== null && slot.rank === ability.rank);
+								if (result.length) {
+									
+									// when matching a universal slot the first time, we need to change all the slots in that seat to the type for future searches
+									slots.filter(slot => slot.shipseatid === result[0].shipseatid).forEach(obj => obj.type = ability.type);
+
+									found = true;
+									matches++;
+									slots = slots.filter(slot => slot.id !== result[0].id);
+								}
+							}
+
+						} // end else
+						
+						
+					}); // end for abilities
+				
+					if (matches == abilities.length) {
+						filteredShips.push(ships[i]);	
+					}
+			
+				} // end for ships
+			
+				ships = filteredShips;
+			
+			} // end if abilities > 0
+			
+			console.log("ships.length: " + ships.length);
+			
+			this.filteredShipCount = ships.length;
 			
 			return ships;
 		},
@@ -363,15 +473,46 @@ const app = Vue.createApp({
 		},
 		flankingOptions() {
 			return this.getOpts("flanking");
+		},
+		abilitytypeOptions() {
+			return new Set(this.allAbilities.map(a => a.type));
+		},
+		abilitynameOptions() {
+			if (this.newAbilityType === null ) {
+				return [];
+			}
+			return new Set(this.allAbilities.filter(a => a.type === this.newAbilityType).map(a => a.name));
+		},
+		abilitylevelOptions() {
+			if (this.newAbilityType === null || this.newAbilityName === null) {
+				return [];
+			}
+			return this.allAbilities.filter(a => a.type === this.newAbilityType && a.name === this.newAbilityName).map(a => a.level);
 		}
 	},
 	methods:{
+		clearNameLevelRank() {
+			this.newAbilityName = null;
+			this.newAbilityLevel = null;
+			this.newAbilityRank = null;
+		},
+		clearLevelRank() {
+			this.newAbilityLevel = null;
+			this.newAbilityRank = null;
+		},
+		setRank(event) {
+			if (event.target.value) {
+				this.newAbilityRank = this.allAbilities.filter(a => a.type === this.newAbilityType && a.name === this.newAbilityName && a.level === event.target.value)[0].rank;
+			} else {
+				this.newAbilityRank = null;
+			}
+		},
 		getOpts(key) {
 			result = Array.from(new Set(this.allShips.map(item => item[key]))).sort();
 			result.unshift("Any");
 			
-			var opts = [];
-			result.forEach(function(item) {
+			let opts = [];
+			result.forEach(item => {
 				var obj = {};
 				obj.value = item;
 				obj.text = item;
@@ -379,8 +520,204 @@ const app = Vue.createApp({
 			});
 			
 			return opts;
+		},
+		getAbilitySlots(ship) {
+			
+			let slots = [];
+			var i;
+			var rank, type, spec;
+			let index = 0;
+					
+			// seat 1
+			if (ship.boff1rank) {
+				rank = ship.boff1rank;
+				type = ship.boff1type;
+				spec = ship.boff1spec;
+				
+				for (i = rank; i > 0; i--) {
+					var obj = {};
+					obj.id = index++;
+					obj.shipseatid = 1;
+					obj.rank = i;
+					obj.type = type;
+					obj.spec = spec;
+					slots.push(obj);
+				}
+			}
+			
+			// seat 2
+			if (ship.boff2rank) {
+				rank = ship.boff2rank;
+				type = ship.boff2type;
+				spec = ship.boff2spec;
+				
+				for (i = rank; i > 0; i--) {
+					var obj = {};
+					obj.id = index++;
+					obj.shipseatid = 2;
+					obj.rank = i;
+					obj.type = type;
+					obj.spec = spec;
+					slots.push(obj);
+				}
+			}
+			
+			// seat 3
+			if (ship.boff3rank) {
+				rank = ship.boff3rank;
+				type = ship.boff3type;
+				spec = ship.boff3spec;
+				
+				for (i = rank; i > 0; i--) {
+					var obj = {};
+					obj.id = index++;
+					obj.shipseatid = 3;
+					obj.rank = i;
+					obj.type = type;
+					obj.spec = spec;
+					slots.push(obj);
+				}
+			}
+			
+			// seat 4
+			if (ship.boff4rank) {
+				rank = ship.boff4rank;
+				type = ship.boff4type;
+				spec = ship.boff4spec;
+				
+				for (i = rank; i > 0; i--) {
+					var obj = {};
+					obj.id = index++;
+					obj.shipseatid = 4;
+					obj.rank = i;
+					obj.type = type;
+					obj.spec = spec;
+					slots.push(obj);
+				}
+			}
+			
+			// seat 5
+			if (ship.boff5rank) {
+				rank = ship.boff5rank;
+				type = ship.boff5type;
+				spec = ship.boff5spec;
+				
+				for (i = rank; i > 0; i--) {
+					var obj = {};
+					obj.id = index++;
+					obj.shipseatid = 5;
+					obj.rank = i;
+					obj.type = type;
+					obj.spec = spec;
+					slots.push(obj);
+				}
+			}
+			
+			// seat 6
+			if (ship.boff6rank) {
+				rank = ship.boff6rank;
+				type = ship.boff6type;
+				spec = ship.boff6spec;
+				
+				for (i = rank; i > 0; i--) {
+					var obj = {};
+					obj.id = index++;
+					obj.shipseatid = 6;
+					obj.rank = i;
+					obj.type = type;
+					obj.spec = spec;
+					slots.push(obj);
+				}
+			}
+			
+			// sort the ability slots by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending
+			slots.sort(function (a, b) {
+
+				if (a.spec === null && b.spec === null) {
+					return (a.type.localeCompare(b.type) || b.rank - a.rank);
+				} else if (a.spec !== null && b.spec === null) {
+					return -1;
+				} else if (a.spec === null && b.spec !== null) {
+					return 1;
+				}
+				return (a.spec.localeCompare(b.spec) || a.type.localeCompare(b.type) || b.rank - a.rank);
+			});
+			
+			return slots;
+		},
+		getSortedAbilities() {
+			
+			// "translate" abilities to make things easier later.  This is ugly and I need to figure out a better way to handle this...
+			let abilities = [];
+			this.abilities.forEach(ability => {
+					
+				let spec = null;
+				let type = null;
+				
+				switch (ability.type) {
+					case "Intelligence":		type = null;	spec = "Int";	break;
+					case "Command":					type = null;	spec = "Com";	break;
+					case "Pilot":						type = null;	spec = "Pil";	break;
+					case "Temporal":				type = null;	spec = "Tmp";	break;
+					case "Miracle Worker":	type = null;	spec = "MW";	break;
+					case "Tactical":				type = "Tac";	spec = null;	break;
+					case "Engineering":			type = "Eng";	spec = null;	break;
+					case "Science":					type = "Sci";	spec = null;	break;
+					default:								type = null;	spec = null;
+				}
+				
+				let obj = {};
+				obj.id = ability.id;
+				obj.rank = ability.rank;
+				obj.type = type;
+				obj.spec = spec;
+				abilities.push(obj);
+			});
+			
+			// sort the abilities by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending
+			abilities.sort(function (a, b) {
+				if (a.spec === null && b.spec === null) {
+					return (a.type.localeCompare(b.type) || b.rank - a.rank);
+				} else if (a.spec !== null && b.spec === null) {
+					return -1;
+				} else if (a.spec === null && b.spec !== null) {
+					return 1;
+				}
+				return (a.spec.localeCompare(b.spec) || a.type.localeCompare(b.type) || b.rank - a.rank);
+			});
+			
+			return abilities;
+		},
+		addNewAbility() {
+			this.abilities.push({
+				id: this.nextAbilityId++,
+				type: this.newAbilityType,
+				name: this.newAbilityName,
+				level: this.newAbilityLevel,
+				rank: this.newAbilityRank,
+			})
+			this.newAbilityType = null;
+			this.newAbilityName = null;
+			this.newAbilityLevel = null;
+			this.newAbilityRank = null;
 		}
 	}
 })
 
+app.component('ability', {
+	template: `
+	<div class="field has-addons">
+		<div class="control">
+			<label class="label">{{ type }} - {{ name }} {{ level }} ({{ rank }})</label>
+		</div>
+		<div class="control">
+			<button @click="$emit('remove')" class="button is-info"><span class="material-icons">&#xe888;</span></button>
+		</div>
+	</div>
+	`,
+	props: ['type', 'name', 'level', 'rank'],
+	emits: ['remove']
+})
+
 app.mount('#app')
+
