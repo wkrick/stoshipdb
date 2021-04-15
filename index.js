@@ -656,7 +656,7 @@ const app = Vue.createApp({
 				
 				switch (ability.type) {
 					case "Intelligence":		type = null;	spec = "Int";	break;
-					case "Command":					type = null;	spec = "Com";	break;
+					case "Command":					type = null;	spec = "Cmd";	break;
 					case "Pilot":						type = null;	spec = "Pil";	break;
 					case "Temporal":				type = null;	spec = "Tmp";	break;
 					case "Miracle Worker":	type = null;	spec = "MW";	break;
