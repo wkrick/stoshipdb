@@ -708,7 +708,7 @@ app.component('ability', {
 	template: `
 	<div class="field has-addons">
 		<div class="control">
-			<label class="label">{{ type }} - {{ name }} {{ level }} ({{ rank }})</label>
+			<label class="input">{{ type }} - {{ name }} {{ level }} ({{ rank }})</label>
 		</div>
 		<div class="control">
 			<button @click="$emit('remove')" class="button is-info"><span class="material-icons">&#xe888;</span></button>
