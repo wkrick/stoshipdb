@@ -587,7 +587,7 @@
 					<th>Ship Name</th>
 				</tr>
 				<tr v-for="ship in rows">
-					<td>{{ ship.name }}</td>
+					<td><a v-bind:href="ship.url">{{ ship.name }}</a></td>
 				</tr>
 			</table>
 			
