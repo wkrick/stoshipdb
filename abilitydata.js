@@ -1,4 +1,5 @@
-var abilitydata = [
+// data source: https://sto.fandom.com/wiki/Bridge_officer_and_kit_abilities
+let abilitydata = [
 { type: "Engineering", name: "Aceton Beam", level: "I", rank: 3 },
 { type: "Engineering", name: "Aceton Beam", level: "II", rank: 4 },
 { type: "Engineering", name: "Aceton Beam", level: "III", rank: 4 },
