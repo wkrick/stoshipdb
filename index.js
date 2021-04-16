@@ -59,7 +59,7 @@ const app = Vue.createApp({
 	computed: {
 		rows() { // All the rows to be shown
 			
-			var ships = this.allShips;
+			let ships = this.allShips;
 			
 			if (this.name !== "") {
 				ships = ships.filter(ship => ship.name.toLowerCase().includes(this.name.toLowerCase()));
@@ -329,7 +329,7 @@ const app = Vue.createApp({
 						
 					}); // end for abilities
 				
-					if (matches == abilities.length) {
+					if (matches === abilities.length) {
 						filteredShips.push(ships[i]);	
 					}
 			
@@ -339,7 +339,7 @@ const app = Vue.createApp({
 			
 			} // end if abilities > 0
 			
-			console.log("ships.length: " + ships.length);
+			//console.log("ships.length: " + ships.length);
 			
 			this.filteredShipCount = ships.length;
 			
@@ -513,7 +513,7 @@ const app = Vue.createApp({
 			
 			let opts = [];
 			result.forEach(item => {
-				var obj = {};
+				let obj = {};
 				obj.value = item;
 				obj.text = item;
 				opts.push(obj);
@@ -524,114 +524,88 @@ const app = Vue.createApp({
 		getAbilitySlots(ship) {
 			
 			let slots = [];
-			var i;
-			var rank, type, spec;
 			let index = 0;
 					
 			// seat 1
 			if (ship.boff1rank) {
-				rank = ship.boff1rank;
-				type = ship.boff1type;
-				spec = ship.boff1spec;
-				
-				for (i = rank; i > 0; i--) {
-					var obj = {};
+				for (let i = ship.boff1rank; i > 0; i--) {
+					let obj = {};
 					obj.id = index++;
 					obj.shipseatid = 1;
 					obj.rank = i;
-					obj.type = type;
-					obj.spec = spec;
+					obj.type = ship.boff1type;
+					obj.spec = ship.boff1spec;
 					slots.push(obj);
 				}
 			}
 			
 			// seat 2
 			if (ship.boff2rank) {
-				rank = ship.boff2rank;
-				type = ship.boff2type;
-				spec = ship.boff2spec;
-				
-				for (i = rank; i > 0; i--) {
-					var obj = {};
+				for (let i = ship.boff2rank; i > 0; i--) {
+					let obj = {};
 					obj.id = index++;
 					obj.shipseatid = 2;
 					obj.rank = i;
-					obj.type = type;
-					obj.spec = spec;
+					obj.type = ship.boff2type;
+					obj.spec = ship.boff2spec;
 					slots.push(obj);
 				}
 			}
 			
 			// seat 3
 			if (ship.boff3rank) {
-				rank = ship.boff3rank;
-				type = ship.boff3type;
-				spec = ship.boff3spec;
-				
-				for (i = rank; i > 0; i--) {
-					var obj = {};
+				for (let i = ship.boff3rank; i > 0; i--) {
+					let obj = {};
 					obj.id = index++;
 					obj.shipseatid = 3;
 					obj.rank = i;
-					obj.type = type;
-					obj.spec = spec;
+					obj.type = ship.boff3type;
+					obj.spec = ship.boff3spec;
 					slots.push(obj);
 				}
 			}
 			
 			// seat 4
 			if (ship.boff4rank) {
-				rank = ship.boff4rank;
-				type = ship.boff4type;
-				spec = ship.boff4spec;
-				
-				for (i = rank; i > 0; i--) {
-					var obj = {};
+				for (let i = ship.boff4rank; i > 0; i--) {
+					let obj = {};
 					obj.id = index++;
 					obj.shipseatid = 4;
 					obj.rank = i;
-					obj.type = type;
-					obj.spec = spec;
+					obj.type = ship.boff4type;
+					obj.spec = ship.boff4spec;
 					slots.push(obj);
 				}
 			}
 			
 			// seat 5
 			if (ship.boff5rank) {
-				rank = ship.boff5rank;
-				type = ship.boff5type;
-				spec = ship.boff5spec;
-				
-				for (i = rank; i > 0; i--) {
-					var obj = {};
+				for (let i = ship.boff5rank; i > 0; i--) {
+					let obj = {};
 					obj.id = index++;
 					obj.shipseatid = 5;
 					obj.rank = i;
-					obj.type = type;
-					obj.spec = spec;
+					obj.type = ship.boff5type;
+					obj.spec = ship.boff5spec;
 					slots.push(obj);
 				}
 			}
 			
 			// seat 6
 			if (ship.boff6rank) {
-				rank = ship.boff6rank;
-				type = ship.boff6type;
-				spec = ship.boff6spec;
-				
-				for (i = rank; i > 0; i--) {
-					var obj = {};
+				for (let i = ship.boff6rank; i > 0; i--) {
+					let obj = {};
 					obj.id = index++;
 					obj.shipseatid = 6;
 					obj.rank = i;
-					obj.type = type;
-					obj.spec = spec;
+					obj.type = ship.boff6type;
+					obj.spec = ship.boff6spec;
 					slots.push(obj);
 				}
 			}
 			
 			// sort the ability slots by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending
-			slots.sort(function (a, b) {
+			slots.sort((a, b) => {
 
 				if (a.spec === null && b.spec === null) {
 					return (a.type.localeCompare(b.type) || b.rank - a.rank);
@@ -675,7 +649,7 @@ const app = Vue.createApp({
 			});
 			
 			// sort the abilities by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending
-			abilities.sort(function (a, b) {
+			abilities.sort((a, b) => {
 				if (a.spec === null && b.spec === null) {
 					return (a.type.localeCompare(b.type) || b.rank - a.rank);
 				} else if (a.spec !== null && b.spec === null) {
