@@ -10,9 +10,11 @@
 		<link rel="manifest" href="/site.webmanifest">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="index.css">
 		<script src="https://cdn.jsdelivr.net/npm/vue@3.0.11/dist/vue.global.prod.js"></script>
 		<script src="shipdata.js" defer></script>
 		<script src="abilitydata.js" defer></script>
+		<script src="attributedata.js" defer></script>
 		<script src="index.js" defer></script>
 	</head>
 	<body>
@@ -22,510 +24,48 @@
 				STO Ship DB
 			</h1>
 			
-			<div class="field">
-				<label for="name" class="label">Name</label>
-				<div class="control">
-					<input id="name" v-model="name" class="input" type="text" placeholder="Search">
-				</div>
-			</div>
 			
-			<!-- Acquiring -->
-	
-			<div class="field">
-				<label for="source" class="label">Source</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="source" id="source">
-							<option v-for="option in sourceOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<div class="field">
-				<label for="bundle" class="label">Bundle</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="bundle" id="bundle">
-							<option v-for="option in bundleOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<div class="field">
-				<label for="starter" class="label">Starter</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="starter" id="starter">
-							<option v-for="option in starterOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<div class="field">
-				<label for="faction" class="label">Faction</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="faction" id="faction">
-							<option v-for="option in factionOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<div class="field">
-				<label for="family" class="label">Family</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="family" id="family">
-							<option v-for="option in familyOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-				
-
-
-			<!-- Ship Role -->
-			<div class="field">
-				<label for="masterypackage" class="label">Mastery Package</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="masterypackage" id="masterypackage">
-							<option v-for="option in masterypackageOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
+			<form v-on:submit.prevent="addNewAttribute">
 			
-			<!--
-				
-			<div class="field">
-				<label for="int" class="label">Int</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="int" id="int">
-							<option v-for="option in intOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="cmd" class="label">Cmd</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="cmd" id="cmd">
-							<option v-for="option in cmdOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-				
-			<div class="field">
-				<label for="pil" class="label">Pil</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="pil" id="pil">
-							<option v-for="option in pilOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<div class="field">
-				<label for="tmp" class="label">Tmp</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="tmp" id="tmp">
-							<option v-for="option in tmpOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="mw" class="label">MW</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="mw" id="mw">
-							<option v-for="option in mwOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			-->
-
-			<!-- Defense -->
-			<div class="field">
-				<label for="hull" class="label">Hull</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="hull" id="hull">
-							<option v-for="option in hullOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="hmod" class="label">Hull Modifier</label>
+				<div class="field">
+					<label for="newAttributeName" class="label">Desired Ship Attributes</label>
 					<div class="control">
-					<div class="select">
-						<select v-model="hmod" id="hmod">
-							<option v-for="option in hmodOptions" :value="option.value">{{ option.text }}</option>
-						</select>
+						<div class="select">
+							<select id="newAttributeName" v-model="newAttributeName" v-on:input="clearAttributeValue()">
+								<option :value="null">Select Name</option>
+								<option v-for="option in attributeNameOptions" :key="option" :value="option">{{ option }}</option>
+							</select>
+						</div>
+					</div>
+					<div class="control">
+						<div class="select">
+							<select id="newAttributeValue" v-model="newAttributeValue">
+								<option :value="null">Select Value</option>
+								<option v-for="option in attributeValueOptions" :value="option.value">{{ option.text }}</option>
+							</select>
+						</div>
+						<button :disabled='!newAttributeValue' class="button is-info"><span class="material-icons">&#xe148;</span></button>
 					</div>
 				</div>
-			</div>
 			
-			<div class="field">
-				<label for="smod" class="label">Shield Modifier</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="smod" id="smod">
-							<option v-for="option in smodOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
+			</form>
 
-			<!-- Mobility -->
-			<div class="field">
-				<label for="turn" class="label">Turn Rate</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="turn" id="turn">
-							<option v-for="option in turnOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-				
-			<div class="field">
-				<label for="imp" class="label">Impulse Modifier</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="imp" id="imp">
-							<option v-for="option in impOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-					
-			<div class="field">
-				<label for="inrt" class="label">Inertia Rating</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="inrt" id="inrt">
-							<option v-for="option in inrtOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
+			<br>
+			
+			<attribute
+				v-for="(attribute, index) in attributes"
+				:key="attribute.id"
+				:name="attribute.name"
+				:value="attribute.value"
+				@remove="attributes.splice(index, 1)"
+			></attribute>
 
-			<!-- Power Bonus -->
-			<div class="field">
-				<label for="wpower" class="label">Bonus Weapons Power</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="wpower" id="wpower">
-							<option v-for="option in wpowerOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
+			<br>
 			
-			<div class="field">
-				<label for="spower" class="label">Bonus Shield Power</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="spower" id="spower">
-							<option v-for="option in spowerOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="epower" class="label">Bonus Engine Power</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="epower" id="epower">
-							<option v-for="option in epowerOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="apower" class="label">Bonus Auxilliary Power</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="apower" id="apower">
-							<option v-for="option in apowerOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<!-- Weapons -->
-			<div class="field">
-				<label for="fa" class="label">Fore + Aft Weapons</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="fa" id="fa">
-							<option v-for="option in faOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-					
-			<div class="field">
-				<label for="fore" class="label">Fore Weapons</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="fore" id="fore">
-							<option v-for="option in foreOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="aft" class="label">Aft Weapons</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="aft" id="aft">
-							<option v-for="option in aftOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="dhc" class="label">Can Equip Dual Cannons</label>
-				<div class="control">
-					<div class="select">
-					<select v-model="dhc" id="dhc">
-						<option v-for="option in dhcOptions" :value="option.value">{{ option.text }}</option>
-					</select>
-				</div>
-			</div>
-			</div>
-			
-			<div class="field">
-				<label for="exp" class="label">Experimental Weapon Slot</label>
-				<div class="control">
-					<div class="select">
-					<select v-model="exp" id="exp">
-						<option v-for="option in expOptions" :value="option.value">{{ option.text }}</option>
-					</select>
-				</div>
-			</div>
-			</div>
-
-			<!-- Misc Equips -->
-			<div class="field">
-				<label for="hangars" class="label">Hangar Bays</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="hangars" id="hangars">
-							<option v-for="option in hangarsOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-					
-			<div class="field">
-				<label for="dev" class="label">Device Slots</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="dev" id="dev">
-							<option v-for="option in devOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<!-- Consoles -->
-			<div class="field">
-				<label for="fleet" class="label">Fleet Grade</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="fleet" id="fleet">
-							<option v-for="option in fleetOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="taccons" class="label">Tactical Consoles</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="taccons" id="taccons">
-							<option v-for="option in tacconsOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="engcons" class="label">Engineering Consoles</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="engcons" id="engcons">
-							<option v-for="option in engconsOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="scicons" class="label">Science Consoles</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="scicons" id="scicons">
-							<option v-for="option in sciconsOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-				
-			<div class="field">
-				<label for="unicons" class="label">Universal Consoles</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="unicons" id="unicons">
-							<option v-for="option in uniconsOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<!-- Cruiser Commands -->
-			<div class="field">
-				<label for="weapon" class="label">CC: Weapon System Efficiency</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="weapon" id="weapon">
-							<option v-for="option in weaponOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="shield" class="label">CC: Shield Frequency Modulation</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="shield" id="shield">
-							<option v-for="option in shieldOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="engine" class="label">CC: Strategic Maneuvering</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="engine" id="engine">
-							<option v-for="option in engineOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-		
-			<div class="field">
-				<label for="threat" class="label">CC: Attract Fire</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="threat" id="threat">
-							<option v-for="option in threatOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<!-- Science Vessel -->
-			<div class="field">
-				<label for="secdef" class="label">Secondary Deflector</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="secdef" id="secdef">
-							<option v-for="option in secdefOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="subtargeting" class="label">Subsystem Targeting</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="subtargeting" id="subtargeting">
-							<option v-for="option in subtargetingOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="sensoranalysis" class="label">Sensor Analysis</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="sensoranalysis" id="sensoranalysis">
-							<option v-for="option in sensoranalysisOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			<!-- Misc -->
-			<div class="field">
-				<label for="singularity" class="label">Singularity</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="singularity" id="singularity">
-							<option v-for="option in singularityOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="cloak" class="label">Cloak</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="cloak" id="cloak">
-							<option v-for="option in cloakOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			
-			<div class="field">
-				<label for="flanking" class="label">Flanking</label>
-				<div class="control">
-					<div class="select">
-						<select v-model="flanking" id="flanking">
-							<option v-for="option in flankingOptions" :value="option.value">{{ option.text }}</option>
-						</select>
-					</div>
-				</div>
-			</div>
-
-			
-			<!-- Abilities -->
 			<form v-on:submit.prevent="addNewAbility">
 			
 				<div class="field">
-					<label for="newAbilityType" class="label">Desired Abilities</label>
+					<label for="newAbilityType" class="label">Desired Bridge Officer Abilities</label>
 					<div class="control">
 						<div class="select">
 							<select id="newAbilityType" v-model="newAbilityType" v-on:input="clearNameLevelRank()">
@@ -534,10 +74,6 @@
 							</select>
 						</div>
 					</div>
-				</div>
-
-				<div class="field">
-					<!--<label for="newAbilityName" class="label">Ability Name</label>-->
 					<div class="control">
 						<div class="select">
 							<select id="newAbilityName" v-model="newAbilityName" v-on:input="clearLevelRank()">
@@ -546,10 +82,6 @@
 							</select>
 						</div>
 					</div>
-				</div>
-
-				<div class="field">
-					<!--<label for="newAbilityLevel" class="label">Ability Level</label>-->
 					<div class="control">
 						<div class="select">
 							<select id="newAbilityLevel" v-model="newAbilityLevel" v-on:input="setRank($event)">
@@ -565,24 +97,21 @@
 			
 			<br>
 
-					<ability
-						v-for="(ability, index) in abilities"
-						:key="ability.id"
-						:type="ability.type"
-						:name="ability.name"
-						:level="ability.level"
-						:rank="ability.rank"
-						@remove="abilities.splice(index, 1)"
-					></ability>
-
-
-						
+			<ability
+				v-for="(ability, index) in abilities"
+				:key="ability.id"
+				:type="ability.type"
+				:name="ability.name"
+				:level="ability.level"
+				:rank="ability.rank"
+				@remove="abilities.splice(index, 1)"
+			></ability>
 
 			<br>
 			
 			<label class="label">Matching Ships: {{ rows.length }} out of {{ allShips.length }}</label>
 
-			<table border="1" v-show="rows.length" class="table">
+			<table v-show="rows.length" class="table">
 				<tr>
 					<th>Ship Name</th>
 				</tr>
