@@ -32,7 +32,7 @@
 					<div class="control">
 						<div class="select">
 							<select id="newAttributeName" v-model="newAttributeName" v-on:input="clearAttributeValue()">
-								<option :value="null">Select Name</option>
+								<option :value="null">Select Attribute</option>
 								<option v-for="option in attributeNameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
