@@ -23,20 +23,44 @@ const app = Vue.createApp({
 			
 			let ships = this.allShips;
 			
-			
-			this.attributes.forEach( attribute => {
+			this.allAttributes.forEach( aa => {
 				
-				let key = this.allAttributes.filter(a => a.text === attribute.name)[0].key;
-				
-				if (attribute.comparison === ">=") {
-					ships = ships.filter(ship => ship[key] >= attribute.value);
-				} else if (attribute.comparison === "<=") {
-					ships = ships.filter(ship => ship[key] >= attribute.value);
-				} else {
-					ships = ships.filter(ship => ship[key] === attribute.value);
+				let result = this.attributes.filter(a => a.name===aa.text);
+
+				if (result.length) {
+
+					// sort so that >= is first, followed by <=, followed by =
+					result.sort((a, b) => {
+						if (a.comparison === "=" && b.comparison !== "=") {
+							return 1;
+						}
+						if (a.comparison !== "=" && b.comparison === "=") {
+							return -1;
+						}
+						if (a.comparison !== b.comparison) {
+							return a.comparison < b.comparison;
+						}
+						return 0;
+					});
+					
+					result.forEach(r => {
+						
+						let key = this.allAttributes.filter(a => a.text === r.name)[0].key;
+						
+						if (r.comparison === ">=") {
+							ships = ships.filter(ship => ship[key] >= r.value);
+						} else if (r.comparison === "<=") {
+							ships = ships.filter(ship => ship[key] <= r.value);
+						} else {
+							ships = ships.filter(ship => ship[key] === r.value);
+						}
+						
+					})
+
 				}
-			
+				
 			});
+
 			
 			if (this.abilities.length > 0) {
 				
