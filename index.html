@@ -31,21 +31,31 @@
 					<label for="newAttributeName" class="label">Desired Ship Attributes</label>
 					<div class="control">
 						<div class="select">
-							<select id="newAttributeName" v-model="newAttributeName" v-on:input="clearAttributeValue()">
+							<select id="newAttributeName" v-model="newAttributeName">
 								<option :value="null">Select Attribute</option>
 								<option v-for="option in attributeNameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
 					</div>
+					
 					<div class="control">
 						<div class="select">
-							<select id="newAttributeValue" v-model="newAttributeValue">
+							<select v-model="newAttributeComparison" :disabled='!(attributeValueOptions[0] && isFinite(attributeValueOptions[0].value))'>
+								<option value="=">=</option>
+								<option value="&lt;=">&lt;=</option>
+								<option value="&gt;=">&gt;=</option>
+							</select>
+						</div>
+
+						<div class="select">
+							<select v-model="newAttributeValue">
 								<option :value="null">Select Value</option>
 								<option v-for="option in attributeValueOptions" :value="option.value">{{ option.text }}</option>
 							</select>
 						</div>
 						<button :disabled='!newAttributeValue' class="button is-info"><span class="material-icons">&#xe148;</span></button>
 					</div>
+					
 				</div>
 			
 			</form>
@@ -56,6 +66,7 @@
 				v-for="(attribute, index) in attributes"
 				:key="attribute.id"
 				:name="attribute.name"
+				:comparison="attribute.comparison"
 				:value="attribute.value"
 				@remove="attributes.splice(index, 1)"
 			></attribute>
@@ -68,7 +79,7 @@
 					<label for="newAbilityType" class="label">Desired Bridge Officer Abilities</label>
 					<div class="control">
 						<div class="select">
-							<select id="newAbilityType" v-model="newAbilityType" v-on:input="clearNameLevelRank()">
+							<select id="newAbilityType" v-model="newAbilityType">
 								<option :value="null">Select Type</option>
 								<option v-for="option in abilitytypeOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
@@ -76,7 +87,7 @@
 					</div>
 					<div class="control">
 						<div class="select">
-							<select id="newAbilityName" v-model="newAbilityName" v-on:input="clearLevelRank()">
+							<select id="newAbilityName" v-model="newAbilityName">
 								<option :value="null">Select Name</option>
 								<option v-for="option in abilitynameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
@@ -84,7 +95,7 @@
 					</div>
 					<div class="control">
 						<div class="select">
-							<select id="newAbilityLevel" v-model="newAbilityLevel" v-on:input="setRank($event)">
+							<select id="newAbilityLevel" v-model="newAbilityLevel">
 								<option :value="null">Select Level</option>
 								<option v-for="option in abilitylevelOptions" :key="option" :value="option">{{ option }}</option>
 							</select>

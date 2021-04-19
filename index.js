@@ -8,6 +8,7 @@ const app = Vue.createApp({
 			abilities: [],
 			nextAbilityId: 1,
 			newAttributeName: null,
+			newAttributeComparison: "=",
 			newAttributeValue: null,
 			attributes: [],
 			nextAttributeId: 1,
@@ -22,15 +23,20 @@ const app = Vue.createApp({
 			
 			let ships = this.allShips;
 			
-			this.allAttributes.forEach( attribute => {
-
-				let filter = new Set(this.attributes.filter(a => a.name==attribute.text).map(a => a.value));
-				if (filter.size) {
-					ships = ships.filter(ship => filter.has(ship[attribute.value]));
+			
+			this.attributes.forEach( attribute => {
+				
+				let key = this.allAttributes.filter(a => a.text === attribute.name)[0].key;
+				
+				if (attribute.comparison === ">=") {
+					ships = ships.filter(ship => ship[key] >= attribute.value);
+				} else if (attribute.comparison === "<=") {
+					ships = ships.filter(ship => ship[key] >= attribute.value);
+				} else {
+					ships = ships.filter(ship => ship[key] === attribute.value);
 				}
-
+			
 			});
-
 			
 			if (this.abilities.length > 0) {
 				
@@ -162,42 +168,42 @@ const app = Vue.createApp({
 			if (this.newAttributeName === null) {
 				return [];
 			}
-			let key = this.allAttributes.filter(a => a.text === this.newAttributeName)[0].value;
+			let key = this.allAttributes.filter(a => a.text === this.newAttributeName)[0].key;
 			return this.getOpts(key);
 		}
 	},
-	methods:{
-		clearNameLevelRank() {
-			this.newAbilityName = null;
-			this.newAbilityLevel = null;
-			this.newAbilityRank = null;
+	watch: {
+		newAttributeName() {
+			this.newAttributeComparison = "=";
+			this.newAttributeValue = null;
 		},
-		clearLevelRank() {
-			this.newAbilityLevel = null;
-			this.newAbilityRank = null;
+		newAbilityType() {
+			this.newAbilityName = null; 
 		},
-		setRank(event) {
-			if (event.target.value) {
-				this.newAbilityRank = this.allAbilities.filter(a => a.type === this.newAbilityType && a.name === this.newAbilityName && a.level === event.target.value)[0].rank;
+		newAbilityName() {
+			this.newAbilityLevel = null;	
+		},
+		newAbilityLevel(val) {
+			if (val) {
+				this.newAbilityRank = this.allAbilities.filter(a => a.type === this.newAbilityType && a.name === this.newAbilityName && a.level === val)[0].rank;
 			} else {
 				this.newAbilityRank = null;
 			}
-		},
-		clearAttributeValue() {
-			this.newAttributeValue = null;
-		},
+		}
+	},
+	methods:{
 		getOpts(key) {
 			result = Array.from(new Set(this.allShips.map(item => item[key]))).sort((a, b) => {
 				if (isFinite(a) && isFinite(b)) {
 					return a - b;
 				}
 				if (a < b) {
-    			return -1;
-  			}
-  			if (a > b) {
-    			return 1;
-  			}
-  			return 0;
+					return -1;
+				}
+				if (a > b) {
+					return 1;
+				}
+				return 0;
 			});
 			
 			let opts = [];
@@ -368,9 +374,11 @@ const app = Vue.createApp({
 			this.attributes.push({
 				id: this.nextAttributeId++,
 				name: this.newAttributeName,
+				comparison: this.newAttributeComparison,
 				value: this.newAttributeValue
 			})
 			this.newAttributeName = null;
+			this.newAttributeComparison = null;
 			this.newAttributeValue = null;
 		}
 	}
@@ -395,14 +403,14 @@ app.component('attribute', {
 	template: `
 	<div class="field has-addons">
 		<div class="control">
-			<label class="input">{{ name }} - {{ value }}</label>
+			<label class="input">{{ name }} {{ comparison }} {{ value }}</label>
 		</div>
 		<div class="control">
 			<button @click="$emit('remove')" class="button is-info"><span class="material-icons">&#xe888;</span></button>
 		</div>
 	</div>
 	`,
-	props: ['name', 'value'],
+	props: ['name', 'comparison', 'value'],
 	emits: ['remove']
 })
 
