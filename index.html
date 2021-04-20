@@ -32,7 +32,7 @@
 					<div class="control">
 						<div class="select">
 							<select id="newAttributeName" v-model="newAttributeName">
-								<option :value="null">Select Attribute</option>
+								<option disabled value="">Select Attribute</option>
 								<option v-for="option in attributeNameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
@@ -49,7 +49,7 @@
 
 						<div class="select">
 							<select v-model="newAttributeValue">
-								<option :value="null">Select Value</option>
+								<option disabled value="">Select Value</option>
 								<option v-for="option in attributeValueOptions" :value="option.value">{{ option.text }}</option>
 							</select>
 						</div>
@@ -80,7 +80,7 @@
 					<div class="control">
 						<div class="select">
 							<select id="newAbilityType" v-model="newAbilityType">
-								<option :value="null">Select Type</option>
+								<option disabled value="">Select Type</option>
 								<option v-for="option in abilitytypeOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
@@ -88,7 +88,7 @@
 					<div class="control">
 						<div class="select">
 							<select id="newAbilityName" v-model="newAbilityName">
-								<option :value="null">Select Name</option>
+								<option disabled value="">Select Name</option>
 								<option v-for="option in abilitynameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
@@ -96,7 +96,7 @@
 					<div class="control">
 						<div class="select">
 							<select id="newAbilityLevel" v-model="newAbilityLevel">
-								<option :value="null">Select Level</option>
+								<option disabled value="">Select Level</option>
 								<option v-for="option in abilitylevelOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>

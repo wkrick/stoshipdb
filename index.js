@@ -1,15 +1,15 @@
 const app = Vue.createApp({
 	data() {
 		return {
-			newAbilityType: null,
-			newAbilityName: null,
-			newAbilityLevel: null,
-			newAbilityRank: null,
+			newAbilityType: "",
+			newAbilityName: "",
+			newAbilityLevel: "",
+			newAbilityRank: "",
 			abilities: [],
 			nextAbilityId: 1,
-			newAttributeName: null,
+			newAttributeName: "",
 			newAttributeComparison: "=",
-			newAttributeValue: null,
+			newAttributeValue: "",
 			attributes: [],
 			nextAttributeId: 1,
 			filteredShipCount: null,
@@ -23,43 +23,19 @@ const app = Vue.createApp({
 			
 			let ships = this.allShips;
 			
-			this.allAttributes.forEach( aa => {
+			this.attributes.forEach( a => {
 				
-				let result = this.attributes.filter(a => a.name===aa.text);
-
-				if (result.length) {
-
-					// sort so that >= is first, followed by <=, followed by =
-					result.sort((a, b) => {
-						if (a.comparison === "=" && b.comparison !== "=") {
-							return 1;
-						}
-						if (a.comparison !== "=" && b.comparison === "=") {
-							return -1;
-						}
-						if (a.comparison !== b.comparison) {
-							return a.comparison < b.comparison;
-						}
-						return 0;
-					});
-					
-					result.forEach(r => {
+				let key = this.allAttributes.filter(aa => aa.text === a.name)[0].key;
 						
-						let key = this.allAttributes.filter(a => a.text === r.name)[0].key;
-						
-						if (r.comparison === ">=") {
-							ships = ships.filter(ship => ship[key] >= r.value);
-						} else if (r.comparison === "<=") {
-							ships = ships.filter(ship => ship[key] <= r.value);
-						} else {
-							ships = ships.filter(ship => ship[key] === r.value);
-						}
-						
-					})
-
-				}
+					if (a.comparison === ">=") {
+						ships = ships.filter(ship => ship[key] >= a.value);
+					} else if (a.comparison === "<=") {
+						ships = ships.filter(ship => ship[key] <= a.value);
+					} else {
+						ships = ships.filter(ship => ship[key] === a.value);
+					}
 				
-			});
+			})
 
 			
 			if (this.abilities.length > 0) {
@@ -164,8 +140,6 @@ const app = Vue.createApp({
 			
 			} // end if abilities > 0
 			
-			//console.log("ships.length: " + ships.length);
-			
 			this.filteredShipCount = ships.length;
 			
 			return ships;
@@ -174,13 +148,13 @@ const app = Vue.createApp({
 			return new Set(this.allAbilities.map(a => a.type));
 		},
 		abilitynameOptions() {
-			if (this.newAbilityType === null ) {
+			if (!this.newAbilityType) {
 				return [];
 			}
 			return new Set(this.allAbilities.filter(a => a.type === this.newAbilityType).map(a => a.name));
 		},
 		abilitylevelOptions() {
-			if (this.newAbilityType === null || this.newAbilityName === null) {
+			if (!this.newAbilityType || !this.newAbilityName) {
 				return [];
 			}
 			return this.allAbilities.filter(a => a.type === this.newAbilityType && a.name === this.newAbilityName).map(a => a.level);
@@ -189,7 +163,7 @@ const app = Vue.createApp({
 			return new Set(this.allAttributes.map(a => a.text));
 		},
 		attributeValueOptions() {
-			if (this.newAttributeName === null) {
+			if (!this.newAttributeName) {
 				return [];
 			}
 			let key = this.allAttributes.filter(a => a.text === this.newAttributeName)[0].key;
@@ -199,19 +173,19 @@ const app = Vue.createApp({
 	watch: {
 		newAttributeName() {
 			this.newAttributeComparison = "=";
-			this.newAttributeValue = null;
+			this.newAttributeValue = "";
 		},
 		newAbilityType() {
-			this.newAbilityName = null; 
+			this.newAbilityName = ""; 
 		},
 		newAbilityName() {
-			this.newAbilityLevel = null;	
+			this.newAbilityLevel = "";	
 		},
 		newAbilityLevel(val) {
 			if (val) {
 				this.newAbilityRank = this.allAbilities.filter(a => a.type === this.newAbilityType && a.name === this.newAbilityName && a.level === val)[0].rank;
 			} else {
-				this.newAbilityRank = null;
+				this.newAbilityRank = "";
 			}
 		}
 	},
@@ -389,10 +363,10 @@ const app = Vue.createApp({
 				level: this.newAbilityLevel,
 				rank: this.newAbilityRank,
 			})
-			this.newAbilityType = null;
-			this.newAbilityName = null;
-			this.newAbilityLevel = null;
-			this.newAbilityRank = null;
+			this.newAbilityType = "";
+			this.newAbilityName = "";
+			this.newAbilityLevel = "";
+			this.newAbilityRank = "";
 		},
 		addNewAttribute() {
 			this.attributes.push({
@@ -401,9 +375,9 @@ const app = Vue.createApp({
 				comparison: this.newAttributeComparison,
 				value: this.newAttributeValue
 			})
-			this.newAttributeName = null;
-			this.newAttributeComparison = null;
-			this.newAttributeValue = null;
+			this.newAttributeName = "";
+			this.newAttributeComparison = "eq";
+			this.newAttributeValue = "";
 		}
 	}
 })
