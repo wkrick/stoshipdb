@@ -53,7 +53,7 @@
 								<option v-for="option in attributeValueOptions" :value="option.value">{{ option.text }}</option>
 							</select>
 						</div>
-						<button :disabled='!newAttributeValue' class="button is-info"><span class="material-icons">&#xe148;</span></button>
+						<button :disabled='!newAttributeValue && newAttributeValue !== 0' class="button is-info"><span class="material-icons">&#xe148;</span></button>
 					</div>
 					
 				</div>
