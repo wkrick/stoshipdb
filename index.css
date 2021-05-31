@@ -14,8 +14,8 @@ table {
 	border: solid;
 	color: #363636;
 	border-radius: 0.5em;
-	margin: 1em 0.25em 0.25em;
-	padding:0 1em 1em;
+	margin: 1em 0 0.25em;
+	padding: 0 0.5em 0.5em;
 }
 
 .legend {
