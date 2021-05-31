@@ -12,6 +12,9 @@ const app = Vue.createApp({
 			newAttributeValue: "",
 			attributes: [],
 			nextAttributeId: 1,
+			newColumnName: "",
+			columns: [],
+			nextColumnId: 1,
 			filteredShipCount: null,
 			allShips: shipdata,
 			allAbilities: abilitydata,
@@ -160,7 +163,7 @@ const app = Vue.createApp({
 			return this.allAbilities.filter(a => a.type === this.newAbilityType && a.name === this.newAbilityName).map(a => a.level);
 		},
 		attributeNameOptions() {
-			return new Set(this.allAttributes.map(a => a.text));
+			return this.allAttributes.map(a => a.text);
 		},
 		attributeValueOptions() {
 			if (!this.newAttributeName) {
@@ -168,6 +171,25 @@ const app = Vue.createApp({
 			}
 			let key = this.allAttributes.filter(a => a.text === this.newAttributeName)[0].key;
 			return this.getOpts(key);
+		},
+		columnNameOptions() {
+			return this.allAttributes.map(a => a.text);
+		},
+		filteredColumns() {
+			let selectedColumns = new Set(this.columns.map(a => a.name));
+			let cols = [];
+			
+			this.allAttributes.forEach(aa => {
+				if (selectedColumns.has(aa.text)) {
+					let obj = {};
+					obj.text = aa.text;
+					obj.key = aa.key;
+					cols.push(obj);
+				}
+				
+			});
+
+			return cols;
 		}
 	},
 	watch: {
@@ -378,6 +400,13 @@ const app = Vue.createApp({
 			this.newAttributeName = "";
 			this.newAttributeComparison = "eq";
 			this.newAttributeValue = "";
+		},
+		addNewColumn() {
+			this.columns.push({
+				id: this.nextColumnId++,
+				name: this.newColumnName,
+			})
+			this.newColumnName = "";
 		}
 	}
 })
@@ -409,6 +438,21 @@ app.component('attribute', {
 	</div>
 	`,
 	props: ['name', 'comparison', 'value'],
+	emits: ['remove']
+})
+
+app.component('column', {
+	template: `
+	<div class="field has-addons">
+		<div class="control">
+			<label class="input">{{ name }}</label>
+		</div>
+		<div class="control">
+			<button @click="$emit('remove')" class="button is-info"><span class="material-icons">&#xe888;</span></button>
+		</div>
+	</div>
+	`,
+	props: ['name'],
 	emits: ['remove']
 })
 
