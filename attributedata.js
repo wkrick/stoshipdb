@@ -19,7 +19,7 @@ let attributedata = [
 { text: "Fore Weapons", key: "fore"},
 { text: "Aft Weapons", key: "aft"},
 { text: "Can Equip Dual Cannons", key: "dhc"},
-{ text: "Experimental Weapon Slot", key: "exp"},
+{ text: "Exp. Weapon Slot", key: "exp"},
 { text: "Hangar Bays", key: "hangars"},
 { text: "Devices", key: "dev"},
 { text: "Fleet Grade", key: "fleet"},
