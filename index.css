@@ -1,9 +1,26 @@
 html {
 	background: #aeb0b5
 }
+
 table {
 	border: 1px solid #dbdbdb
 }
-.tab { 
-	margin-left: 40px;
+
+.divider {
+	background-color: #dbdbdb;
+}
+
+.fieldset {
+	border: solid;
+	color: #363636;
+	border-radius: 0.5em;
+	margin: 1em 0.25em 0.25em;
+	padding:0 1em 1em;
+}
+
+.legend {
+	transform: translatey(-50%);
+	width: max-content;
+	background: #aeb0b5;
+	padding: 0 0.25em;
 }

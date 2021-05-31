@@ -19,10 +19,12 @@
 				STO Ship DB
 			</h1>
 			
-			<form v-on:submit.prevent="addNewAttribute">
 			
-				<div class="field">
-					<label for="newAttributeName" class="label">Desired Ship Attributes</label>
+			<form v-on:submit.prevent="addNewAttribute">
+				
+				<div class="field fieldset">
+					<h2 class="label legend">Desired Ship Attributes</h2>
+
 					<div class="control">
 						<div class="select">
 							<select id="newAttributeName" v-model="newAttributeName">
@@ -50,29 +52,28 @@
 						<button :disabled='!newAttributeValue && newAttributeValue !== 0' class="button is-info"><span class="material-icons">&#xe148;</span></button>
 					</div>
 					
+					<div  v-show="attributes.length">
+						<hr class="divider">
+					<attribute
+						v-for="(attribute, index) in attributes"
+						:key="attribute.id"
+						:name="attribute.name"
+						:comparison="attribute.comparison"
+						:value="attribute.value"
+						@remove="attributes.splice(index, 1)"
+					></attribute>
+					</div>
+					
 				</div>
 			
 			</form>
 
-			<br>
-			
-			<div class="tab">
-				<attribute
-					v-for="(attribute, index) in attributes"
-					:key="attribute.id"
-					:name="attribute.name"
-					:comparison="attribute.comparison"
-					:value="attribute.value"
-					@remove="attributes.splice(index, 1)"
-				></attribute>
-			</div>
-
-			<br>
 			
 			<form v-on:submit.prevent="addNewAbility">
-			
-				<div class="field">
-					<label for="newAbilityType" class="label">Desired Bridge Officer Abilities</label>
+				
+				<div class="field fieldset">
+					<h2 class="label legend">Desired Bridge Officer Abilities</h2>
+
 					<div class="control">
 						<div class="select">
 							<select id="newAbilityType" v-model="newAbilityType">
@@ -98,30 +99,30 @@
 						</div>
 						<button :disabled='!newAbilityLevel' class="button is-info"><span class="material-icons">&#xe148;</span></button>
 					</div>
+			
+					<div v-show="abilities.length">
+						<hr class="divider">
+						<ability
+							v-for="(ability, index) in abilities"
+							:key="ability.id"
+							:type="ability.type"
+							:name="ability.name"
+							:level="ability.level"
+							:rank="ability.rank"
+							@remove="abilities.splice(index, 1)"
+						></ability>
+					</div>
+
 				</div>
 
 			</form>
 			
-			<br>
-
-			<div class="tab">
-				<ability
-					v-for="(ability, index) in abilities"
-					:key="ability.id"
-					:type="ability.type"
-					:name="ability.name"
-					:level="ability.level"
-					:rank="ability.rank"
-					@remove="abilities.splice(index, 1)"
-				></ability>
-			</div>
-			
-			<br>
 			
 			<form v-on:submit.prevent="addNewColumn">
-			
-				<div class="field">
-					<label for="newColumnName" class="label">Display Result Columns</label>
+				
+				<div class="field fieldset">
+					<h2 class="label legend">Desired Columns in Result Table</h2>
+
 					<div class="control">
 						<div class="select">
 							<select id="newColumnName" v-model="newColumnName">
@@ -131,25 +132,24 @@
 						</div>
 						<button :disabled='!newColumnName' class="button is-info"><span class="material-icons">&#xe148;</span></button>
 					</div>
+
+					<div v-show="columns.length">
+						<hr class="divider">
+						<column
+							v-for="(column, index) in columns"
+							:key="column.id"
+							:name="column.name"
+							@remove="columns.splice(index, 1)"
+						></column>
+					</div>
 					
 				</div>
 			
 			</form>
 
 			<br>
-			
-			<div class="tab">
-				<column
-					v-for="(column, index) in columns"
-					:key="column.id"
-					:name="column.name"
-					@remove="columns.splice(index, 1)"
-				></column>
-			</div>
-
-			<br>
-			
-			<label class="label">Matching Ships: {{ rows.length }} out of {{ allShips.length }}</label>
+	
+			<h2 class="label">Matching Ships: {{ rows.length }} out of {{ allShips.length }}</h2>
 
 			<table v-show="rows.length" class="table">
 				<tr>
