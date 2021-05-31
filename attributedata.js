@@ -27,7 +27,7 @@ let attributedata = [
 { text: "Engineering Consoles", key: "engcons"},
 { text: "Science Consoles", key: "scicons"},
 { text: "Universal Consoles", key: "unicons"},
-{ text: "CC: Weapon System Eff.", key: "weapon"},
+{ text: "CC: Weapon Syst. Eff.", key: "weapon"},
 { text: "CC: Shield Freq. Mod.", key: "shield"},
 { text: "CC: Strat. Maneuvering", key: "engine"},
 { text: "CC: Attract Fire", key: "threat"},
