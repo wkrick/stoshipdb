@@ -157,7 +157,7 @@
 					<th v-for="(c) in filteredColumns">{{ c.text }}</th>
 				</tr>
 				<tr v-for="ship in rows">
-					<td><a v-bind:href="ship.url">{{ ship.name }}</a></td>
+					<td><a v-bind:href="ship.url" target="_blank">{{ ship.name }}</a></td>
 					<td v-for="(c) in filteredColumns">{{ ship[c.key] }}</td>
 				</tr>
 			</table>
