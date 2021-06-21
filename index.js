@@ -250,6 +250,7 @@ const app = Vue.createApp({
 					obj.rank = i;
 					obj.type = ship.boff1type;
 					obj.spec = ship.boff1spec;
+					obj.seatrank = ship.boff1rank;
 					slots.push(obj);
 				}
 			}
@@ -263,6 +264,7 @@ const app = Vue.createApp({
 					obj.rank = i;
 					obj.type = ship.boff2type;
 					obj.spec = ship.boff2spec;
+					obj.seatrank = ship.boff2rank;
 					slots.push(obj);
 				}
 			}
@@ -276,6 +278,7 @@ const app = Vue.createApp({
 					obj.rank = i;
 					obj.type = ship.boff3type;
 					obj.spec = ship.boff3spec;
+					obj.seatrank = ship.boff3rank;
 					slots.push(obj);
 				}
 			}
@@ -289,6 +292,7 @@ const app = Vue.createApp({
 					obj.rank = i;
 					obj.type = ship.boff4type;
 					obj.spec = ship.boff4spec;
+					obj.seatrank = ship.boff4rank;
 					slots.push(obj);
 				}
 			}
@@ -302,6 +306,7 @@ const app = Vue.createApp({
 					obj.rank = i;
 					obj.type = ship.boff5type;
 					obj.spec = ship.boff5spec;
+					obj.seatrank = ship.boff5rank;
 					slots.push(obj);
 				}
 			}
@@ -315,21 +320,22 @@ const app = Vue.createApp({
 					obj.rank = i;
 					obj.type = ship.boff6type;
 					obj.spec = ship.boff6spec;
+					obj.seatrank = ship.boff6rank;
 					slots.push(obj);
 				}
 			}
 			
-			// sort the ability slots by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending
+			// sort the ability slots by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending, then by seatrank (size) ascending
 			slots.sort((a, b) => {
 
 				if (a.spec === null && b.spec === null) {
-					return (a.type.localeCompare(b.type) || b.rank - a.rank);
+					return (a.type.localeCompare(b.type) || b.rank - a.rank || a.seatrank - b.seatrank);
 				} else if (a.spec !== null && b.spec === null) {
 					return -1;
 				} else if (a.spec === null && b.spec !== null) {
 					return 1;
 				}
-				return (a.spec.localeCompare(b.spec) || a.type.localeCompare(b.type) || b.rank - a.rank);
+				return (a.spec.localeCompare(b.spec) || a.type.localeCompare(b.type) || b.rank - a.rank || a.seatrank - b.seatrank);
 			});
 			
 			return slots;
