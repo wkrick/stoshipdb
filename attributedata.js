@@ -28,6 +28,7 @@ let attributedata = [
 { text: "Science Consoles", key: "scicons"},
 { text: "Universal Consoles", key: "unicons"},
 { text: "Total Consoles", key: "totcons"},
+{ text: "Total BOff Abilities", key: "totrank"},
 { text: "CC: Weapon Syst. Eff.", key: "weapon"},
 { text: "CC: Shield Freq. Mod.", key: "shield"},
 { text: "CC: Strat. Maneuvering", key: "engine"},
