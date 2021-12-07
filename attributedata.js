@@ -3,6 +3,7 @@ let attributedata = [
 { text: "Bundle", key: "bundle"},
 { text: "Starter", key: "starter"},
 { text: "Faction", key: "faction"},
+{ text: "Origin", key: "origin"},
 { text: "Family", key: "family"},
 { text: "Mastery Package", key: "masterypackage"},
 { text: "Hull", key: "hull"},
