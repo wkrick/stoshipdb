@@ -37,7 +37,7 @@
 					</div>
 					<div class="control">
 						<div class="select">
-							<select v-model="newAttributeComparison" :disabled='!(attributeValueOptions[0] && isFinite(attributeValueOptions[0].value))'>
+							<select v-model="newAttributeComparison" :disabled="!(attributeValueOptions[0] && isFinite(attributeValueOptions[0].value))">
 								<option value="=">=</option>
 								<option value="&lt;=">&lt;=</option>
 								<option value="&gt;=">&gt;=</option>
@@ -46,12 +46,12 @@
 					</div>
 					<div class="control">
 						<div class="select">
-							<select v-model="newAttributeValue">
+							<select v-model="newAttributeValue" :disabled="!newAttributeName">
 								<option disabled value="">Select Value</option>
 								<option v-for="option in attributeValueOptions" :value="option.value">{{ option.text }}</option>
 							</select>
 						</div>
-						<button class="button is-info" :disabled='!newAttributeValue && newAttributeValue !== 0'>
+						<button class="button is-info" :disabled="!newAttributeValue && newAttributeValue !== 0">
 							<span class="icon is-small">
 								<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 									<path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
@@ -92,7 +92,7 @@
 					</div>
 					<div class="control">
 						<div class="select">
-							<select id="newAbilityName" v-model="newAbilityName">
+							<select id="newAbilityName" v-model="newAbilityName" :disabled="!newAbilityType">
 								<option disabled value="">Select Name</option>
 								<option v-for="option in abilitynameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
@@ -100,12 +100,12 @@
 					</div>
 					<div class="control">
 						<div class="select">
-							<select id="newAbilityLevel" v-model="newAbilityLevel">
+							<select id="newAbilityLevel" v-model="newAbilityLevel" :disabled="!newAbilityName">
 								<option disabled value="">Select Level</option>
 								<option v-for="option in abilitylevelOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
-						<button class="button is-info" :disabled='!newAbilityLevel'>
+						<button class="button is-info" :disabled="!newAbilityLevel">
 							<span class="icon is-small">
 								<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 									<path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
@@ -144,7 +144,7 @@
 								<option v-for="option in columnNameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
-						<button class="button is-info" :disabled='!newColumnName'>
+						<button class="button is-info" :disabled="!newColumnName">
 							<span class="icon is-small">
 								<svg style="width:24px;height:24px" viewBox="0 0 24 24">
 									<path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
@@ -185,7 +185,12 @@
 		</div>
 	</section>
 	
+	<!--
 	<script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.prod.js"></script>
+	-->
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue@3.2.31/dist/vue.global.js"></script>
+	
 	<script src="shipdata.js"></script>
 	<script src="abilitydata.js"></script>
 	<script src="attributedata.js"></script>

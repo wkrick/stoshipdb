@@ -148,13 +148,13 @@ const app = Vue.createApp({
 			return ships;
 		},
 		abilitytypeOptions() {
-			return new Set(this.allAbilities.map(a => a.type));
+			return [...new Set(this.allAbilities.map(a => a.type))];
 		},
 		abilitynameOptions() {
 			if (!this.newAbilityType) {
 				return [];
 			}
-			return new Set(this.allAbilities.filter(a => a.type === this.newAbilityType).map(a => a.name));
+			return [...new Set(this.allAbilities.filter(a => a.type === this.newAbilityType).map(a => a.name))];
 		},
 		abilitylevelOptions() {
 			if (!this.newAbilityType || !this.newAbilityName) {
@@ -213,7 +213,7 @@ const app = Vue.createApp({
 	},
 	methods:{
 		getOpts(key) {
-			let result = Array.from(new Set(this.allShips.map(item => item[key]))).sort((a, b) => {
+			let result = [...new Set(this.allShips.map(item => item[key]))].sort((a, b) => {
 				if (a === b) {
 					return 0;
 				}
