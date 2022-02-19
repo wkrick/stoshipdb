@@ -35,7 +35,6 @@
 							</select>
 						</div>
 					</div>
-					
 					<div class="control">
 						<div class="select">
 							<select v-model="newAttributeComparison" :disabled='!(attributeValueOptions[0] && isFinite(attributeValueOptions[0].value))'>
@@ -44,7 +43,8 @@
 								<option value="&gt;=">&gt;=</option>
 							</select>
 						</div>
-
+					</div>
+					<div class="control">
 						<div class="select">
 							<select v-model="newAttributeValue">
 								<option disabled value="">Select Value</option>
