@@ -213,17 +213,19 @@ const app = Vue.createApp({
 	},
 	methods:{
 		getOpts(key) {
-			result = Array.from(new Set(this.allShips.map(item => item[key]))).sort((a, b) => {
-				if (isFinite(a) && isFinite(b)) {
-					return a - b;
+			let result = Array.from(new Set(this.allShips.map(item => item[key]))).sort((a, b) => {
+				if (a === b) {
+					return 0;
 				}
-				if (a < b) {
-					return -1;
-				}
-				if (a > b) {
+				else if (a === null) {
 					return 1;
 				}
-				return 0;
+				else if (b === null) {
+					return -1;
+				}
+				else {
+					return a < b ? -1 : 1;
+				}
 			});
 			
 			let opts = [];
