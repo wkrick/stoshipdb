@@ -9,7 +9,6 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 		<link rel="manifest" href="/site.webmanifest">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="index.css">
 	</head>
 	<body>
@@ -52,7 +51,13 @@
 								<option v-for="option in attributeValueOptions" :value="option.value">{{ option.text }}</option>
 							</select>
 						</div>
-						<button :disabled='!newAttributeValue && newAttributeValue !== 0' class="button is-info"><span class="material-icons">&#xe148;</span></button>
+						<button class="button is-info" :disabled='!newAttributeValue && newAttributeValue !== 0'>
+							<span class="icon is-small">
+								<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+									<path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
+								</svg>
+							</span>
+						</button>
 					</div>
 					
 					<div  v-show="attributes.length">
@@ -100,7 +105,13 @@
 								<option v-for="option in abilitylevelOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
-						<button :disabled='!newAbilityLevel' class="button is-info"><span class="material-icons">&#xe148;</span></button>
+						<button class="button is-info" :disabled='!newAbilityLevel'>
+							<span class="icon is-small">
+								<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+									<path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
+								</svg>
+						</span>
+						</button>
 					</div>
 			
 					<div v-show="abilities.length">
@@ -133,7 +144,13 @@
 								<option v-for="option in columnNameOptions" :key="option" :value="option">{{ option }}</option>
 							</select>
 						</div>
-						<button :disabled='!newColumnName' class="button is-info"><span class="material-icons">&#xe148;</span></button>
+						<button class="button is-info" :disabled='!newColumnName'>
+							<span class="icon is-small">
+								<svg style="width:24px;height:24px" viewBox="0 0 24 24">
+									<path fill="currentColor" d="M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M13,7H11V11H7V13H11V17H13V13H17V11H13V7Z" />
+								</svg>
+							</span>
+						</button>
 					</div>
 
 					<div v-show="columns.length">
