@@ -43,7 +43,8 @@ const app = Vue.createApp({
 			
 			if (this.abilities.length > 0) {
 				
-				let abilities = this.getSortedAbilities();
+				let specAbilities = this.getSpecAbilities();
+				let nonSpecAbilities = this.getNonSpecAbilities();
 
 				let filteredShips = [];	
 			
@@ -51,89 +52,103 @@ const app = Vue.createApp({
 				
 					let slots = this.getAbilitySlots(ships[i]);
 					let matches = 0;
+					let unmatchedAbilities = [];
 				
-					abilities.forEach( ability => {
+					nonSpecAbilities.forEach( ability => {
 						
 						let found = false;
-
-						if (ability.spec) {
 						
-							if (!found) {
-								// 1: search for non-universal slot with desired spec
-								let result = slots.filter(slot => slot.type !== "Uni" && slot.spec === ability.spec && slot.rank === ability.rank);
-								if (result.length) {
-									found = true;
-									matches++;
-									slots = slots.filter(slot => slot.id !== result[0].id);
-								}
+						if (!found) {
+							// 1: search for specific slot type with null spec
+							let result = slots.filter(slot => slot.type === ability.type && slot.spec === null && slot.rank === ability.rank);
+							if (result.length) {
+								found = true;
+								matches++;
+								slots = slots.filter(slot => slot.id !== result[0].id);
 							}
+						}
 						
-							if (!found) {
-								// 2: search for universal slot with desired spec
-								let result = slots.filter(slot => slot.type === "Uni" && slot.spec === ability.spec && slot.rank === ability.rank);
-								if (result.length) {
-									found = true;
-									matches++;
-									slots = slots.filter(slot => slot.id !== result[0].id);
-								}
-							}
-
-						} else { // not a specialization ability
-
-							if (!found) {
-								// 3: search for specific slot type with null spec
-								let result = slots.filter(slot => slot.type === ability.type && slot.spec === null && slot.rank === ability.rank);
-								if (result.length) {
-									found = true;
-									matches++;
-									slots = slots.filter(slot => slot.id !== result[0].id);
-								}
-							}
-							
-							if (!found) {
-								// 4: search for specific slot type with non-null spec
-								let result = slots.filter(slot => slot.type === ability.type && slot.spec !== null && slot.rank === ability.rank);
-								if (result.length) {
-									found = true;
-									matches++;
-									slots = slots.filter(slot => slot.id !== result[0].id);
-								}
-							}
-							
-							if (!found) {
-								// 5: search for universal slot with null spec
-								let result = slots.filter(slot => slot.type === "Uni" && slot.spec === null && slot.rank === ability.rank);
-								if (result.length) {
-
-									// when matching a universal slot the first time, we need to change all the slots in that seat to the type for future searches
-									slots.filter(slot => slot.shipseatid === result[0].shipseatid).forEach(obj => obj.type = ability.type);
-									
-									found = true;
-									matches++;
-									slots = slots.filter(slot => slot.id !== result[0].id);
-								}
-							}
-							
-							if (!found) {
-								// 6: search for universal slot with non-null spec
-								let result = slots.filter(slot => slot.type === "Uni" && slot.spec !== null && slot.rank === ability.rank);
-								if (result.length) {
-									
-									// when matching a universal slot the first time, we need to change all the slots in that seat to the type for future searches
-									slots.filter(slot => slot.shipseatid === result[0].shipseatid).forEach(obj => obj.type = ability.type);
-
-									found = true;
-									matches++;
-									slots = slots.filter(slot => slot.id !== result[0].id);
-								}
-							}
-
-						} // end else
+						if (!found) {
+							unmatchedAbilities.push(ability)
+						}
 						
+					}); // end for nonSpecAbilities
+					
+					specAbilities.forEach( ability => {
 						
-					}); // end for abilities
-				
-					if (matches === abilities.length) {
+						let found = false;
+						
+						if (!found) {
+							// 5: search for non-universal slot with desired spec
+							let result = slots.filter(slot => slot.type !== "Uni" && slot.spec === ability.spec && slot.rank === ability.rank);
+							if (result.length) {
+								found = true;
+								matches++;
+								slots = slots.filter(slot => slot.id !== result[0].id);
+							}
+						}
+						
+						if (!found) {
+							// 6: search for universal slot with desired spec
+							let result = slots.filter(slot => slot.type === "Uni" && slot.spec === ability.spec && slot.rank === ability.rank);
+							if (result.length) {
+								found = true;
+								matches++;
+								slots = slots.filter(slot => slot.id !== result[0].id);
+							}
+						}
+						
+						if (!found) {
+							unmatchedAbilities.push(ability)
+						}
+											
+					}); // end for specAbilities
+					
+					unmatchedAbilities.forEach( ability => {
+						
+						let found = false;
+						
+						if (!found) {
+							// 2: search for specific slot type with non-null spec
+							let result = slots.filter(slot => slot.type === ability.type && slot.spec !== null && slot.rank === ability.rank);
+							if (result.length) {
+								found = true;
+								matches++;
+								slots = slots.filter(slot => slot.id !== result[0].id);
+							}
+						}
+
+						if (!found) {
+							// 3: search for universal slot with null spec
+							let result = slots.filter(slot => slot.type === "Uni" && slot.spec === null && slot.rank === ability.rank);
+							if (result.length) {
+
+								// when matching a universal slot the first time, we need to change all the slots in that seat to the type for future searches
+								slots.filter(slot => slot.shipseatid === result[0].shipseatid).forEach(obj => obj.type = ability.type);
+								
+								found = true;
+								matches++;
+								slots = slots.filter(slot => slot.id !== result[0].id);
+							}
+						}
+						
+						if (!found) {
+							// 4: search for universal slot with non-null spec
+							let result = slots.filter(slot => slot.type === "Uni" && slot.spec !== null && slot.rank === ability.rank);
+							if (result.length) {
+								
+								// when matching a universal slot the first time, we need to change all the slots in that seat to the type for future searches
+								slots.filter(slot => slot.shipseatid === result[0].shipseatid).forEach(obj => obj.type = ability.type);
+
+								found = true;
+								matches++;
+								slots = slots.filter(slot => slot.id !== result[0].id);
+							}
+						}
+					
+					}); // end for unmatchedAbilities
+					
+					if (matches === (nonSpecAbilities.length + specAbilities.length)) {
 						filteredShips.push(ships[i]);	
 					}
 			
@@ -342,7 +357,7 @@ const app = Vue.createApp({
 			
 			return slots;
 		},
-		getSortedAbilities() {
+		getSpecAbilities() {
 			
 			// "translate" abilities to make things easier later.  This is ugly and I need to figure out a better way to handle this...
 			let abilities = [];
@@ -363,12 +378,59 @@ const app = Vue.createApp({
 					default:								type = null;	spec = null;
 				}
 				
-				let obj = {};
-				obj.id = ability.id;
-				obj.rank = ability.rank;
-				obj.type = type;
-				obj.spec = spec;
-				abilities.push(obj);
+				if (spec) {
+					let obj = {};
+					obj.id = ability.id;
+					obj.rank = ability.rank;
+					obj.type = type;
+					obj.spec = spec;
+					abilities.push(obj);
+				}
+			});
+			
+			// sort the abilities by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending
+			abilities.sort((a, b) => {
+				if (a.spec === null && b.spec === null) {
+					return (a.type.localeCompare(b.type) || b.rank - a.rank);
+				} else if (a.spec !== null && b.spec === null) {
+					return -1;
+				} else if (a.spec === null && b.spec !== null) {
+					return 1;
+				}
+				return (a.spec.localeCompare(b.spec) || a.type.localeCompare(b.type) || b.rank - a.rank);
+			});
+			
+			return abilities;
+		},
+		getNonSpecAbilities() {
+			
+			// "translate" abilities to make things easier later.  This is ugly and I need to figure out a better way to handle this...
+			let abilities = [];
+			this.abilities.forEach(ability => {
+					
+				let spec = null;
+				let type = null;
+				
+				switch (ability.type) {
+					case "Intelligence":		type = null;	spec = "Int";	break;
+					case "Command":					type = null;	spec = "Cmd";	break;
+					case "Pilot":						type = null;	spec = "Pil";	break;
+					case "Temporal":				type = null;	spec = "Tmp";	break;
+					case "Miracle Worker":	type = null;	spec = "MW";	break;
+					case "Tactical":				type = "Tac";	spec = null;	break;
+					case "Engineering":			type = "Eng";	spec = null;	break;
+					case "Science":					type = "Sci";	spec = null;	break;
+					default:								type = null;	spec = null;
+				}
+				
+				if (!spec) {
+					let obj = {};
+					obj.id = ability.id;
+					obj.rank = ability.rank;
+					obj.type = type;
+					obj.spec = spec;
+					abilities.push(obj);
+				}
 			});
 			
 			// sort the abilities by spec first (nulls at end), then by type ascending so "uni" is last, then by rank descending
