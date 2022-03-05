@@ -109,6 +109,16 @@ const app = Vue.createApp({
 						let found = false;
 						
 						if (!found) {
+							// 1: search for specific slot type with null spec  (in case we assigned a type to a Universal on a previous pass)
+							let result = slots.filter(slot => slot.type === ability.type && slot.spec === null && slot.rank === ability.rank);
+							if (result.length) {
+								found = true;
+								matches++;
+								slots = slots.filter(slot => slot.id !== result[0].id);
+							}
+						}
+						
+						if (!found) {
 							// 2: search for specific slot type with non-null spec
 							let result = slots.filter(slot => slot.type === ability.type && slot.spec !== null && slot.rank === ability.rank);
 							if (result.length) {
