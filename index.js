@@ -356,13 +356,13 @@ const app = Vue.createApp({
 			slots.sort((a, b) => {
 
 				if (a.spec === null && b.spec === null) {
-					return (a.type.localeCompare(b.type) || b.rank - a.rank || a.seatrank - b.seatrank);
+					return (b.type.localeCompare(a.type) || a.seatrank - b.seatrank || a.rank - b.rank);
 				} else if (a.spec !== null && b.spec === null) {
 					return -1;
 				} else if (a.spec === null && b.spec !== null) {
 					return 1;
 				}
-				return (a.spec.localeCompare(b.spec) || a.type.localeCompare(b.type) || b.rank - a.rank || a.seatrank - b.seatrank);
+				return (b.type.localeCompare(a.type) || a.seatrank - b.seatrank|| a.spec.localeCompare(b.spec) || a.rank - b.rank );
 			});
 			
 			return slots;
