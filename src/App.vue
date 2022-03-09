@@ -497,7 +497,7 @@ const testShip = (seats: SeatInterface[]) => {
 		
 		<p>Created by Reddit user u/wkrick using data from
 			<a href="https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing" target="_blank">Sortable/Filterable T6 Ship List</a>
-			by Reddit user u/Fleffle. Last updated 2022-02-14.</p>
+			by Reddit user u/Fleffle. Last updated 2022-03-08.</p>
 
 		<form>
 
