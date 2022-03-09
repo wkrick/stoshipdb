@@ -484,182 +484,176 @@ const testShip = (seats: SeatInterface[]) => {
 
 	return isSuccessful
 }
-
-
-
 </script>
 
 <template>
-	<div id="app">
-		<h1>
-			STO Ship DB
-		</h1>
-		
-		<p>Created by Reddit user u/wkrick using data from
-			<a href="https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing" target="_blank">Sortable/Filterable T6 Ship List</a>
-			by Reddit user u/Fleffle. Last updated 2022-03-08.</p>
+	<h1>
+		STO Ship DB
+	</h1>
+	
+	<p>Created by Reddit user u/wkrick using data from
+		<a href="https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing" target="_blank">Sortable/Filterable T6 Ship List</a>
+		by Reddit user u/Fleffle. Last updated 2022-03-09.</p>
 
-		<form>
+	<form>
 
-			<div class="fieldset">
-				<h2 class="legend">Desired Ship Attributes</h2>
+		<div class="fieldset">
+			<h2 class="legend">Desired Ship Attributes</h2>
+			<div>
 				<div>
-					<div>
-						<Dropdown
-							v-model="newAttributeName"
-							:options="attributeNameOptions"
-							placeholder="Select Attribute"
-						/>
-					</div>
-					<div>
-						<Dropdown
-							v-if="attributeValueOptions[0] && isNumeric(attributeValueOptions[0])"
-							v-model="newAttributeOperator"
-							:options="attributeOperatorOptions1"
-							:disabled="!attributeValueOptions[0]"
-						/>
-						<Dropdown
-							v-else
-							v-model="newAttributeOperator"
-							:options="attributeOperatorOptions2"
-							:disabled="!attributeValueOptions[0]"
-						/>
-					</div>
-					<div>
-						<MultiSelect
-							v-if="newAttributeOperator==='='||newAttributeOperator==='!='"
-							v-model="newAttributeValue"
-							:options="attributeValueOptions"
-							placeholder="Select Value"
-							:disabled="!newAttributeName"
-						/>
-						<Dropdown
-							v-else
-							v-model="newAttributeValue"
-							:options="attributeValueOptions"
-							placeholder="Select Value"
-							:disabled="!newAttributeName"
-						/>
-						<Button
-							@click="addNewAttribute()"
-							:disabled="!hasValue(newAttributeValue)"
-							icon="pi pi-plus-circle"
-						/>
-					</div>
+					<Dropdown
+						v-model="newAttributeName"
+						:options="attributeNameOptions"
+						placeholder="Select Attribute"
+					/>
 				</div>
-				<div v-show="attributes.length">
-					<hr>
-					<div>
-						<Chip
-							v-for="(attribute, index) in attributes"
-							class="mr-2 mb-2"
-							:key="attribute.id"
-							removable
-							@remove="attributes.splice(index, 1)"
-						>{{ attribute.name + ' ' + attribute.operator + ' ' + attribute.value?.join(', ') }}</Chip>
-					</div>
+				<div>
+					<Dropdown
+						v-if="attributeValueOptions[0] && isNumeric(attributeValueOptions[0])"
+						v-model="newAttributeOperator"
+						:options="attributeOperatorOptions1"
+						:disabled="!attributeValueOptions[0]"
+					/>
+					<Dropdown
+						v-else
+						v-model="newAttributeOperator"
+						:options="attributeOperatorOptions2"
+						:disabled="!attributeValueOptions[0]"
+					/>
 				</div>
-			
+				<div>
+					<MultiSelect
+						v-if="newAttributeOperator==='='||newAttributeOperator==='!='"
+						v-model="newAttributeValue"
+						:options="attributeValueOptions"
+						placeholder="Select Value"
+						:disabled="!newAttributeName"
+					/>
+					<Dropdown
+						v-else
+						v-model="newAttributeValue"
+						:options="attributeValueOptions"
+						placeholder="Select Value"
+						:disabled="!newAttributeName"
+					/>
+					<Button
+						@click="addNewAttribute()"
+						:disabled="!hasValue(newAttributeValue)"
+						icon="pi pi-plus-circle"
+					/>
+				</div>
+			</div>
+			<div v-show="attributes.length">
+				<hr>
+				<div>
+					<Chip
+						v-for="(attribute, index) in attributes"
+						class="mr-2 mb-2"
+						:key="attribute.id"
+						removable
+						@remove="attributes.splice(index, 1)"
+					>{{ attribute.name + ' ' + attribute.operator + ' ' + attribute.value?.join(', ') }}</Chip>
+				</div>
+			</div>
+		
+		</div>
+
+	</form>
+
+	<form>
+		
+		<div  class="fieldset">
+			<h2 class="legend">Desired Bridge Officer Abilities</h2>
+			<div>
+				<div>
+					<Dropdown
+						v-model="newAbilityType"
+						:options="abilitytypeOptions"
+						placeholder="Select Type"
+					/>
+				</div>
+				<div>
+					<Dropdown
+						v-model="newAbilityName"
+						:options="abilitynameOptions"
+						placeholder="Select Name"
+						:disabled="!newAbilityType"
+					/>
+				</div>
+				<div>
+					<Dropdown
+						v-model="newAbilityLevel"
+						:options="abilitylevelOptions"
+						placeholder="Select Level"
+						:disabled="!newAbilityName"
+					/>
+					<Button @click="addNewAbility()"
+						:disabled="!newAbilityLevel" 
+						icon="pi pi-plus-circle"
+					/>
+				</div>
+			</div>
+			<div v-show="abilities.length">
+				<hr>
+				<div>
+				<Chip
+					v-for="(ability, index) in abilities"
+					class="mr-2 mb-2"
+					:key="ability.id"
+					removable
+					@remove="abilities.splice(index, 1)"
+				>{{ ability.type + " - " + ability.name + " " + ability.level + " (" + ability.rank + ")" }}</Chip>
+				</div>
 			</div>
 
-		</form>
+		</div>
 
-		<form>
-			
-			<div  class="fieldset">
-				<h2 class="legend">Desired Bridge Officer Abilities</h2>
+	</form>
+
+	<form>
+		
+		<div class="fieldset">
+			<h2 class="legend">Desired Columns in Result Table</h2>
+			<div>
 				<div>
-					<div>
-						<Dropdown
-							v-model="newAbilityType"
-							:options="abilitytypeOptions"
-							placeholder="Select Type"
-						/>
-					</div>
-					<div>
-						<Dropdown
-							v-model="newAbilityName"
-							:options="abilitynameOptions"
-							placeholder="Select Name"
-							:disabled="!newAbilityType"
-						/>
-					</div>
-					<div>
-						<Dropdown
-							v-model="newAbilityLevel"
-							:options="abilitylevelOptions"
-							placeholder="Select Level"
-							:disabled="!newAbilityName"
-						/>
-						<Button @click="addNewAbility()"
-							:disabled="!newAbilityLevel" 
-							icon="pi pi-plus-circle"
-						/>
-					</div>
+					<MultiSelect
+						v-model="newColumnNames"
+						:options="columnNameOptions"
+						placeholder="Select Columns"
+					/>
+					<Dropdown v-show="false" />
+					<Button
+						@click="addNewColumn()"
+						:disabled="!newColumnNames"
+						icon="pi pi-plus-circle"
+					/>
 				</div>
-				<div v-show="abilities.length">
+
+				<div v-show="columns.length">
 					<hr>
 					<div>
 					<Chip
-						v-for="(ability, index) in abilities"
+						v-for="(column, index) in columns"
 						class="mr-2 mb-2"
-						:key="ability.id"
+						:key="column.id"
 						removable
-						@remove="abilities.splice(index, 1)"
-					>{{ ability.type + " - " + ability.name + " " + ability.level + " (" + ability.rank + ")" }}</Chip>
-					</div>
-				</div>
-
-			</div>
-
-		</form>
-
-		<form>
-			
-			<div class="fieldset">
-				<h2 class="legend">Desired Columns in Result Table</h2>
-				<div>
-					<div>
-						<MultiSelect
-							v-model="newColumnNames"
-							:options="columnNameOptions"
-							placeholder="Select Columns"
-						/>
-						<Dropdown v-show="false" />
-						<Button
-							@click="addNewColumn()"
-							:disabled="!newColumnNames"
-							icon="pi pi-plus-circle"
-						/>
-					</div>
-
-					<div v-show="columns.length">
-						<hr>
-						<div>
-						<Chip
-							v-for="(column, index) in columns"
-							class="mr-2 mb-2"
-							:key="column.id"
-							removable
-							@remove="columns.splice(index, 1)"
-						>{{ column.label }}</Chip>
-						</div>
+						@remove="columns.splice(index, 1)"
+					>{{ column.label }}</Chip>
 					</div>
 				</div>
 			</div>
-		
-		</form>			
+		</div>
+	
+	</form>			
 
-		<br>
+	<br>
 
-		<h2>Matching Ships: {{ rows.length }} out of {{ allShips.length }}</h2>
+	<h2>Matching Ships: {{ rows.length }} out of {{ allShips.length }}</h2>
 
-		<DataTable :value="rows">
-			<Column field="name" header="Ship Name" :sortable="true"></Column>
-			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
-		</DataTable>
-
-	</div>
+	<DataTable :value="rows">
+		<Column field="name" header="Ship Name" :sortable="true"></Column>
+		<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
+	</DataTable>
 
 </template>
 
