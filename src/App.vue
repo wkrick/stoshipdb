@@ -651,7 +651,11 @@ const testShip = (seats: SeatInterface[]) => {
 	<h2>Matching Ships: {{ rows.length }} out of {{ allShips.length }}</h2>
 
 	<DataTable :value="rows">
-		<Column field="name" header="Ship Name" :sortable="true"></Column>
+		<Column field="name" header="Ship Name" :sortable="true">
+			<template #body="slotProps">
+				<a v-bind:href="slotProps.data.url" target="_blank">{{slotProps.data.name}}</a>
+        	</template>
+		</Column>
 		<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
 	</DataTable>
 
