@@ -24,6 +24,10 @@ const allSeats = allSeatsJSON as ShipSeatsInterface[]
 const allAttributes = allAttributesJSON as ShipAttributeInterface[]
 const allAbilities = allAbilitiesJSON as BoffAbilityInterface[]
 
+const openURL = (url: string) => {
+      window.open(url);
+}
+
 //***********************************************************************//
 // ATTRIBUTES
 //***********************************************************************//
@@ -487,13 +491,23 @@ const testShip = (seats: SeatInterface[]) => {
 </script>
 
 <template>
-	<h1>
-		STO Ship DB
-	</h1>
+<div class="p-component">
+
+	<h1>STO Ship DB</h1>
 	
-	<p>Created by Reddit user u/wkrick using data from
-		<a href="https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing" target="_blank">Sortable/Filterable T6 Ship List</a>
-		by Reddit user u/Fleffle. Last updated 2022-03-10.</p>
+	<p>Created by Reddit user <Button
+			label="u/wkrick"
+			class="p-button-link p-link"
+			@click="openURL('https://www.reddit.com/user/wkrick')"
+		/> using data from the <Button
+			label="Sortable/Filterable T6 Ship List"
+			class="p-button-link p-link"
+			@click="openURL('https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing')"
+		/> by Reddit user <Button
+			label="u/Fleffle"
+			class="p-button-link p-link"
+			@click="openURL('https://www.reddit.com/user/Fleffle')"
+		/>. Last updated 2022-03-10.</p>
 
 	<form>
 
@@ -646,21 +660,32 @@ const testShip = (seats: SeatInterface[]) => {
 	
 	</form>			
 
-	<br>
-
-	<h2>Matching Ships: {{ rows.length }} out of {{ allShips.length }}</h2>
-
+	<div class="fieldset">
+	<h2 class="legend">Matching Ships: {{ rows.length }} out of {{ allShips.length }}</h2>
 	<DataTable :value="rows">
+		<template #empty>
+			No ships found.
+		</template>
+		<template #loading>
+			Loading ship data....
+		</template>	
 		<Column field="name" header="Ship Name" :sortable="true">
 			<template #body="slotProps">
-				<a v-bind:href="slotProps.data.url" target="_blank">{{slotProps.data.name}}</a>
+				<Button
+					class="p-button-link p-link"
+					@click="openURL(slotProps.data.url)"
+				>{{slotProps.data.name}}</Button>
         	</template>
 		</Column>
 		<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
 	</DataTable>
+	</div>
 
+</div>
 </template>
 
 <style>
 
 </style>
+
+
