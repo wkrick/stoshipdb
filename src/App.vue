@@ -627,7 +627,7 @@ const testShip = (seats: SeatInterface[]) => {
 	<form>
 		
 		<div class="fieldset">
-			<h2 class="legend">Desired Columns in Result Table</h2>
+			<h2 class="legend">Desired Result Table Columns</h2>
 			<div>
 				<div>
 					<MultiSelect
