@@ -494,6 +494,12 @@ const testShip = (seats: SeatInterface[]) => {
 <div class="p-component">
 
 	<h1>STO Ship DB</h1>
+
+	<p>Filter ships by attributes and bridge officer abilities to find your perfect ship in the <Button
+			label="Star Trek Online"
+			class="p-button-link p-link"
+			@click="openURL('https://www.arcgames.com/en/games/star-trek-online')"
+		/> game.</p>
 	
 	<p>Created by Reddit user <Button
 			label="u/wkrick"
@@ -507,12 +513,15 @@ const testShip = (seats: SeatInterface[]) => {
 			label="u/Fleffle"
 			class="p-button-link p-link"
 			@click="openURL('https://www.reddit.com/user/Fleffle')"
-		/>. Last updated 2022-03-10.</p>
+		/>.</p>
+
+		<p>Last updated 2022-03-10</p>
 
 	<form>
 
-		<div class="fieldset">
-			<h2 class="legend">Desired Ship Attributes</h2>
+		<fieldset class="fieldset">
+			<legend class="legend">Ship Attributes</legend>
+			<p>Choose the attributes that you would like your ship to have.</p>
 			<div>
 				<div>
 					<Dropdown
@@ -570,14 +579,15 @@ const testShip = (seats: SeatInterface[]) => {
 				</div>
 			</div>
 		
-		</div>
+		</fieldset>
 
 	</form>
 
 	<form>
 		
-		<div  class="fieldset">
-			<h2 class="legend">Desired Bridge Officer Abilities</h2>
+		<fieldset class="fieldset">
+			<legend class="legend">Bridge Officer Abilities</legend>
+			<p>Choose which bridge officer abilities you would like to use on your ship.</p>
 			<div>
 				<div>
 					<Dropdown
@@ -620,20 +630,20 @@ const testShip = (seats: SeatInterface[]) => {
 				</div>
 			</div>
 
-		</div>
+		</fieldset>
 
 	</form>
 
 	<form>
-		
-		<div class="fieldset">
-			<h2 class="legend">Desired Result Table Columns</h2>
+		<fieldset class="fieldset">
+			<legend class="legend">Additional Result Details</legend>
+			<p>Choose additional information about each ship to display in the results.</p>
 			<div>
 				<div>
 					<MultiSelect
 						v-model="newColumnNames"
 						:options="columnNameOptions"
-						placeholder="Select Columns"
+						placeholder="Select Attribute"
 					/>
 					<Dropdown v-show="false" />
 					<Button
@@ -656,31 +666,31 @@ const testShip = (seats: SeatInterface[]) => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</fieldset>
 	
 	</form>			
 
-	<div class="fieldset">
-	<h2 class="legend">Matching Ships: {{ rows.length }} out of {{ allShips.length }}</h2>
-	<DataTable :value="rows">
-		<template #empty>
-			No ships found.
-		</template>
-		<template #loading>
-			Loading ship data....
-		</template>	
-		<Column field="name" header="Ship Name" :sortable="true">
-			<template #body="slotProps">
-				<Button
-					:label=slotProps.data.name
-					class="p-button-link p-link"
-					@click="openURL(slotProps.data.url)"
-				/>
-        	</template>
-		</Column>
-		<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
-	</DataTable>
-	</div>
+	<fieldset class="fieldset">
+		<legend class="legend">Ships Matched ({{ rows.length }} of {{ allShips.length }})</legend>
+		<DataTable :value="rows">
+			<template #empty>
+				No ships found.
+			</template>
+			<template #loading>
+				Loading ship data....
+			</template>	
+			<Column field="name" header="Ship Name" :sortable="true">
+				<template #body="slotProps">
+					<Button
+						:label=slotProps.data.name
+						class="p-button-link p-link"
+						@click="openURL(slotProps.data.url)"
+					/>
+				</template>
+			</Column>
+			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
+		</DataTable>
+	</fieldset>
 
 </div>
 </template>
