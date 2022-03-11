@@ -672,9 +672,10 @@ const testShip = (seats: SeatInterface[]) => {
 		<Column field="name" header="Ship Name" :sortable="true">
 			<template #body="slotProps">
 				<Button
+					:label=slotProps.data.name
 					class="p-button-link p-link"
 					@click="openURL(slotProps.data.url)"
-				>{{slotProps.data.name}}</Button>
+				/>
         	</template>
 		</Column>
 		<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
