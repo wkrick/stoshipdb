@@ -528,6 +528,7 @@ const testShip = (seats: SeatInterface[]) => {
 						v-model="newAttributeName"
 						:options="attributeNameOptions"
 						placeholder="Select Attribute"
+						scrollHeight="400px"
 					/>
 				</div>
 				<div>
@@ -536,12 +537,14 @@ const testShip = (seats: SeatInterface[]) => {
 						v-model="newAttributeOperator"
 						:options="attributeOperatorOptions1"
 						:disabled="!attributeValueOptions[0]"
+						scrollHeight="400px"
 					/>
 					<Dropdown
 						v-else
 						v-model="newAttributeOperator"
 						:options="attributeOperatorOptions2"
 						:disabled="!attributeValueOptions[0]"
+						scrollHeight="400px"
 					/>
 				</div>
 				<div>
@@ -551,6 +554,7 @@ const testShip = (seats: SeatInterface[]) => {
 						:options="attributeValueOptions"
 						placeholder="Select Value"
 						:disabled="!newAttributeName"
+						scrollHeight="400px"
 					/>
 					<Dropdown
 						v-else
@@ -558,6 +562,7 @@ const testShip = (seats: SeatInterface[]) => {
 						:options="attributeValueOptions"
 						placeholder="Select Value"
 						:disabled="!newAttributeName"
+						scrollHeight="400px"
 					/>
 					<Button
 						@click="addNewAttribute()"
@@ -594,6 +599,7 @@ const testShip = (seats: SeatInterface[]) => {
 						v-model="newAbilityType"
 						:options="abilitytypeOptions"
 						placeholder="Select Type"
+						scrollHeight="400px"
 					/>
 				</div>
 				<div>
@@ -602,6 +608,7 @@ const testShip = (seats: SeatInterface[]) => {
 						:options="abilitynameOptions"
 						placeholder="Select Name"
 						:disabled="!newAbilityType"
+						scrollHeight="400px"
 					/>
 				</div>
 				<div>
@@ -610,6 +617,7 @@ const testShip = (seats: SeatInterface[]) => {
 						:options="abilitylevelOptions"
 						placeholder="Select Level"
 						:disabled="!newAbilityName"
+						scrollHeight="400px"
 					/>
 					<Button @click="addNewAbility()"
 						:disabled="!newAbilityLevel" 
@@ -644,8 +652,8 @@ const testShip = (seats: SeatInterface[]) => {
 						v-model="newColumnNames"
 						:options="columnNameOptions"
 						placeholder="Select Attribute"
+						scrollHeight="400px"
 					/>
-					<Dropdown v-show="false" />
 					<Button
 						@click="addNewColumn()"
 						:disabled="!newColumnNames"
