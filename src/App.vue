@@ -12,10 +12,11 @@ import ShipSeatsInterface from './types/ShipSeats.interface'
 
 // data source: https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing
 // created by Reddit user u/Fleffle
-// last updated 09 Jun 2022
+// last updated 30 Jun 2022
 import allShipsJSON from './assets/shipdata.json'
 import allSeatsJSON from './assets/seatdata.json'
 import allAttributesJSON from './assets/attributedata.json'
+
 // data source: https://sto.fandom.com/wiki/Bridge_officer_and_kit_abilities
 import allAbilitiesJSON from './assets/abilitydata.json'
 
@@ -515,7 +516,7 @@ const testShip = (seats: SeatInterface[]) => {
 			@click="openURL('https://www.reddit.com/user/Fleffle')"
 		/>.</p>
 
-		<p>Last updated 2022-06-09</p>
+		<p>Last updated 2022-06-30</p>
 
 	<form>
 
