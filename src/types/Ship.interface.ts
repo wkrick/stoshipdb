@@ -45,6 +45,7 @@ interface ShipInterface {
     secdef: string,
     subtargeting: string,
     sensoranalysis: string,
+    tacmode: string,
     singularity: string,
     cloak: string,
     flanking: string,

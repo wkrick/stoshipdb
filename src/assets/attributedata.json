@@ -42,6 +42,7 @@
     { "label": "Secondary Deflector", "key": "secdef"},
     { "label": "Subsytem Targeting", "key": "subtargeting"},
     { "label": "Sensor Analysis", "key": "sensoranalysis"},
+    { "label": "Tactical Mode", "key": "tacmode"},
     { "label": "Singularity", "key": "singularity"},
     { "label": "Cloak", "key": "cloak"},
     { "label": "Flanking", "key": "flanking" }
