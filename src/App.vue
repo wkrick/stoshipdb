@@ -220,7 +220,7 @@ const columnNameOptions = computed(() => {
 
 const getAbilitySlots = (seats: SeatInterface[]) => {
 
-	let slots = <AbilitySlotInterface[]>[]
+	let slots: AbilitySlotInterface[] = []
 	let id = 0
 
 	for (let i = 0; i < seats.length; i++) {
@@ -276,7 +276,7 @@ const getAbilities = () => {
 
 	// "transform" abilities to make filtering easier later.
 	// This is ugly and I need to figure out a better way to handle this...
-	let transformedAbilities = <AbilitySlotInterface[]>[];
+	let transformedAbilities: AbilitySlotInterface[] = [];
 
 	abilities.value.forEach(ability => {
 
