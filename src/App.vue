@@ -12,7 +12,7 @@ import ShipSeatsInterface from './types/ShipSeats.interface'
 
 // data source: https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing
 // created by Reddit user u/Fleffle
-// last updated 28 Jul 2022
+// last updated 21 Aug 2022
 import allShipsJSON from './assets/shipdata.json'
 import allSeatsJSON from './assets/seatdata.json'
 import allAttributesJSON from './assets/attributedata.json'
@@ -516,7 +516,7 @@ const testShip = (seats: SeatInterface[]) => {
 			@click="openURL('https://www.reddit.com/user/Fleffle')"
 		/>.</p>
 
-		<p>Last updated 2022-07-28</p>
+		<p>Last updated 2022-08-21</p>
 
 	<form>
 
