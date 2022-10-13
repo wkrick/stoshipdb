@@ -25,7 +25,7 @@
     { "label": "Fore + Aft Weapons", "key": "fa"},
     { "label": "Fore Weapons", "key": "fore"},
     { "label": "Aft Weapons", "key": "aft"},
-    { "label": "Can Equip Dual Cannons", "key": "dhc"},
+    { "label": "Equip Dual Cannons", "key": "dhc"},
     { "label": "Exp. Weapon Slot", "key": "exp"},
     { "label": "Hangar Bays", "key": "hangars"},
     { "label": "Devices", "key": "dev"},
@@ -42,7 +42,7 @@
     { "label": "Secondary Deflector", "key": "secdef"},
     { "label": "Subsytem Targeting", "key": "subtargeting"},
     { "label": "Sensor Analysis", "key": "sensoranalysis"},
-    { "label": "Has Tac/Sci Modes", "key": "tacmode"},
+    { "label": "Tac/Sci Modes", "key": "tacmode"},
     { "label": "Singularity", "key": "singularity"},
     { "label": "Cloak", "key": "cloak"},
     { "label": "Flanking", "key": "flanking" }
