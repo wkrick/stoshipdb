@@ -17,8 +17,6 @@ import "primeicons/primeicons.css"
 
 import './assets/global.css'
 
-//createApp(App).mount('#app')
-
 const app = createApp(App)
 app.use(PrimeVue)
 app.component('MultiSelect', MultiSelect)
