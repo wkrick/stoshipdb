@@ -1,8 +1,10 @@
+import AbilityType from "./AbilityType.enum"
+
 interface AbilitySlotInterface {
     id: number,
     rank: number,
-    type: string,
-    spec: string
+    type: AbilityType,
+    spec: AbilityType
 }
 
 export default AbilitySlotInterface

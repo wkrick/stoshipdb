@@ -1,7 +1,9 @@
+import AbilityType from "./AbilityType.enum"
+
 interface SeatInterface {
     rank: number,
-    type: string,
-    spec: string
+    type: AbilityType,
+    spec: AbilityType
 }
 
 export default SeatInterface

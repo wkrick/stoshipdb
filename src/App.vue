@@ -9,10 +9,11 @@ import SeatInterface from './types/Seat.interface'
 import ShipInterface from './types/Ship.interface'
 import ShipAttributeInterface from './types/ShipAttribute.interface'
 import ShipSeatsInterface from './types/ShipSeats.interface'
+import AbilityType from './types/AbilityType.enum'
 
 // data source: https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing
 // created by Reddit user u/Fleffle
-// last updated 08 Oct 2022
+// last updated 13 Oct 2022
 import allShipsJSON from './assets/shipdata.json'
 import allSeatsJSON from './assets/seatdata.json'
 import allAttributesJSON from './assets/attributedata.json'
@@ -238,18 +239,18 @@ const getAbilitySlots = (seats: SeatInterface[]) => {
 	return slots
 }
 
-const getSeatArrays = (seats: SeatInterface[], abilityTypes: string[]) => {
+const getSeatArrays = (seats: SeatInterface[], abilityTypes: AbilityType[]) => {
 
 	let seatArrays: SeatInterface[][] = []
 
 	// push clone of original seat array onto array
 	seatArrays.push(JSON.parse(JSON.stringify(seats)));
 
-	let universalSeats = seatArrays.filter(array => !!array.find(seat => seat.type === "Uni"));
+	let universalSeats = seatArrays.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED));
 	
 	while (abilityTypes.length !== 0 && universalSeats.length > 0) {
   		universalSeats.forEach(array => {
-    		const seatIndex = array.findIndex(seat => seat.type === "Uni");
+    		const seatIndex = array.findIndex(seat => seat.type === AbilityType.UNDEFINED);
 
 			if (abilityTypes.length > 0) {
 				array[seatIndex].type = abilityTypes[0];
@@ -266,7 +267,7 @@ const getSeatArrays = (seats: SeatInterface[], abilityTypes: string[]) => {
 			}
   		});
   		
-		universalSeats = seatArrays.filter(array => !!array.find(seat => seat.type === "Uni"));
+		universalSeats = seatArrays.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED));
 	}
 
 	return seatArrays
@@ -280,18 +281,18 @@ const getAbilities = () => {
 
 	abilities.value.forEach(ability => {
 
-		let type = ""
-		let spec = ""
+		let type = AbilityType.UNDEFINED
+		let spec = AbilityType.UNDEFINED
 		
 		switch (ability.type) {
-			case "Intelligence":	type = ""; spec = "Int"; break;
-			case "Command":			type = ""; spec = "Cmd"; break;
-			case "Pilot":			type = ""; spec = "Pil"; break;
-			case "Temporal":		type = ""; spec = "Tmp"; break;
-			case "Miracle Worker":	type = ""; spec = "MW";  break;
-			case "Tactical":		type = "Tac"; spec = ""; break;
-			case "Engineering":		type = "Eng"; spec = ""; break;
-			case "Science":			type = "Sci"; spec = ""; break;
+			case "Tactical":		type = AbilityType.TAC; break;
+			case "Engineering":		type = AbilityType.ENG; break;
+			case "Science":			type = AbilityType.SCI; break;
+			case "Intelligence":	spec = AbilityType.INT; break;
+			case "Command":			spec = AbilityType.CMD; break;
+			case "Pilot":			spec = AbilityType.PIL; break;
+			case "Temporal":		spec = AbilityType.TMP; break;
+			case "Miracle Worker":	spec = AbilityType.MWR; break;
 		}
 		
 		transformedAbilities.push({
@@ -387,9 +388,8 @@ const rows = computed(() => {  // All the rows to be shown
 	if (abilities.value.length > 0) {
 		let filteredShips = [];	
 		for (let i = 0; i < ships.length; i++) {
-			// using the ship id, grab the corresponding array of seats
-			let seats = allSeats.filter(s => s.id === ships[i].id)[0].seats
-			if (testShip(seats)) {
+			// for each ship, test the corresponding array of seats
+			if (testShip(allSeats[i].seats)) {
 				filteredShips.push(ships[i]);
 			}
 		}
@@ -403,8 +403,8 @@ const testShip = (seats: SeatInterface[]) => {
 
 	let isSuccessful = false
 
-	let abilitiesSpec = getAbilities().filter(a => a.spec !== "")
-	let abilitiesNonSpec = getAbilities().filter(a => a.spec === "")
+	let abilitiesSpec = getAbilities().filter(a => a.spec !== AbilityType.UNDEFINED)
+	let abilitiesNonSpec = getAbilities().filter(a => a.spec === AbilityType.UNDEFINED)
 
 	// if this ship doesn't have the required specs, we can return early
 	let abilitySpecs = [...new Set(abilitiesSpec.map(a => a.spec))]
@@ -428,13 +428,13 @@ const testShip = (seats: SeatInterface[]) => {
 		slots.forEach( slot => {
 
 			// if this slot is a spec slot
-			if (slot.spec) {
+			if (slot.spec !== AbilityType.UNDEFINED) {
 				// see if the list of desired spec abilities contains something that could match this slot
 				let result = abilitiesSpec.filter(a => a.spec === slot.spec && a.rank === slot.rank)
 
 				// if not found, then we don't need this seat to have a spec
 				if (result.length === 0) {
-					slot.spec = ""
+					slot.spec = AbilityType.UNDEFINED
 				}
 			}
 		})
@@ -447,7 +447,7 @@ const testShip = (seats: SeatInterface[]) => {
 
 			if (!found) {
 				// 1: search for specific slot type with no spec
-				let result = slots.filter(slot => slot.type === ability.type && slot.spec === "" && slot.rank === ability.rank);
+				let result = slots.filter(slot => slot.type === ability.type && slot.spec === AbilityType.UNDEFINED && slot.rank === ability.rank);
 				if (result.length) {
 					found = true;
 					matches++;
@@ -489,6 +489,29 @@ const testShip = (seats: SeatInterface[]) => {
 
 	return isSuccessful
 }
+
+// get the seats for a specific ship as a string for display in the table
+const getSeats = (shipIndex: number) => {
+
+	let seats = allSeats[shipIndex].seats
+	const typeMap = new Map([
+		[0, "Uni"],[1, "Tac"],[2, "Eng"],[3, "Sci"],
+		[4, "Int"],[5, "Cmd"],[6, "Pil"],[7, "Tmp"],[8, "MW"]
+	]);
+
+	let result = ""
+	let separator = ""
+	seats.forEach( s => {
+		result += separator + s.rank + " " + typeMap.get(s.type)
+		if (s.spec !== 0) {
+			result += "/" + typeMap.get(s.spec)
+		}
+		separator = ", "
+	})
+
+	return result;
+}
+
 </script>
 
 <template>
@@ -518,7 +541,7 @@ const testShip = (seats: SeatInterface[]) => {
 
 		<p>Note: The total number of ships in this app is higher than the source data because Science Destroyers with Tactical/Science modes are each treated as two distinct ships for more accurate filtering.</p>
 
-		<p>Last updated 2022-10-08</p>
+		<p>Last updated 2022-10-13</p>
 
 	<form>
 
@@ -697,6 +720,11 @@ const testShip = (seats: SeatInterface[]) => {
 						class="p-button-link p-link"
 						@click="openURL(slotProps.data.url)"
 					/>
+				</template>
+			</Column>
+			<Column field="seats" header="Seating" :sortable="false">
+				<template #body="slotProps">
+					{{ getSeats(slotProps.data.id) }}
 				</template>
 			</Column>
 			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
