@@ -100,8 +100,13 @@ const attributeNameOptions = computed(() => {
 	return [...new Set(allAttributes.map(a => a.label))];
 })
 
-const attributeOperatorOptions1 = ["=", "!=", "<=", ">="]
-const attributeOperatorOptions2 = ["=", "!="]
+const attributeOperatorOptions = computed(() => {
+	if (attributeValueOptions.value[0] && isNumeric(attributeValueOptions.value[0]) ) {
+		return ["=", "!=", "<=", ">="]
+	} else {
+		return ["=", "!="]
+	}
+})
 
 const attributeValueOptions = computed(() => {
 	if (!newAttributeName.value) {
@@ -559,37 +564,31 @@ const getSeats = (shipIndex: number) => {
 				</div>
 				<div>
 					<Dropdown
-						v-if="attributeValueOptions[0] && isNumeric(attributeValueOptions[0])"
 						v-model="newAttributeOperator"
-						:options="attributeOperatorOptions1"
-						:disabled="!attributeValueOptions[0]"
-						scrollHeight="400px"
-					/>
-					<Dropdown
-						v-else
-						v-model="newAttributeOperator"
-						:options="attributeOperatorOptions2"
-						:disabled="!attributeValueOptions[0]"
+						:options="attributeOperatorOptions"
+						:disabled="!attributeValueOptions.length"
 						scrollHeight="400px"
 					/>
 				</div>
 				<div>
-					<MultiSelect
-						v-if="newAttributeOperator==='='||newAttributeOperator==='!='"
-						v-model="newAttributeValue"
-						:options="attributeValueOptions"
-						placeholder="Select Value"
-						:disabled="!newAttributeName"
-						scrollHeight="400px"
-					/>
-					<Dropdown
-						v-else
-						v-model="newAttributeValue"
-						:options="attributeValueOptions"
-						placeholder="Select Value"
-						:disabled="!newAttributeName"
-						scrollHeight="400px"
-					/>
+					<template v-if="newAttributeOperator==='='||newAttributeOperator==='!='">
+						<MultiSelect
+							v-model="newAttributeValue"
+							:options="attributeValueOptions"
+							placeholder="Select Value"
+							:disabled="!newAttributeName"
+							scrollHeight="400px"
+						/>
+					</template>
+					<template v-else>
+						<Dropdown
+							v-model="newAttributeValue"
+							:options="attributeValueOptions"
+							placeholder="Select Value"
+							:disabled="!newAttributeName"
+							scrollHeight="400px"
+						/>
+					</template>
 					<Button
 						@click="addNewAttribute()"
 						:disabled="!hasValue(newAttributeValue)"
