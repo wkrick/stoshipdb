@@ -566,7 +566,7 @@ const getSeats = (shipIndex: number) => {
 					<Dropdown
 						v-model="newAttributeOperator"
 						:options="attributeOperatorOptions"
-						:disabled="!attributeValueOptions.length"
+						:disabled="!newAttributeName"
 						scrollHeight="400px"
 					/>
 				</div>
