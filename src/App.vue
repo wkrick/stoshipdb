@@ -705,23 +705,23 @@ const getSeats = (shipIndex: number) => {
 
 	<fieldset class="fieldset">
 		<legend class="legend">Ships Matched ({{ rows.length }} of {{ allShips.length }})</legend>
-		<DataTable :value="rows">
+		<DataTable :value="rows" dataKey="id">
 			<template #empty>
 				No ships found.
 			</template>
 			<template #loading>
 				Loading ship data....
 			</template>	
-			<Column field="name" header="Ship Name" :sortable="true">
+			<Column field="nm" header="Ship Name" :sortable="true">
 				<template #body="slotProps">
 					<Button
-						:label=slotProps.data.name
+						:label=slotProps.data.nm
 						class="p-button-link p-link"
 						@click="openURL(slotProps.data.url)"
 					/>
 				</template>
 			</Column>
-			<Column field="seats" header="Seating" :sortable="false">
+			<Column header="Seating" :sortable="false">
 				<template #body="slotProps">
 					{{ getSeats(slotProps.data.id) }}
 				</template>
