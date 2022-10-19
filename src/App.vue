@@ -48,13 +48,24 @@ const addNewAttribute = () => {
 	} else {
 		value = newAttributeValue.value;
 	}
-	attributes.value.push({
-		id: nextAttributeId.value++,
-		name: newAttributeName.value,
-		key: newAttributeKey.value,
-		operator: newAttributeOperator.value,
-		value: value
-	})
+	
+	// if new attribute is equals or not equals, see if it already exists and merge if found
+	var matchingAttribute = null
+	if (newAttributeOperator.value === "=" || newAttributeOperator.value === "!=") {
+		matchingAttribute = attributes.value.find(a => a.key === newAttributeKey.value && a.operator === newAttributeOperator.value)
+	}
+	
+	if (matchingAttribute) {
+		matchingAttribute.value = [...new Set([...matchingAttribute.value ,...value])].sort()
+	} else {
+		attributes.value.push({
+			id: nextAttributeId.value++,
+			name: newAttributeName.value,
+			key: newAttributeKey.value,
+			operator: newAttributeOperator.value,
+			value: value
+		})
+	}
 	newAttributeName.value = undefined
 	newAttributeOperator.value = "="
 	newAttributeValue.value = undefined
