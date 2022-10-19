@@ -344,7 +344,7 @@ const rows = computed(() => {  // All the rows to be shown
 		let filteredShips = [];	
 		for (let i = 0; i < ships.length; i++) {
 			// for each ship, test the corresponding array of seats
-			if (testShip(allSeats[i].seats)) {
+			if (testShip(allSeats[ships[i].id].seats)) {
 				filteredShips.push(ships[i]);
 			}
 		}
