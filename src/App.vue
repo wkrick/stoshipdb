@@ -323,78 +323,17 @@ const getAbilities = () => {
 	return transformedAbilities
 }
 
-const getAttributesEqual = () => {
-
-	let resultArray: AttributeFilterInterface[] = []
-	let attributesEqual = attributes.value.filter(a => a.operator === "=")
-	if (attributesEqual.length > 0) {
-		attributesEqual.forEach(a => {
-			let exists = resultArray.find(r => r.name === a.name)
-			if (exists) {
-				// merge the values
-				exists.value = [...new Set([...exists.value, ...a.value  ])]
-			} else {
-				// add it to the resultArray
-				resultArray.push({
-					id: a.id,
-					name: a.name,
-					key: a.key,
-					operator: a.operator,
-					value: a.value
-				})
-
-			}
-		})
-	}
-
-	return resultArray
-}
-
-const getAttributesNotEqual = () => {
-
-	let resultArray: AttributeFilterInterface[] = []
-	let attributesEqual = attributes.value.filter(a => a.operator === "!=")
-	if (attributesEqual.length > 0) {
-		attributesEqual.forEach(a => {
-			let exists = resultArray.find(r => r.name === a.name)
-			if (exists) {
-				// merge the values
-				exists.value = [...new Set([...exists.value, ...a.value  ])]
-			} else {
-				// add it to the resultArray
-				resultArray.push({
-					id: a.id,
-					name: a.name,
-					key: a.key,
-					operator: a.operator,
-					value: a.value
-				})
-
-			}
-		})
-	}
-
-	return resultArray
-}
-
 const rows = computed(() => {  // All the rows to be shown
 			
 	let ships = allShips;
 
-	// filter ships based on the "equals" operator
-	getAttributesEqual().forEach(a => {
-		ships = ships.filter(ship => a.value.includes(""+ship[a.key]))
-	})
-
-	// filter ships based on the "not equals" operator
-	getAttributesNotEqual().forEach(a => {
-		ships = ships.filter(ship => !a.value.includes(""+ship[a.key]))
-	})	
-
-	// filter ships based on "less than" and "greater than" operator
-	// TODO: factor these out later
+	// filter ships based on the attributes chosen
 	attributes.value.forEach( a => {
-		if (a.operator === ">=") {
+		if (a.operator === "=") {
+			ships = ships.filter(ship => a.value.includes(""+ship[a.key]))
+		} else if (a.operator === "!=") {
+			ships = ships.filter(ship => !a.value.includes(""+ship[a.key]))
+		} else if (a.operator === ">=") {
 			ships = ships.filter(ship => ship[a.key] >= a.value[0]);
 		} else if (a.operator === "<=") {
 			ships = ships.filter(ship => ship[a.key] <= a.value[0]);
