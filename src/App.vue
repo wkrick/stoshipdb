@@ -13,7 +13,7 @@ import AbilityType from './types/AbilityType.enum'
 
 // data source: https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing
 // created by Reddit user u/Fleffle
-// last updated 13 Oct 2022
+// last updated 20 Oct 2022
 import allShipsJSON from './assets/shipdata.json'
 import allSeatsJSON from './assets/seatdata.json'
 import allAttributesJSON from './assets/attributedata.json'
@@ -496,7 +496,7 @@ const getSeats = (shipIndex: number) => {
 
 		<p>Note: The total number of ships in this app is higher than the source data because Science Destroyers with Tactical/Science modes are each treated as two distinct ships for more accurate filtering.</p>
 
-		<p>Last updated 2022-10-13</p>
+		<p>Last updated 2022-10-20</p>
 
 	<form>
 
