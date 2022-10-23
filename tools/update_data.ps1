@@ -15,7 +15,7 @@ Get-ChildItem "$PSScriptRoot/$csvname" | ForEach-Object {
 }
 
 $header = @(
-"div0"
+"skip0"
 "nm"
 # Acquiring
 "rel"
@@ -28,68 +28,68 @@ $header = @(
 "fac"
 "org"
 "fam"
-"div1"
+"skip1"
 # Ship Role / Highest Seats
 "mp"
-"div2"
-"divtac"
-"diveng"
-"divsci"
-"divuni"
-"div3"
+"skip2"
+"skiptac"
+"skipeng"
+"skipsci"
+"skipuni"
+"skip3"
 "mxi"
 "mxc"
 "mxp"
 "mxo"
 "mxm"
-"divfull"
-"div4"
+"skipfull"
+"skip4"
 # Defense
 "hul"
 "hmd"
 "smd"
-"div5"
+"skip5"
 # Mobility
 "trn"
 "imp"
 "inr"
-"div6"
+"skip6"
 # Power Bonus
 "bw"
 "bs"
 "be"
 "ba"
-"div7"
+"skip7"
 # BOff 1
 "boff1rank"
 "boff1type"
 "boff1spec"
-"div8"
+"skip8"
 # BOff 2
 "boff2rank"
 "boff2type"
 "boff2spec"
-"div9"
+"skip9"
 # BOff 3
 "boff3rank"
 "boff3type"
 "boff3spec"
-"div10"
+"skip10"
 # BOff 4
 "boff4rank"
 "boff4type"
 "boff4spec"
-"div11"
+"skip11"
 # BOff 5
 "boff5rank"
 "boff5type"
 "boff5spec"
-"div12"
+"skip12"
 # BOff 6
 "boff6rank"
 "boff6type"
 "boff6spec"
-"div13"
+"skip13"
 # Weapons
 "fa"
 "for"
@@ -97,57 +97,57 @@ $header = @(
 "dhc"
 "exp"
 # Misc Equips
-"div14"
+"skip14"
 "hng"
 "dev"
-"div15"
+"skip15"
 # Consoles
 "flt"
 "ct"
 "ce"
 "cs"
 "cu"
-"div16"
+"skip16"
 # Cruiser Commands
 "ccw"
 "ccs"
 "cce"
 "cct"
-"div17"
+"skip17"
 # Science Vessel
 "sd"
 "st"
 "sa"
 "tm"
-"div18"
+"skip18"
 # Misc
 "sng"
 "clk"
 "flk"
-"div19"
+"skip19"
 # Trait
 "trt"
 "trs"
-"div20"
+"skip20"
 # Admiralty
-"divadmrarity"
-"divadmtype"
-"divadmeng"
-"divadmtac"
-"divadmsci"
-"divbonus"
-"div21"
+"skipadmrarity"
+"skipadmtype"
+"skipadmeng"
+"skipadmtac"
+"skipadmsci"
+"skipbonus"
+"skip21"
 # Seat Counts
-"divconfigseat1"
-"divconfigseat2"
-"div22"
+"skipconfigseat1"
+"skipconfigseat2"
+"skip22"
 # Console Counts
-"divconsoleconfig1"
-"divconsoleconfig2"
-"div23"
+"skipconsoleconfig1"
+"skipconsoleconfig2"
+"skip23"
 # Cruiser Command Analysis
-"divcca1"
-"divcca2"
+"skipcca1"
+"skipcca2"
 "url"
 )
 
@@ -314,7 +314,7 @@ $csvData | Foreach-Object {
 
     foreach ($property in $_.PSObject.Properties)
     {
-        if (-not (($property.Name -like 'div*') -or ($property.Name -like 'boff*'))) {
+        if (-not (($property.Name -like 'skip*') -or ($property.Name -like 'boff*'))) {
 
             $name = $property.Name
             $value = $property.Value
