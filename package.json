@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "primeflex": "^3.2.1",
-    "primeicons": "^5.0.0",
-    "primevue": "^3.17.0",
+    "primeicons": "^6.0.0",
+    "primevue": "^3.18.0",
     "vue": "^3.2.39"
   },
   "devDependencies": {
