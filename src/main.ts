@@ -7,8 +7,8 @@ import MultiSelect from 'primevue/multiselect'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
 import Chip from 'primevue/chip'
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 import "primevue/resources/themes/fluent-light/theme.css"
 import "primevue/resources/primevue.min.css"

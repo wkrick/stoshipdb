@@ -49,14 +49,28 @@ const addNewAttribute = () => {
 		value = newAttributeValue.value;
 	}
 	
-	// if new attribute is equals or not equals, see if it already exists and merge if found
-	var matchingAttribute = null
-	if (newAttributeOperator.value === "=" || newAttributeOperator.value === "!=") {
-		matchingAttribute = attributes.value.find(a => a.key === newAttributeKey.value && a.operator === newAttributeOperator.value)
-	}
+	// TODO:
+	// check if we already have a filter on this key
+	// if yes...
+	//    if the operators match (= or !=) merge, (<= or >=) replace
+	//    if the operators don't match...
+	//        if equals - remove any !=, <=, >=, then add it
+	//        if not-equals - remove any !=, <=, >=, then add it
+	//        if less-than-equals - remove any =, !=
+	//        if greater-than-equals - remove any =, !=
 	
+	// check if we already have a filter for this attribute/operator combination
+	var matchingAttribute = attributes.value.find(a => a.key === newAttributeKey.value && a.operator === newAttributeOperator.value)
 	if (matchingAttribute) {
-		matchingAttribute.value = [...new Set([...matchingAttribute.value ,...value])].sort()
+
+		// if operator is equals or not equals merge it.
+		// if less-than equals or greater-than equals replace it.
+		if (newAttributeOperator.value === "=" || newAttributeOperator.value === "!=") {
+			matchingAttribute.value = [...new Set([...matchingAttribute.value ,...value])].sort()
+		} else if (newAttributeOperator.value === "<=" || newAttributeOperator.value === ">=") {
+			matchingAttribute.value = value
+		}
+
 	} else {
 		attributes.value.push({
 			id: nextAttributeId.value++,
@@ -65,7 +79,8 @@ const addNewAttribute = () => {
 			operator: newAttributeOperator.value,
 			value: value
 		})
-	}
+	}	
+
 	newAttributeName.value = undefined
 	newAttributeOperator.value = "="
 	newAttributeValue.value = undefined
@@ -101,10 +116,9 @@ const getOpts = (key: keyof ShipInterface) => {
 	// PrimeVue handles "0" strangely when the options are numbers
 	// so make sure result is always an array of strings
 	// TODO: revisit this later
-	result = result.map(String);
+	let opts: String[] = result.map(String);
 
-	//return opts
-	return result
+	return opts
 }
 
 const attributeNameOptions = computed(() => {
