@@ -13,3 +13,7 @@ html {
 	font-size: x-large;
 	font-weight: bold;
 }
+
+.selectable {
+	user-select: text;
+}

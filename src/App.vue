@@ -680,7 +680,7 @@ const getSeats = (shipIndex: number) => {
 				<template #body="slotProps">
 					<Button
 						:label=slotProps.data.nm
-						class="p-button-link p-link"
+						class="p-button-link p-link selectable"
 						@click="openURL(slotProps.data.url)"
 					/>
 				</template>
