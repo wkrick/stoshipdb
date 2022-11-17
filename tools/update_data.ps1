@@ -284,7 +284,7 @@ $count = 0
 
 $rowseparator = ''
 
-$list_null_to_empty_string = "rel", "bun", "str", "fac", "fam", "trt", "trs"
+$list_null_to_empty_string = "rel", "y", "m", "bun", "str", "fac", "fam", "trt", "trs"
 $list_null_to_zero = "mxi", "mxc", "mxp", "mxo", "mxm", "bw", "bs", "be","ba", "hng", "cu"
 $list_null_to_no = "dhc", "exp", "flt", "ccw", "ccs", "cce", "cct", "sd", "st", "sa", "tm", "sng",  "clk", "flk"
 
