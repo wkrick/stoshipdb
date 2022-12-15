@@ -45,5 +45,6 @@
     { "label": "Tac/Sci Modes", "key": "tm"},
     { "label": "Singularity", "key": "sng"},
     { "label": "Cloak", "key": "clk"},
-    { "label": "Flanking", "key": "flk" }
+    { "label": "Flanking", "key": "flk" },
+    { "label": "Starhip Trait", "key": "trt" }
 ]
