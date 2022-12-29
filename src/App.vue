@@ -303,13 +303,13 @@ const getSeatArrays = (seats: SeatInterface[], abilityTypes: AbilityType[]) => {
 	return seatArrays
 }
 
-const getAbilities = () => {
+const transformAbilities = (abilities: AbilityFilterInterface[]) => {
 
 	// "transform" abilities to make filtering easier later.
 	// This is ugly and I need to figure out a better way to handle this...
 	let transformedAbilities: AbilitySlotInterface[] = [];
 
-	abilities.value.forEach(ability => {
+	abilities.forEach(ability => {
 
 		let type = AbilityType.UNDEFINED
 		let spec = AbilityType.UNDEFINED
@@ -355,10 +355,14 @@ const rows = computed(() => {  // All the rows to be shown
 	})
 
 	if (abilities.value.length > 0) {
+
+		// transform the ability list for easier filtering
+		let tab = transformAbilities(abilities.value)
+
 		let filteredShips = [];	
 		for (let i = 0; i < ships.length; i++) {
-			// for each ship, test the corresponding array of seats
-			if (testShip(allSeats[ships[i].id].seats)) {
+			// for each ship, test the corresponding array of seats against the list of abilities
+			if (testShip(allSeats[ships[i].id].seats, tab)) {
 				filteredShips.push(ships[i]);
 			}
 		}
@@ -368,12 +372,12 @@ const rows = computed(() => {  // All the rows to be shown
 	return ships;
 })
 
-const testShip = (seats: SeatInterface[]) => {
+const testShip = (seats: SeatInterface[], abilities: AbilitySlotInterface[]) => {
 
 	let isSuccessful = false
 
-	let abilitiesSpec = getAbilities().filter(a => a.spec !== AbilityType.UNDEFINED)
-	let abilitiesNonSpec = getAbilities().filter(a => a.spec === AbilityType.UNDEFINED)
+	let abilitiesSpec = abilities.filter(a => a.spec !== AbilityType.UNDEFINED)
+	let abilitiesNonSpec = abilities.filter(a => a.spec === AbilityType.UNDEFINED)
 
 	// if this ship doesn't have the required specs, we can return early
 	let abilitySpecs = [...new Set(abilitiesSpec.map(a => a.spec))]
@@ -452,7 +456,7 @@ const testShip = (seats: SeatInterface[]) => {
 
 		})
 
-		isSuccessful =  (matches === abilities.value.length)
+		isSuccessful =  (matches === abilities.length)
 
 	}
 
