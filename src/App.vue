@@ -162,44 +162,61 @@ watch(newAttributeOperator, (selection, prevSelection) => {
 const abilities = ref<AbilityFilterInterface[]>([])
 
 const nextAbilityId = ref(1)
-const newAbilityType = ref()
+const newAbilityTypeSpec = ref()
 const newAbilityName = ref()
 const newAbilityLevel = ref()
 const newAbilityRank = ref()
 
 const addNewAbility = () => {
+
+	// convert the ability "typespec" into separate type/spec codes to simplify filtering later
+	let type = AbilityType.UNDEFINED
+	let spec = AbilityType.UNDEFINED
+	switch (newAbilityTypeSpec.value) {
+		case "Tactical":       type = AbilityType.TAC; break;
+		case "Engineering":    type = AbilityType.ENG; break;
+		case "Science":        type = AbilityType.SCI; break;
+		case "Intelligence":   spec = AbilityType.INT; break;
+		case "Command":        spec = AbilityType.CMD; break;
+		case "Pilot":          spec = AbilityType.PIL; break;
+		case "Temporal":       spec = AbilityType.TMP; break;
+		case "Miracle Worker": spec = AbilityType.MWR; break;
+	}
+
 	abilities.value.push({
 		id: nextAbilityId.value++,
-		type: newAbilityType.value,
+		typespec: newAbilityTypeSpec.value,
 		name: newAbilityName.value,
 		level: newAbilityLevel.value,
-		rank: newAbilityRank.value
+		rank: newAbilityRank.value,
+		type: type,
+		spec: spec
 	})
-	newAbilityType.value = undefined
+	newAbilityTypeSpec.value = undefined
 	newAbilityName.value = undefined
 	newAbilityLevel.value = undefined
 	newAbilityRank.value = undefined
 }
 
 const abilitytypeOptions = computed(() => {
-	return [...new Set(allAbilities.map(a => a.type))];
+	return [...new Set(allAbilities.map(a => a.typespec))];
 })
 
 const abilitynameOptions = computed(() => {
-	if (!newAbilityType.value) {
+	if (!newAbilityTypeSpec.value) {
 		return [];
 	}
-	return [...new Set(allAbilities.filter(a => a.type === newAbilityType.value).map(a => a.name))];
+	return [...new Set(allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value).map(a => a.name))];
 })
 
 const abilitylevelOptions = computed(() => {
-	if (!newAbilityType.value || !newAbilityName.value) {
+	if (!newAbilityTypeSpec.value || !newAbilityName.value) {
 		return [];
 	}
-	return allAbilities.filter(a => a.type === newAbilityType.value && a.name === newAbilityName.value).map(a => a.level);
+	return allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value).map(a => a.level);
 })
 
-watch(newAbilityType, (selection, prevSelection) => { 
+watch(newAbilityTypeSpec, (selection, prevSelection) => { 
 	newAbilityName.value = undefined
 })
 
@@ -209,7 +226,7 @@ watch(newAbilityName, (selection, prevSelection) => {
 
 watch(newAbilityLevel, (selection, prevSelection) => { 
 	if (selection) {
-		newAbilityRank.value = allAbilities.filter(a => a.type === newAbilityType.value && a.name === newAbilityName.value && a.level === selection)[0].rank;
+		newAbilityRank.value = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value && a.level === selection)[0].rank;
 	} else {
 		newAbilityRank.value = undefined
 	}
@@ -303,40 +320,6 @@ const getSeatArrays = (seats: SeatInterface[], abilityTypes: AbilityType[]) => {
 	return seatArrays
 }
 
-const transformAbilities = (abilities: AbilityFilterInterface[]) => {
-
-	// "transform" abilities to make filtering easier later.
-	// This is ugly and I need to figure out a better way to handle this...
-	let transformedAbilities: AbilitySlotInterface[] = [];
-
-	abilities.forEach(ability => {
-
-		let type = AbilityType.UNDEFINED
-		let spec = AbilityType.UNDEFINED
-		
-		switch (ability.type) {
-			case "Tactical":		type = AbilityType.TAC; break;
-			case "Engineering":		type = AbilityType.ENG; break;
-			case "Science":			type = AbilityType.SCI; break;
-			case "Intelligence":	spec = AbilityType.INT; break;
-			case "Command":			spec = AbilityType.CMD; break;
-			case "Pilot":			spec = AbilityType.PIL; break;
-			case "Temporal":		spec = AbilityType.TMP; break;
-			case "Miracle Worker":	spec = AbilityType.MWR; break;
-		}
-		
-		transformedAbilities.push({
-			id: ability.id,
-			rank: ability.rank,
-			type: type,
-			spec: spec
-		})
-	
-	})
-	
-	return transformedAbilities
-}
-
 const rows = computed(() => {  // All the rows to be shown
 			
 	let ships = allShips;
@@ -356,13 +339,10 @@ const rows = computed(() => {  // All the rows to be shown
 
 	if (abilities.value.length > 0) {
 
-		// transform the ability list for easier filtering
-		let tab = transformAbilities(abilities.value)
-
 		let filteredShips = [];	
 		for (let i = 0; i < ships.length; i++) {
 			// for each ship, test the corresponding array of seats against the list of abilities
-			if (testShip(allSeats[ships[i].id].seats, tab)) {
+			if (testShip(allSeats[ships[i].id].seats, abilities.value)) {
 				filteredShips.push(ships[i]);
 			}
 		}
@@ -372,7 +352,7 @@ const rows = computed(() => {  // All the rows to be shown
 	return ships;
 })
 
-const testShip = (seats: SeatInterface[], abilities: AbilitySlotInterface[]) => {
+const testShip = (seats: SeatInterface[], abilities: AbilityFilterInterface[]) => {
 
 	let isSuccessful = false
 
@@ -589,7 +569,7 @@ const getSeats = (shipIndex: number) => {
 			<div>
 				<div>
 					<Dropdown
-						v-model="newAbilityType"
+						v-model="newAbilityTypeSpec"
 						:options="abilitytypeOptions"
 						placeholder="Select Type"
 						scrollHeight="400px"
@@ -600,7 +580,7 @@ const getSeats = (shipIndex: number) => {
 						v-model="newAbilityName"
 						:options="abilitynameOptions"
 						placeholder="Select Name"
-						:disabled="!newAbilityType"
+						:disabled="!newAbilityTypeSpec"
 						scrollHeight="400px"
 					/>
 				</div>
@@ -627,7 +607,7 @@ const getSeats = (shipIndex: number) => {
 					:key="ability.id"
 					removable
 					@remove="abilities.splice(index, 1)"
-				>{{ ability.type + " - " + ability.name + " " + ability.level + " (" + ability.rank + ")" }}</Chip>
+				>{{ ability.typespec + " - " + ability.name + " " + ability.level + " (" + ability.rank + ")" }}</Chip>
 				</div>
 			</div>
 

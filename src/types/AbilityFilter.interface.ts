@@ -1,9 +1,13 @@
+import AbilityType from "./AbilityType.enum"
+
 interface AbilityFilterInterface {
     id: number,
-    type: string,
+    typespec: string,
     name: string,
     level: string,
-    rank: number
+    rank: number,
+    type: AbilityType,
+    spec: AbilityType
 }
 
 export default AbilityFilterInterface

@@ -1,5 +1,5 @@
 interface BoffAbilityInterface {
-    type: string,
+    typespec: string,
     name: string,
     level: string,
     rank: number
