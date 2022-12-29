@@ -213,7 +213,12 @@ const abilitylevelOptions = computed(() => {
 	if (!newAbilityTypeSpec.value || !newAbilityName.value) {
 		return [];
 	}
-	return allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value).map(a => a.level);
+
+	let list = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value).map(a => a.level)
+	list.push("Any")
+	return list
+
+	//return allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value).map(a => a.level);
 })
 
 watch(newAbilityTypeSpec, (selection, prevSelection) => { 
@@ -225,8 +230,10 @@ watch(newAbilityName, (selection, prevSelection) => {
 })
 
 watch(newAbilityLevel, (selection, prevSelection) => { 
-	if (selection) {
+	if (selection && selection !== "Any") {
 		newAbilityRank.value = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value && a.level === selection)[0].rank;
+	} else if (selection) {
+		newAbilityRank.value = 0
 	} else {
 		newAbilityRank.value = undefined
 	}
@@ -339,18 +346,75 @@ const rows = computed(() => {  // All the rows to be shown
 
 	if (abilities.value.length > 0) {
 
+		// replace "any" abilities with all the possible permutations
+		let exp = expandAbilities(abilities.value)
+
 		let filteredShips = [];	
 		for (let i = 0; i < ships.length; i++) {
 			// for each ship, test the corresponding array of seats against the list of abilities
-			if (testShip(allSeats[ships[i].id].seats, abilities.value)) {
+			let seats = allSeats[ships[i].id].seats // seats for this ship
+
+			// loop over the permutations and test each one.  if at least one matches, add the ship to the output
+			let matched = false
+			exp.forEach(a => {
+				if (testShip(seats, a)) {
+					matched = true
+				}
+			})
+
+			if (matched) {
 				filteredShips.push(ships[i]);
 			}
+
 		}
 		ships = filteredShips
 	}
 	
 	return ships;
 })
+
+// the rank of an ability could be "any" so we need to create all of the possible permutations
+const expandAbilities = (abilities: AbilityFilterInterface[]) => {
+
+	let abilityArrays: AbilityFilterInterface[][] = []
+
+	// push clone of original ability array onto array
+	abilityArrays.push(JSON.parse(JSON.stringify(abilities)));
+
+	// filter the list to just arrays of abilities that have at least one "Any"
+	let anyAbilities = abilityArrays.filter(array => !!array.find(ability => ability.rank === 0))
+	
+	while (anyAbilities.length > 0) {
+		anyAbilities.forEach(array => {
+    		const abilityIndex = array.findIndex(ability => ability.rank === 0);
+			const aa = array[abilityIndex]
+
+			let levels = allAbilities.filter(a => a.typespec === aa.typespec && a.name === aa.name).map(a => a.level)
+			let ranks = allAbilities.filter(a => a.typespec === aa.typespec && a.name === aa.name).map(a => a.rank)
+
+			if (levels.length > 0) {
+				array[abilityIndex].level = levels[0];
+				array[abilityIndex].rank = ranks[0];
+			}
+			if (levels.length > 1) {
+				const arrayCopy1 = JSON.parse(JSON.stringify(array));
+				arrayCopy1[abilityIndex].level = levels[1];
+				arrayCopy1[abilityIndex].rank = ranks[1];
+				abilityArrays.push(arrayCopy1);
+			}
+			if (levels.length > 2) {
+				const arrayCopy2 = JSON.parse(JSON.stringify(array));
+    			arrayCopy2[abilityIndex].level = levels[2];
+				arrayCopy2[abilityIndex].rank = ranks[2];
+    			abilityArrays.push(arrayCopy2);
+			}
+  		});
+
+		anyAbilities = abilityArrays.filter(array => !!array.find(ability => ability.rank === 0));
+	}
+
+	return abilityArrays
+}
 
 const testShip = (seats: SeatInterface[], abilities: AbilityFilterInterface[]) => {
 
@@ -607,7 +671,7 @@ const getSeats = (shipIndex: number) => {
 					:key="ability.id"
 					removable
 					@remove="abilities.splice(index, 1)"
-				>{{ ability.typespec + " - " + ability.name + " " + ability.level + " (" + ability.rank + ")" }}</Chip>
+				>{{ ability.typespec + " - " + ability.name + " " + (ability.rank > 0 ? ability.level + " (" + ability.rank + ")" : "(Any)") }}</Chip>
 				</div>
 			</div>
 
