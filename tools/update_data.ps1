@@ -32,10 +32,10 @@ $header = @(
 # Ship Role / Highest Seats
 "mp"
 "skip2"
-"skiptac"
-"skipeng"
-"skipsci"
-"skipuni"
+"mxt"
+"mxe"
+"mxs"
+"mxu"
 "skip3"
 "mxi"
 "mxc"
@@ -285,7 +285,7 @@ $count = 0
 $rowseparator = ''
 
 $list_null_to_empty_string = "rel", "y", "m", "bun", "str", "fac", "fam", "trt", "trs"
-$list_null_to_zero = "mxi", "mxc", "mxp", "mxo", "mxm", "bw", "bs", "be","ba", "hng", "cu"
+$list_null_to_zero = "mxt", "mxe", "mxs", "mxu", "mxi", "mxc", "mxp", "mxo", "mxm", "bw", "bs", "be","ba", "hng", "cu"
 $list_null_to_no = "dhc", "exp", "flt", "ccw", "ccs", "cce", "cct", "sd", "st", "sa", "tm", "sng",  "clk", "flk"
 
 # helper function to convert seat type/spec into a numeric code
