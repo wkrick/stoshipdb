@@ -27,7 +27,7 @@ const allAttributes = allAttributesJSON as ShipAttributeInterface[]
 const allAbilities = allAbilitiesJSON as BoffAbilityInterface[]
 
 const openURL = (url: string) => {
-      window.open(url);
+			window.open(url)
 }
 
 //***********************************************************************//
@@ -44,11 +44,11 @@ const newAttributeValue = ref()
 const addNewAttribute = () => {
 	let value: string[] = []
 	if (!Array.isArray(newAttributeValue.value)) {
-		value = [newAttributeValue.value];
+		value = [newAttributeValue.value]
 	} else {
-		value = newAttributeValue.value;
+		value = newAttributeValue.value
 	}
-	
+
 	// TODO:
 	// check if we already have a filter on this key
 	// if yes...
@@ -58,7 +58,7 @@ const addNewAttribute = () => {
 	//        if not-equals - remove any !=, <=, >=, then add it
 	//        if less-than-equals - remove any =, !=
 	//        if greater-than-equals - remove any =, !=
-	
+
 	// check if we already have a filter for this attribute/operator combination
 	var matchingAttribute = attributes.value.find(a => a.key === newAttributeKey.value && a.operator === newAttributeOperator.value)
 	if (matchingAttribute) {
@@ -79,7 +79,7 @@ const addNewAttribute = () => {
 			operator: newAttributeOperator.value,
 			value: value
 		})
-	}	
+	}
 
 	newAttributeName.value = undefined
 	newAttributeOperator.value = "="
@@ -116,13 +116,13 @@ const getOpts = (key: keyof ShipInterface) => {
 	// PrimeVue handles "0" strangely when the options are numbers
 	// so make sure result is always an array of strings
 	// TODO: revisit this later
-	let opts: String[] = result.map(String);
+	let opts: String[] = result.map(String)
 
 	return opts
 }
 
 const attributeNameOptions = computed(() => {
-	return [...new Set(allAttributes.map(a => a.label))];
+	return [...new Set(allAttributes.map(a => a.label))]
 })
 
 const attributeOperatorOptions = computed(() => {
@@ -147,11 +147,11 @@ watch(newAttributeName, (selection, prevSelection) => {
 	} else {
 		newAttributeKey.value = undefined
 	}
-   	newAttributeOperator.value = "="
+		newAttributeOperator.value = "="
 	newAttributeValue.value = undefined
 })
 
-watch(newAttributeOperator, (selection, prevSelection) => { 
+watch(newAttributeOperator, (selection, prevSelection) => {
 	newAttributeValue.value = undefined
 })
 
@@ -173,14 +173,14 @@ const addNewAbility = () => {
 	let type = AbilityType.UNDEFINED
 	let spec = AbilityType.UNDEFINED
 	switch (newAbilityTypeSpec.value) {
-		case "Tactical":       type = AbilityType.TAC; break;
-		case "Engineering":    type = AbilityType.ENG; break;
-		case "Science":        type = AbilityType.SCI; break;
-		case "Intelligence":   spec = AbilityType.INT; break;
-		case "Command":        spec = AbilityType.CMD; break;
-		case "Pilot":          spec = AbilityType.PIL; break;
-		case "Temporal":       spec = AbilityType.TMP; break;
-		case "Miracle Worker": spec = AbilityType.MWR; break;
+		case "Tactical":       type = AbilityType.TAC; break
+		case "Engineering":    type = AbilityType.ENG; break
+		case "Science":        type = AbilityType.SCI; break
+		case "Intelligence":   spec = AbilityType.INT; break
+		case "Command":        spec = AbilityType.CMD; break
+		case "Pilot":          spec = AbilityType.PIL; break
+		case "Temporal":       spec = AbilityType.TMP; break
+		case "Miracle Worker": spec = AbilityType.MWR; break
 	}
 
 	abilities.value.push({
@@ -199,39 +199,37 @@ const addNewAbility = () => {
 }
 
 const abilitytypeOptions = computed(() => {
-	return [...new Set(allAbilities.map(a => a.typespec))];
+	return [...new Set(allAbilities.map(a => a.typespec))]
 })
 
 const abilitynameOptions = computed(() => {
 	if (!newAbilityTypeSpec.value) {
-		return [];
+		return []
 	}
-	return [...new Set(allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value).map(a => a.name))];
+	return [...new Set(allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value).map(a => a.name))]
 })
 
 const abilitylevelOptions = computed(() => {
 	if (!newAbilityTypeSpec.value || !newAbilityName.value) {
-		return [];
+		return []
 	}
 
 	let list = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value).map(a => a.level)
 	list.push("Any")
 	return list
-
-	//return allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value).map(a => a.level);
 })
 
-watch(newAbilityTypeSpec, (selection, prevSelection) => { 
+watch(newAbilityTypeSpec, (selection, prevSelection) => {
 	newAbilityName.value = undefined
 })
 
-watch(newAbilityName, (selection, prevSelection) => { 
+watch(newAbilityName, (selection, prevSelection) => {
 	newAbilityLevel.value = undefined
 })
 
-watch(newAbilityLevel, (selection, prevSelection) => { 
+watch(newAbilityLevel, (selection, prevSelection) => {
 	if (selection && selection !== "Any") {
-		newAbilityRank.value = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value && a.level === selection)[0].rank;
+		newAbilityRank.value = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value && a.level === selection)[0].rank
 	} else if (selection) {
 		newAbilityRank.value = 0
 	} else {
@@ -266,7 +264,7 @@ const addNewColumn = () => {
 }
 
 const columnNameOptions = computed(() => {
-	return allAttributes.map(a => a.label);
+	return allAttributes.map(a => a.label)
 })
 
 //***********************************************************************//
@@ -276,60 +274,139 @@ const columnNameOptions = computed(() => {
 const getAbilitySlots = (seats: SeatInterface[]) => {
 
 	let slots: AbilitySlotInterface[] = []
-	let id = 0
 
 	for (let i = 0; i < seats.length; i++) {
 		let seat = seats[i]
-		for (let j = seat.rank; j > 0; j--) {
-			slots.push({
-				id: id++,
-				rank: j,
-				type: seat.type,
-				spec: seat.spec
-			})
+		switch(seat.rank) {
+			case 4: slots.push({rank: 4, type: seat.type, spec: seat.spec, matched: false})
+			case 3: slots.push({rank: 3, type: seat.type, spec: seat.spec, matched: false})
+			case 2: slots.push({rank: 2, type: seat.type, spec: seat.spec, matched: false})
+			case 1: slots.push({rank: 1, type: seat.type, spec: seat.spec, matched: false})
 		}
 	}
+
+	// descending sort
+	slots.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec))
 
 	return slots
 }
 
-const getSeatArrays = (seats: SeatInterface[], abilityTypes: AbilityType[]) => {
+// the rank of an ability could be "any" so we need to generate all of the possible permutations
+const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 
-	let seatArrays: SeatInterface[][] = []
+	let permutations: AbilityFilterInterface[][] = []
 
-	// push clone of original seat array onto array
-	seatArrays.push(JSON.parse(JSON.stringify(seats)));
+	// start with a deep copy of original ability array
+	permutations.push(JSON.parse(JSON.stringify(abilities)))
 
-	let universalSeats = seatArrays.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED));
-	
-	while (abilityTypes.length !== 0 && universalSeats.length > 0) {
-  		universalSeats.forEach(array => {
-    		const seatIndex = array.findIndex(seat => seat.type === AbilityType.UNDEFINED);
+	// filter the list to just arrays of abilities that have at least one "Any"
+	let anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank === 0))
 
-			if (abilityTypes.length > 0) {
-				array[seatIndex].type = abilityTypes[0];
+	while (anyAbilities.length > 0) {
+		anyAbilities.forEach(array => {
+			const abilityIndex = array.findIndex(ability => ability.rank === 0)
+			const aa = array[abilityIndex]
+
+			let filteredByName = allAbilities.filter(a => a.name === aa.name)
+			let levels = filteredByName.map(a => a.level)
+			let ranks = filteredByName.map(a => a.rank)
+
+			if (ranks.length > 0) {
+				array[abilityIndex].level = levels[0]
+				array[abilityIndex].rank = ranks[0]
 			}
-			if (abilityTypes.length > 1) {
-				const arrayCopy1 = JSON.parse(JSON.stringify(array));
-				arrayCopy1[seatIndex].type = abilityTypes[1];
-				seatArrays.push(arrayCopy1);
+			if (ranks.length > 1) {
+				const arrayCopy1: AbilityFilterInterface[] = JSON.parse(JSON.stringify(array))
+				arrayCopy1[abilityIndex].level = levels[1]
+				arrayCopy1[abilityIndex].rank = ranks[1]
+				permutations.push(arrayCopy1)
 			}
-			if (abilityTypes.length > 2) {
-				const arrayCopy2 = JSON.parse(JSON.stringify(array));
-    			arrayCopy2[seatIndex].type = abilityTypes[2];
-    			seatArrays.push(arrayCopy2);
+			if (ranks.length > 2) {
+				const arrayCopy2: AbilityFilterInterface[] = JSON.parse(JSON.stringify(array))
+				arrayCopy2[abilityIndex].level = levels[2]
+				arrayCopy2[abilityIndex].rank = ranks[2]
+				permutations.push(arrayCopy2)
 			}
-  		});
-  		
-		universalSeats = seatArrays.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED));
+		})
+		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank === 0))
 	}
 
-	return seatArrays
+	// optimization: remove permutations that can't possibly fit on any ship
+	// max ranks (at the time this code was written): 1:6, 2:5, 3:4, 4:2
+	// also, use a smaller object with just what we need for filtering
+
+	let slotPermutations: AbilitySlotInterface[][] = []
+
+	for (let i = 0; i < permutations.length; i++) {
+
+		let array: AbilityFilterInterface[] = permutations[i]
+
+		let ranks = [0,0,0,0]
+		for (let j=0; j<array.length; j++) {
+			ranks[array[j].rank-1]++
+		}
+
+		if (ranks[0] > 6 || ranks[1] > 5 || ranks[2] > 4 || ranks[3] > 2) {
+			continue
+		}
+
+		let newArray: AbilitySlotInterface[] = []
+		for (let k=0; k < array.length; k++) {
+			let a = array[k]
+			newArray.push({
+				rank: a.rank,
+				type: a.type,
+				spec: a.spec,
+				matched: false
+			})
+		}
+
+		// descending sort
+		newArray.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec))
+
+		slotPermutations.push(newArray)
+	}
+
+	return slotPermutations
+}
+
+// the type of a seat can be "Uni" so we need to generate all the possible permutations
+const getSeatPermutations = (seats: SeatInterface[], abilityTypes: AbilityType[]) => {
+
+	let permutations: SeatInterface[][] = []
+
+	// start with a deep copy of original seat array
+	permutations.push(JSON.parse(JSON.stringify(seats)))
+
+	let universalSeats = permutations.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED))
+
+	while (abilityTypes.length !== 0 && universalSeats.length > 0) {
+		universalSeats.forEach(array => {
+			const seatIndex = array.findIndex(seat => seat.type === AbilityType.UNDEFINED)
+
+			if (abilityTypes.length > 0) {
+				array[seatIndex].type = abilityTypes[0]
+			}
+			if (abilityTypes.length > 1) {
+				const arrayCopy1: SeatInterface[] = JSON.parse(JSON.stringify(array))
+				arrayCopy1[seatIndex].type = abilityTypes[1]
+				permutations.push(arrayCopy1)
+			}
+			if (abilityTypes.length > 2) {
+				const arrayCopy2: SeatInterface[] = JSON.parse(JSON.stringify(array))
+				arrayCopy2[seatIndex].type = abilityTypes[2]
+				permutations.push(arrayCopy2)
+			}
+		})
+		universalSeats = permutations.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED))
+	}
+
+	return permutations
 }
 
 const rows = computed(() => {  // All the rows to be shown
-			
-	let ships = allShips;
+
+	let ships = allShips
 
 	// filter ships based on the attributes chosen
 	attributes.value.forEach( a => {
@@ -338,173 +415,169 @@ const rows = computed(() => {  // All the rows to be shown
 		} else if (a.operator === "!=") {
 			ships = ships.filter(ship => !a.value.includes(""+ship[a.key]))
 		} else if (a.operator === ">=") {
-			ships = ships.filter(ship => ship[a.key] >= a.value[0]);
+			ships = ships.filter(ship => ship[a.key] >= a.value[0])
 		} else if (a.operator === "<=") {
-			ships = ships.filter(ship => ship[a.key] <= a.value[0]);
-		} 
+			ships = ships.filter(ship => ship[a.key] <= a.value[0])
+		}
 	})
 
-	if (abilities.value.length > 0) {
+	if (ships.length > 0 && abilities.value.length > 0) {
 
-		// replace "any" abilities with all the possible permutations
-		let exp = expandAbilities(abilities.value)
+		let abilitiesclone: AbilityFilterInterface[] = JSON.parse(JSON.stringify(abilities.value))
+		let abilitySpecs = [...new Set(abilitiesclone.filter(a => a.spec !== AbilityType.UNDEFINED).map(a => a.spec))]
+		let abilityTypes = [...new Set(abilitiesclone.filter(a => a.spec === AbilityType.UNDEFINED).map(a => a.type))]
 
-		let filteredShips = [];	
+		// for each ship, test the corresponding array of seats against the list of abilities
+		let filteredShips: ShipInterface[] = []
 		for (let i = 0; i < ships.length; i++) {
-			// for each ship, test the corresponding array of seats against the list of abilities
+
+			// if the user selected more abilities than this ship can support, then skip it
+			if (abilities.value.length > ships[i].tab) {
+				continue
+			}
+
 			let seats = allSeats[ships[i].id].seats // seats for this ship
 
-			// loop over the permutations and test each one.  if at least one matches, add the ship to the output
-			let matched = false
-			exp.forEach(a => {
-				if (testShip(seats, a)) {
-					matched = true
-				}
-			})
+			// if this ship doesn't have the desired specs, we can skip over it
+			let shipSpecs = [...new Set(seats.map(s => s.spec))]
+			let unmatchedSpecs = abilitySpecs.filter( spec => !shipSpecs.includes(spec) )
+			if (unmatchedSpecs.length > 0) {
+				continue
+			}
 
-			if (matched) {
-				filteredShips.push(ships[i]);
+			// getSeatPermutations (replace "Uni" with the desired types)
+			let seatPermutations = getSeatPermutations(seats, abilityTypes)
+
+			// getAbilityPermutations (replace "any" with all the possible ability ranks)
+			let abilityPermutations = getAbilityPermutations(abilities.value)
+
+			// loop over the permutations and test each one.  if at least one matches, add the ship to the output
+			let shipmatch = false
+
+			for (let j = 0; shipmatch === false && j < abilityPermutations.length; j++) {
+
+				let abilityPermutation = abilityPermutations[j]
+
+				for (let k = 0; shipmatch === false && k < seatPermutations.length; k++) {
+
+					let slots = getAbilitySlots(seatPermutations[k])
+
+					if (testShip(slots, abilityPermutation)) {
+						filteredShips.push(ships[i])
+						shipmatch = true
+					}
+
+				}
 			}
 
 		}
 		ships = filteredShips
+
 	}
-	
-	return ships;
+
+	return ships
 })
 
-// the rank of an ability could be "any" so we need to create all of the possible permutations
-const expandAbilities = (abilities: AbilityFilterInterface[]) => {
+const testShip = (slots: AbilitySlotInterface[], abilities: AbilitySlotInterface[]) => {
 
-	let abilityArrays: AbilityFilterInterface[][] = []
+	let abilitiesSpec: AbilitySlotInterface[] = []
+	let abilitiesNonSpec: AbilitySlotInterface[] = []
 
-	// push clone of original ability array onto array
-	abilityArrays.push(JSON.parse(JSON.stringify(abilities)));
+	for (let i=0; i < abilities.length; i++) {
 
-	// filter the list to just arrays of abilities that have at least one "Any"
-	let anyAbilities = abilityArrays.filter(array => !!array.find(ability => ability.rank === 0))
-	
-	while (anyAbilities.length > 0) {
-		anyAbilities.forEach(array => {
-    		const abilityIndex = array.findIndex(ability => ability.rank === 0);
-			const aa = array[abilityIndex]
+		let ability = abilities[i]
 
-			let levels = allAbilities.filter(a => a.typespec === aa.typespec && a.name === aa.name).map(a => a.level)
-			let ranks = allAbilities.filter(a => a.typespec === aa.typespec && a.name === aa.name).map(a => a.rank)
-
-			if (levels.length > 0) {
-				array[abilityIndex].level = levels[0];
-				array[abilityIndex].rank = ranks[0];
-			}
-			if (levels.length > 1) {
-				const arrayCopy1 = JSON.parse(JSON.stringify(array));
-				arrayCopy1[abilityIndex].level = levels[1];
-				arrayCopy1[abilityIndex].rank = ranks[1];
-				abilityArrays.push(arrayCopy1);
-			}
-			if (levels.length > 2) {
-				const arrayCopy2 = JSON.parse(JSON.stringify(array));
-    			arrayCopy2[abilityIndex].level = levels[2];
-				arrayCopy2[abilityIndex].rank = ranks[2];
-    			abilityArrays.push(arrayCopy2);
-			}
-  		});
-
-		anyAbilities = abilityArrays.filter(array => !!array.find(ability => ability.rank === 0));
+		if (ability.spec === AbilityType.UNDEFINED) {
+			abilitiesNonSpec.push(ability)
+		} else {
+			abilitiesSpec.push(ability)
+		}
 	}
 
-	return abilityArrays
-}
+	// go through the list of slots and remove the spec from any slot that we definitely don't need
+	for (let i=0; i < slots.length; i++) {
 
-const testShip = (seats: SeatInterface[], abilities: AbilityFilterInterface[]) => {
+		let slot = slots[i]
 
-	let isSuccessful = false
+		// if this slot is a spec slot
+		if (slot.spec !== AbilityType.UNDEFINED) {
+			// see if the list of desired spec abilities contains something that could match this slot
 
-	let abilitiesSpec = abilities.filter(a => a.spec !== AbilityType.UNDEFINED)
-	let abilitiesNonSpec = abilities.filter(a => a.spec === AbilityType.UNDEFINED)
+			let found = false
+			for (let j=0; !found && j < abilitiesSpec.length; j++) {
+				let ability = abilitiesSpec[j]
+				if (ability.spec === slot.spec && ability.rank === slot.rank) {
+					found = true
+				}
+			}
 
-	// if this ship doesn't have the required specs, we can return early
-	let abilitySpecs = [...new Set(abilitiesSpec.map(a => a.spec))]
-	let shipSpecs = [...new Set(seats.map(s => s.spec))]
-	let unmatchedSpecs = abilitySpecs.filter( spec => !shipSpecs.includes(spec) )
-	if (unmatchedSpecs.length > 0) {
-		return isSuccessful
+			// if not found, then we don't need this seat to have a spec
+			if (!found) {
+				slot.spec = AbilityType.UNDEFINED
+			}
+		}
 	}
 
-	// get the list of desired ability types (not specs)
-	let abilityTypes = [...new Set(abilitiesNonSpec.map(a => a.type))]
+	for (let i=0; i < abilitiesNonSpec.length; i++) {
 
-	// build an array of all the possible seat permutations of replacing "Uni" with the above types
-	let seatArrays = getSeatArrays(seats, abilityTypes)
+		let ability = abilitiesNonSpec[i]
+		let found = false
 
-	for (let i=0; !isSuccessful && i<seatArrays.length; i++) {
+		// 1: search for specific slot type with no spec
+		for (let j=0; !found && j < slots.length; j++) {
 
-		let slots = getAbilitySlots(seatArrays[i])
+			let slot = slots[j]
 
-		// go through the list of slots and remove the spec from any slot that we definitley don't need
-		slots.forEach( slot => {
-
-			// if this slot is a spec slot
-			if (slot.spec !== AbilityType.UNDEFINED) {
-				// see if the list of desired spec abilities contains something that could match this slot
-				let result = abilitiesSpec.filter(a => a.spec === slot.spec && a.rank === slot.rank)
-
-				// if not found, then we don't need this seat to have a spec
-				if (result.length === 0) {
-					slot.spec = AbilityType.UNDEFINED
-				}
-			}
-		})
-
-		let matches = 0
-
-		abilitiesNonSpec.forEach( ability => {
-			
-			let found = false;
-
-			if (!found) {
-				// 1: search for specific slot type with no spec
-				let result = slots.filter(slot => slot.type === ability.type && slot.spec === AbilityType.UNDEFINED && slot.rank === ability.rank);
-				if (result.length) {
-					found = true;
-					matches++;
-					slots = slots.filter(slot => slot.id !== result[0].id);
-				}
+			if (!slot.matched && slot.type === ability.type && slot.spec === AbilityType.UNDEFINED && slot.rank === ability.rank) {
+				found = true
+				slot.matched = true
 			}
 
-			if (!found) {
-				// 2: search for specific slot type with any (or no) spec
-				let result = slots.filter(slot => slot.type === ability.type && slot.rank === ability.rank);
-				if (result.length) {
-					found = true;
-					matches++;
-					slots = slots.filter(slot => slot.id !== result[0].id);
-				}
+		}
+
+		// 2: search for specific slot type with any (or no) spec
+		for (let k=0; !found && k < slots.length; k++) {
+
+			let slot = slots[k]
+
+			if (!slot.matched && slot.type === ability.type && slot.rank === ability.rank) {
+				found = true
+				slot.matched = true
 			}
-			
-		})
+		}
 
-		abilitiesSpec.forEach( ability => {
-
-			let found = false;
-
-			if (!found) {
-				// 3: search for slot with desired spec and any type
-				let result = slots.filter(slot => slot.spec === ability.spec && slot.rank === ability.rank);
-				if (result.length) {
-					found = true;
-					matches++;
-					slots = slots.filter(slot => slot.id !== result[0].id);
-				}
-			}
-
-		})
-
-		isSuccessful =  (matches === abilities.length)
+		// we can exit early as soon as we have an ability we can't match
+		if (!found) {
+			return false
+		}
 
 	}
 
-	return isSuccessful
+	for (let i=0; i < abilitiesSpec.length; i++) {
+
+		let ability = abilitiesSpec[i]
+		let found = false
+
+		// 3: search for slot with desired spec and any type
+		for (let j=0; !found && j < slots.length; j++) {
+
+			let slot = slots[j]
+
+			if (!slot.matched && slot.spec === ability.spec && slot.rank === ability.rank) {
+				found = true
+				slot.matched = true
+			}
+
+		}
+
+		// we can exit early as soon as we have an ability we can't match
+		if (!found) {
+			return false
+		}
+
+	}
+
+	return true
 }
 
 // get the seats for a specific ship as a string for display in the table
@@ -514,7 +587,7 @@ const getSeats = (shipIndex: number) => {
 	const typeMap = new Map([
 		[0, "Uni"],[1, "Tac"],[2, "Eng"],[3, "Sci"],
 		[4, "Int"],[5, "Cmd"],[6, "Pil"],[7, "Tmp"],[8, "MW"]
-	]);
+	])
 
 	let result = ""
 	let separator = ""
@@ -526,7 +599,7 @@ const getSeats = (shipIndex: number) => {
 		separator = ", "
 	})
 
-	return result;
+	return result
 }
 
 </script>
@@ -541,7 +614,7 @@ const getSeats = (shipIndex: number) => {
 			class="p-button-link p-link"
 			@click="openURL('https://www.arcgames.com/en/games/star-trek-online')"
 		/> game.</p>
-	
+
 	<p>Created by Reddit user <Button
 			label="u/wkrick"
 			class="p-button-link p-link"
@@ -620,13 +693,13 @@ const getSeats = (shipIndex: number) => {
 					>{{ attribute.name + ' ' + attribute.operator + ' ' + attribute.value?.join(', ') }}</Chip>
 				</div>
 			</div>
-		
+
 		</fieldset>
 
 	</form>
 
 	<form>
-		
+
 		<fieldset class="fieldset">
 			<legend class="legend">Bridge Officer Abilities</legend>
 			<p>Choose which bridge officer abilities you would like to use on your ship.</p>
@@ -657,7 +730,7 @@ const getSeats = (shipIndex: number) => {
 						scrollHeight="400px"
 					/>
 					<Button @click="addNewAbility()"
-						:disabled="!newAbilityLevel" 
+						:disabled="!newAbilityLevel"
 						icon="pi pi-plus-circle"
 					/>
 				</div>
@@ -712,8 +785,8 @@ const getSeats = (shipIndex: number) => {
 				</div>
 			</div>
 		</fieldset>
-	
-	</form>			
+
+	</form>
 
 	<fieldset class="fieldset">
 		<legend class="legend">Ships Matched ({{ rows.length }} of {{ allShips.length }})</legend>
@@ -723,7 +796,7 @@ const getSeats = (shipIndex: number) => {
 			</template>
 			<template #loading>
 				Loading ship data....
-			</template>	
+			</template>
 			<Column field="nm" header="Ship Name" :sortable="true">
 				<template #body="slotProps">
 					<Button
