@@ -27,7 +27,7 @@ const allAttributes = allAttributesJSON as ShipAttributeInterface[]
 const allAbilities = allAbilitiesJSON as BoffAbilityInterface[]
 
 const openURL = (url: string) => {
-			window.open(url)
+	window.open(url)
 }
 
 //***********************************************************************//
@@ -292,7 +292,7 @@ const getAbilitySlots = (seats: SeatInterface[]) => {
 }
 
 // the rank of an ability could be "any" so we need to generate all of the possible permutations
-const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
+const getAbilityPermutations = (abilities: AbilityFilterInterface[], slotRanks: number[]) => {
 
 	let permutations: AbilityFilterInterface[][] = []
 
@@ -331,8 +331,7 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank === 0))
 	}
 
-	// optimization: remove permutations that can't possibly fit on any ship
-	// max ranks (at the time this code was written): 1:6, 2:5, 3:4, 4:2
+	// optimization: remove permutations that can't possibly fit on this ship
 	// also, use a smaller object with just what we need for filtering
 
 	let slotPermutations: AbilitySlotInterface[][] = []
@@ -341,12 +340,15 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 
 		let array: AbilityFilterInterface[] = permutations[i]
 
-		let ranks = [0,0,0,0]
+		let abilityRanks = [0,0,0,0]
 		for (let j=0; j<array.length; j++) {
-			ranks[array[j].rank-1]++
+			abilityRanks[array[j].rank-1]++
 		}
 
-		if (ranks[0] > 6 || ranks[1] > 5 || ranks[2] > 4 || ranks[3] > 2) {
+		if (abilityRanks[0] > slotRanks[0] ||
+			abilityRanks[1] > slotRanks[1] ||
+			abilityRanks[2] > slotRanks[2] ||
+			abilityRanks[3] > slotRanks[3]) {
 			continue
 		}
 
@@ -448,8 +450,15 @@ const rows = computed(() => {  // All the rows to be shown
 			// getSeatPermutations (replace "Uni" with the desired types)
 			let seatPermutations = getSeatPermutations(seats, abilityTypes)
 
+			// gather stats on the ability slots on this ship for optimization
+			let abilitySlots = getAbilitySlots(seats)
+			let slotRanks = [0,0,0,0]
+			for (let s=0; s<abilitySlots.length; s++) {
+				slotRanks[abilitySlots[s].rank-1]++
+			}
+
 			// getAbilityPermutations (replace "any" with all the possible ability ranks)
-			let abilityPermutations = getAbilityPermutations(abilities.value)
+			let abilityPermutations = getAbilityPermutations(abilities.value, slotRanks)
 
 			// loop over the permutations and test each one.  if at least one matches, add the ship to the output
 			let shipmatch = false
