@@ -268,31 +268,28 @@ const columnNameOptions = computed(() => {
 })
 
 //***********************************************************************//
-// Ability ship filtering methods
+// Ship filtering helper methods
 //***********************************************************************//
 
-const getAbilitySlots = (seats: SeatInterface[]) => {
+// build a map of ability levels to save time later
+const getAbilityLevels = (abilities: AbilityFilterInterface[]) => {
 
-	let slots: AbilitySlotInterface[] = []
+	let results = new Map();
 
-	for (let i = 0; i < seats.length; i++) {
-		let seat = seats[i]
-		switch(seat.rank) {
-			case 4: slots.push({rank: 4, type: seat.type, spec: seat.spec, matched: false})
-			case 3: slots.push({rank: 3, type: seat.type, spec: seat.spec, matched: false})
-			case 2: slots.push({rank: 2, type: seat.type, spec: seat.spec, matched: false})
-			case 1: slots.push({rank: 1, type: seat.type, spec: seat.spec, matched: false})
-		}
-	}
+	abilities.forEach( ability => {
+		let filteredByName = allAbilities.filter(a => a.name === ability.name)
+		let levels = filteredByName.map(a => a.level)
+		let ranks = filteredByName.map(a => a.rank)
+		results.set(ability.name, {levels, ranks})
+	})
 
-	// descending sort
-	slots.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec))
-
-	return slots
+	return results
 }
 
 // the rank of an ability could be "any" so we need to generate all of the possible permutations
-const getAbilityPermutations = (abilities: AbilityFilterInterface[], slotRanks: number[]) => {
+const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
+
+	let abilityLevels = getAbilityLevels(abilities)
 
 	let permutations: AbilityFilterInterface[][] = []
 
@@ -305,23 +302,21 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[], slotRanks: 
 	while (anyAbilities.length > 0) {
 		anyAbilities.forEach(array => {
 			const abilityIndex = array.findIndex(ability => ability.rank === 0)
-			const aa = array[abilityIndex]
 
-			let filteredByName = allAbilities.filter(a => a.name === aa.name)
-			let levels = filteredByName.map(a => a.level)
-			let ranks = filteredByName.map(a => a.rank)
+			// look up the levels and associated ranks for this ability
+			let {levels, ranks} = abilityLevels.get(array[abilityIndex].name)
 
-			if (ranks.length > 0) {
+			if (levels.length > 0) {
 				array[abilityIndex].level = levels[0]
 				array[abilityIndex].rank = ranks[0]
 			}
-			if (ranks.length > 1) {
+			if (levels.length > 1) {
 				const arrayCopy1: AbilityFilterInterface[] = JSON.parse(JSON.stringify(array))
 				arrayCopy1[abilityIndex].level = levels[1]
 				arrayCopy1[abilityIndex].rank = ranks[1]
 				permutations.push(arrayCopy1)
 			}
-			if (ranks.length > 2) {
+			if (levels.length > 2) {
 				const arrayCopy2: AbilityFilterInterface[] = JSON.parse(JSON.stringify(array))
 				arrayCopy2[abilityIndex].level = levels[2]
 				arrayCopy2[abilityIndex].rank = ranks[2]
@@ -331,45 +326,7 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[], slotRanks: 
 		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank === 0))
 	}
 
-	// optimization: remove permutations that can't possibly fit on this ship
-	// also, use a smaller object with just what we need for filtering
-
-	let slotPermutations: AbilitySlotInterface[][] = []
-
-	for (let i = 0; i < permutations.length; i++) {
-
-		let array: AbilityFilterInterface[] = permutations[i]
-
-		let abilityRanks = [0,0,0,0]
-		for (let j=0; j<array.length; j++) {
-			abilityRanks[array[j].rank-1]++
-		}
-
-		if (abilityRanks[0] > slotRanks[0] ||
-			abilityRanks[1] > slotRanks[1] ||
-			abilityRanks[2] > slotRanks[2] ||
-			abilityRanks[3] > slotRanks[3]) {
-			continue
-		}
-
-		let newArray: AbilitySlotInterface[] = []
-		for (let k=0; k < array.length; k++) {
-			let a = array[k]
-			newArray.push({
-				rank: a.rank,
-				type: a.type,
-				spec: a.spec,
-				matched: false
-			})
-		}
-
-		// descending sort
-		newArray.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec))
-
-		slotPermutations.push(newArray)
-	}
-
-	return slotPermutations
+	return permutations
 }
 
 // the type of a seat can be "Uni" so we need to generate all the possible permutations
@@ -423,7 +380,8 @@ const rows = computed(() => {  // All the rows to be shown
 		}
 	})
 
-	if (ships.length > 0 && abilities.value.length > 0) {
+	let abilityCount = abilities.value.length;
+	if (ships.length > 0 && abilityCount > 0) {
 
 		let abilitiesclone: AbilityFilterInterface[] = JSON.parse(JSON.stringify(abilities.value))
 		let abilitySpecs = [...new Set(abilitiesclone.filter(a => a.spec !== AbilityType.UNDEFINED).map(a => a.spec))]
@@ -433,12 +391,13 @@ const rows = computed(() => {  // All the rows to be shown
 		let filteredShips: ShipInterface[] = []
 		for (let i = 0; i < ships.length; i++) {
 
+			let ship = ships[i]
 			// if the user selected more abilities than this ship can support, then skip it
-			if (abilities.value.length > ships[i].tab) {
+			if (abilityCount > ship.tab) {
 				continue
 			}
 
-			let seats = allSeats[ships[i].id].seats // seats for this ship
+			let seats = allSeats[ship.id].seats // seats for this ship
 
 			// if this ship doesn't have the desired specs, we can skip over it
 			let shipSpecs = [...new Set(seats.map(s => s.spec))]
@@ -447,143 +406,137 @@ const rows = computed(() => {  // All the rows to be shown
 				continue
 			}
 
-			// getSeatPermutations (replace "Uni" with the desired types)
+			// gather stats on the ability slot ranks on this ship for optimization later
+			let slotRanks = [0,0,0,0]
+			seats.forEach ( seat => {
+				switch (seat.rank) {
+					case 4: slotRanks[3]++
+					case 3: slotRanks[2]++
+					case 2: slotRanks[1]++
+					case 1: slotRanks[0]++
+				}
+			})
+
+			// replace "Uni" with the desired ability types to get all the permutations of the ship seats
 			let seatPermutations = getSeatPermutations(seats, abilityTypes)
 
-			// gather stats on the ability slots on this ship for optimization
-			let abilitySlots = getAbilitySlots(seats)
-			let slotRanks = [0,0,0,0]
-			for (let s=0; s<abilitySlots.length; s++) {
-				slotRanks[abilitySlots[s].rank-1]++
-			}
-
-			// getAbilityPermutations (replace "any" with all the possible ability ranks)
-			let abilityPermutations = getAbilityPermutations(abilities.value, slotRanks)
+			// replace "any" with each of the possible ability ranks to get all permutations of the desired abilities
+			let abilityPermutations = getAbilityPermutations(abilitiesclone)
 
 			// loop over the permutations and test each one.  if at least one matches, add the ship to the output
 			let shipmatch = false
-
 			for (let j = 0; shipmatch === false && j < abilityPermutations.length; j++) {
 
 				let abilityPermutation = abilityPermutations[j]
 
+				// see if this permutation will even fit on this ship
+				let abilityRanks = [0,0,0,0]
+				abilityPermutation.forEach ( ability => {
+					switch (ability.rank) {
+						case 4: abilityRanks[3]++; break
+						case 3: abilityRanks[2]++; break
+						case 2: abilityRanks[1]++; break
+						case 1: abilityRanks[0]++; break
+					}
+				})
+
+				// skip this permutation if it can't fit on this ship
+				if (abilityRanks[0] > slotRanks[0] ||
+					abilityRanks[1] > slotRanks[1] ||
+					abilityRanks[2] > slotRanks[2] ||
+					abilityRanks[3] > slotRanks[3]) {
+					continue
+				}
+
+				// sort abilities in descending order
+				abilityPermutation.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec))
+
 				for (let k = 0; shipmatch === false && k < seatPermutations.length; k++) {
 
-					let slots = getAbilitySlots(seatPermutations[k])
-
-					if (testShip(slots, abilityPermutation)) {
-						filteredShips.push(ships[i])
+					if (testShip(abilityPermutation, seatPermutations[k])) {
+						filteredShips.push(ship)
 						shipmatch = true
 					}
-
 				}
 			}
-
 		}
-		ships = filteredShips
 
+		ships = filteredShips
 	}
 
 	return ships
 })
 
-const testShip = (slots: AbilitySlotInterface[], abilities: AbilitySlotInterface[]) => {
+const testShip = (abilities: AbilityFilterInterface[], seats: SeatInterface[]) => {
 
-	let abilitiesSpec: AbilitySlotInterface[] = []
-	let abilitiesNonSpec: AbilitySlotInterface[] = []
-
-	for (let i=0; i < abilities.length; i++) {
-
-		let ability = abilities[i]
-
+	// partition the abilities into spec and non-spec
+	let abilitiesSpec: AbilityFilterInterface[] = []
+	let abilitiesNonSpec: AbilityFilterInterface[] = []
+	abilities.forEach(ability => {
 		if (ability.spec === AbilityType.UNDEFINED) {
 			abilitiesNonSpec.push(ability)
 		} else {
 			abilitiesSpec.push(ability)
 		}
-	}
+	})
 
-	// go through the list of slots and remove the spec from any slot that we definitely don't need
-	for (let i=0; i < slots.length; i++) {
-
-		let slot = slots[i]
-
-		// if this slot is a spec slot
-		if (slot.spec !== AbilityType.UNDEFINED) {
-			// see if the list of desired spec abilities contains something that could match this slot
-
-			let found = false
-			for (let j=0; !found && j < abilitiesSpec.length; j++) {
-				let ability = abilitiesSpec[j]
-				if (ability.spec === slot.spec && ability.rank === slot.rank) {
-					found = true
-				}
-			}
-
-			// if not found, then we don't need this seat to have a spec
-			if (!found) {
-				slot.spec = AbilityType.UNDEFINED
-			}
+	// slice up the seats into ability slots
+	let slots: AbilitySlotInterface[] = []
+	seats.forEach(seat => {
+		switch(seat.rank) {
+			case 4: slots.push({rank: 4, type: seat.type, spec: seat.spec, matched: false})
+			case 3: slots.push({rank: 3, type: seat.type, spec: seat.spec, matched: false})
+			case 2: slots.push({rank: 2, type: seat.type, spec: seat.spec, matched: false})
+			case 1: slots.push({rank: 1, type: seat.type, spec: seat.spec, matched: false})
 		}
-	}
+	})
 
-	for (let i=0; i < abilitiesNonSpec.length; i++) {
+	// go through the list of spec slots and remove the spec from any slot that we definitely don't need
+	slots.filter(slot => slot.spec !==AbilityType.UNDEFINED).forEach(slot => {
 
-		let ability = abilitiesNonSpec[i]
-		let found = false
+		// see if the list of desired spec abilities contains something that could match this slot
+		// if not found, then we don't need this seat to have a spec
+		if (!abilitiesSpec.find(a => a.spec === slot.spec && a.rank === slot.rank)) {
+			slot.spec = AbilityType.UNDEFINED
+		}
+	})
+
+	// NOTE TO SELF: sorting the slots at this point doesn't appear to make any difference at all
+
+	// try to seat all the the non-spec abilities first
+	for (const ability of abilitiesNonSpec) {
 
 		// 1: search for specific slot type with no spec
-		for (let j=0; !found && j < slots.length; j++) {
-
-			let slot = slots[j]
-
-			if (!slot.matched && slot.type === ability.type && slot.spec === AbilityType.UNDEFINED && slot.rank === ability.rank) {
-				found = true
-				slot.matched = true
-			}
-
+		let target = slots.find( slot => !slot.matched && slot.type === ability.type && slot.spec === AbilityType.UNDEFINED && slot.rank === ability.rank)
+		
+		if (target) {
+			target.matched = true
+			continue // skip to the next ability as soon as we find a match
 		}
 
 		// 2: search for specific slot type with any (or no) spec
-		for (let k=0; !found && k < slots.length; k++) {
+		target = slots.find( slot => !slot.matched && slot.type === ability.type && slot.rank === ability.rank)
 
-			let slot = slots[k]
-
-			if (!slot.matched && slot.type === ability.type && slot.rank === ability.rank) {
-				found = true
-				slot.matched = true
-			}
+		if (target) {
+			target.matched = true
+			continue // skip to the next ability as soon as we find a match
 		}
 
-		// we can exit early as soon as we have an ability we can't match
-		if (!found) {
-			return false
-		}
-
+		return false // we can exit the test entirely as soon as an ability isn't matched to a slot
 	}
 
-	for (let i=0; i < abilitiesSpec.length; i++) {
-
-		let ability = abilitiesSpec[i]
-		let found = false
+	// then try to seat the non-spec abilities
+	for (const ability of abilitiesSpec) {
 
 		// 3: search for slot with desired spec and any type
-		for (let j=0; !found && j < slots.length; j++) {
+		let target = slots.find( slot => !slot.matched && slot.spec === ability.spec && slot.rank === ability.rank)
 
-			let slot = slots[j]
-
-			if (!slot.matched && slot.spec === ability.spec && slot.rank === ability.rank) {
-				found = true
-				slot.matched = true
-			}
-
+		if (target) {
+			target.matched = true
+			continue  // skip to the next ability as soon as we find a match
 		}
 
-		// we can exit early as soon as we have an ability we can't match
-		if (!found) {
-			return false
-		}
-
+		return false  // we can exit the test entirely as soon as an ability isn't matched to a slot
 	}
 
 	return true
