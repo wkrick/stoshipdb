@@ -286,13 +286,42 @@ const getAbilityLevels = (abilities: AbilityFilterInterface[]) => {
 	return results
 }
 
-const copyAbilityArray = (abilities: AbilityFilterInterface[]) => {
+// convert an array of user-selected abilities to a better format for filtering along with a map
+const convertAbilityFilterToSlot = (abilities: AbilityFilterInterface[]) => {
+
+	let len = abilities.length
+	let array: AbilitySlotInterface[] = new Array(len)
+	let map = new Map()
+	let i = 0
+	let mapKey = -1 // keys for the map start at -1 and go backwards
+	while (i < len) {
+    	let ability = abilities[i]
+		let rank = ability.rank
+		if (rank === 0) {
+			rank = mapKey
+			let ranks = allAbilities.filter(a => a.name === ability.name).map(a => a.rank)
+			map.set(mapKey, ranks)
+			mapKey--
+		}
+		array[i] = {
+			rank: rank,
+			type: ability.type,
+			spec: ability.spec,
+			matched: false
+		}
+		i++
+	}
+
+	return { array, map }
+}
+
+const copyAbilityFilterArray = (abilities: AbilityFilterInterface[]) => {
 
 	let len = abilities.length
 	let copy: AbilityFilterInterface[] = new Array(len)
-	let i = 0;
+	let i = 0
 	while (i < len) {
-    	let ability = abilities[i]
+	let ability = abilities[i]
 		copy[i] = {
 			id: ability.id,
 			typespec: ability.typespec,
@@ -302,7 +331,26 @@ const copyAbilityArray = (abilities: AbilityFilterInterface[]) => {
 			type: ability.type,
 			spec: ability.spec
 		}
-		i++;
+		i++
+	}
+
+	return copy
+}
+
+const copyAbilitySlotArray = (abilities: AbilitySlotInterface[]) => {
+
+	let len = abilities.length
+	let copy: AbilitySlotInterface[] = new Array(len)
+	let i = 0
+	while (i < len) {
+	let ability = abilities[i]
+		copy[i] = {
+			rank: ability.rank,
+			type: ability.type,
+			spec: ability.spec,
+			matched: ability.matched
+		}
+		i++
 	}
 
 	return copy
@@ -312,7 +360,7 @@ const copySeatArray = (seats: SeatInterface[]) => {
 
 	let len = seats.length
 	let copy: SeatInterface[] = new Array(len)
-	let i = 0;
+	let i = 0
 	while (i < len) {
 		let seat = seats[i]
 		copy[i] = {
@@ -320,7 +368,7 @@ const copySeatArray = (seats: SeatInterface[]) => {
 			type: seat.type,
 			spec: seat.spec
 		}
-		i++;
+		i++
 	}
 
 	return copy
@@ -328,42 +376,39 @@ const copySeatArray = (seats: SeatInterface[]) => {
 // the rank of an ability could be "any" so we need to generate all of the possible permutations
 const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 
-	let abilityLevels = getAbilityLevels(abilities)
+	let permutations: AbilitySlotInterface[][] = []
 
-	let permutations: AbilityFilterInterface[][] = []
+	// convert the abilities array and build a lookup map
+	let { array, map} = convertAbilityFilterToSlot(abilities)
 
-	// start with a deep copy of original ability array
-	permutations.push(copyAbilityArray(abilities))
+	permutations.push(array)
 
 	// filter the list to just arrays of abilities that have at least one "Any"
-	let anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank === 0))
+	let anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank < 0))
 
 	while (anyAbilities.length > 0) {
 		anyAbilities.forEach(array => {
-			const abilityIndex = array.findIndex(ability => ability.rank === 0)
+			const abilityIndex = array.findIndex(ability => ability.rank < 0)
 
 			// look up the levels and associated ranks for this ability
-			let {levels, ranks} = abilityLevels.get(array[abilityIndex].name)
+			let ranks = map.get(array[abilityIndex].rank)
 
 			// update the original array
-			array[abilityIndex].level = levels[0]
 			array[abilityIndex].rank = ranks[0]
 
 			// make a copy for the level 2 skill
-			const arrayCopy1: AbilityFilterInterface[] = copyAbilityArray(array)
-			arrayCopy1[abilityIndex].level = levels[1]
+			const arrayCopy1 = copyAbilitySlotArray(array)
 			arrayCopy1[abilityIndex].rank = ranks[1]
 			permutations.push(arrayCopy1)
 
 			// make a copy for skills with 3 levels
-			if (levels.length == 3) {
-				const arrayCopy2: AbilityFilterInterface[] = copyAbilityArray(array)
-				arrayCopy2[abilityIndex].level = levels[2]
+			if (ranks.length === 3) {
+				const arrayCopy2 = copyAbilitySlotArray(array)
 				arrayCopy2[abilityIndex].rank = ranks[2]
 				permutations.push(arrayCopy2)
 			}
 		})
-		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank === 0))
+		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank < 0))
 	}
 
 	return permutations
@@ -423,9 +468,12 @@ const rows = computed(() => {  // All the rows to be shown
 	let abilityCount = abilities.value.length;
 	if (ships.length > 0 && abilityCount > 0) {
 
-		let abilitiesclone: AbilityFilterInterface[] = copyAbilityArray(abilities.value)
+		let abilitiesclone: AbilityFilterInterface[] = copyAbilityFilterArray(abilities.value)
 		let abilitySpecs = [...new Set(abilitiesclone.filter(a => a.spec !== AbilityType.UNDEFINED).map(a => a.spec))]
 		let abilityTypes = [...new Set(abilitiesclone.filter(a => a.spec === AbilityType.UNDEFINED).map(a => a.type))]
+
+		// replace "any" with each of the possible ability ranks to get all permutations of the desired abilities
+		let abilityPermutations = getAbilityPermutations(abilitiesclone)
 
 		// for each ship, test the corresponding array of seats against the list of abilities
 		let filteredShips: ShipInterface[] = []
@@ -507,11 +555,11 @@ const rows = computed(() => {  // All the rows to be shown
 	return ships
 })
 
-const testShip = (abilities: AbilityFilterInterface[], seats: SeatInterface[]) => {
+const testShip = (abilities: AbilitySlotInterface[], seats: SeatInterface[]) => {
 
 	// partition the abilities into spec and non-spec
-	let abilitiesSpec: AbilityFilterInterface[] = []
-	let abilitiesNonSpec: AbilityFilterInterface[] = []
+	let abilitiesSpec: AbilitySlotInterface[] = []
+	let abilitiesNonSpec: AbilitySlotInterface[] = []
 	abilities.forEach(ability => {
 		if (ability.spec === AbilityType.UNDEFINED) {
 			abilitiesNonSpec.push(ability)
