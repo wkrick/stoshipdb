@@ -397,7 +397,7 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank < 0))
 	}
 
-	permutations.forEach( permutation => permutation.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
+	permutations.forEach( p => p.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
 
 	return permutations
 }
@@ -432,6 +432,8 @@ const getSeatPermutations = (seats: SeatInterface[], abilityTypes: AbilityType[]
 		})
 		universalSeats = permutations.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED))
 	}
+
+	permutations.forEach( p => p.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
 
 	return permutations
 }
@@ -502,7 +504,7 @@ const rows = computed(() => {  // All the rows to be shown
 
 				let abilityPermutation = abilityPermutations[j]
 
-				// see if this permutation will even fit on this ship
+				// gather stats about the ability ranks in this permutation
 				let abilityRanks = [0,0,0,0]
 				abilityPermutation.forEach ( ability => {
 					switch (ability.rank) {
@@ -514,11 +516,11 @@ const rows = computed(() => {  // All the rows to be shown
 				})
 
 				// skip this permutation if it can't fit on this ship
-				if (abilityRanks[0] > slotRanks[0] ||
-					abilityRanks[1] > slotRanks[1] ||
+				if (abilityRanks[3] > slotRanks[3] ||
 					abilityRanks[2] > slotRanks[2] ||
-					abilityRanks[3] > slotRanks[3]) {
-					continue
+					abilityRanks[1] > slotRanks[1] ||
+					abilityRanks[0] > slotRanks[0]) {
+						continue
 				}
 
 				for (let k = 0; shipmatch === false && k < seatPermutations.length; k++) {
@@ -561,13 +563,15 @@ const testShip = (abilities: AbilitySlotInterface[], seats: SeatInterface[]) => 
 		}
 	})
 
-	// go through the list of spec slots and remove the spec from any slot that we definitely don't need
-	slots.filter(slot => slot.spec !==AbilityType.UNDEFINED).forEach(slot => {
-
-		// see if the list of desired spec abilities contains something that could match this slot
-		// if not found, then we don't need this seat to have a spec
-		if (!abilitiesSpec.find(a => a.spec === slot.spec && a.rank === slot.rank)) {
-			slot.spec = AbilityType.UNDEFINED
+	// go through the list of slots and remove the spec from any spec slot that we definitely don't need
+	slots.forEach( slot => {
+		// if this is a spec slot
+		if (slot.spec !== AbilityType.UNDEFINED) {
+			// see if the list of desired spec abilities contains something that could match this slot
+			// if not found, then we don't need this seat to have a spec
+			if (!abilitiesSpec.find(a => a.spec === slot.spec && a.rank === slot.rank)) {
+				slot.spec = AbilityType.UNDEFINED
+			}
 		}
 	})
 
@@ -595,7 +599,7 @@ const testShip = (abilities: AbilitySlotInterface[], seats: SeatInterface[]) => 
 		return false // we can exit the test entirely as soon as an ability isn't matched to a slot
 	}
 
-	// then try to seat the non-spec abilities
+	// then try to seat the spec abilities
 	for (const ability of abilitiesSpec) {
 
 		// 3: search for slot with desired spec and any type
