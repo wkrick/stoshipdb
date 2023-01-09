@@ -271,21 +271,6 @@ const columnNameOptions = computed(() => {
 // Ship filtering helper methods
 //***********************************************************************//
 
-// build a map of ability levels to save time later
-const getAbilityLevels = (abilities: AbilityFilterInterface[]) => {
-
-	let results = new Map();
-
-	abilities.forEach( ability => {
-		let filteredByName = allAbilities.filter(a => a.name === ability.name)
-		let levels = filteredByName.map(a => a.level)
-		let ranks = filteredByName.map(a => a.rank)
-		results.set(ability.name, {levels, ranks})
-	})
-
-	return results
-}
-
 // convert an array of user-selected abilities to a better format for filtering along with a map
 const convertAbilityFilterToSlot = (abilities: AbilityFilterInterface[]) => {
 
@@ -373,6 +358,7 @@ const copySeatArray = (seats: SeatInterface[]) => {
 
 	return copy
 }
+
 // the rank of an ability could be "any" so we need to generate all of the possible permutations
 const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 
@@ -410,6 +396,8 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 		})
 		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank < 0))
 	}
+
+	permutations.forEach( permutation => permutation.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
 
 	return permutations
 }
@@ -508,9 +496,6 @@ const rows = computed(() => {  // All the rows to be shown
 			// replace "Uni" with the desired ability types to get all the permutations of the ship seats
 			let seatPermutations = getSeatPermutations(seats, abilityTypes)
 
-			// replace "any" with each of the possible ability ranks to get all permutations of the desired abilities
-			let abilityPermutations = getAbilityPermutations(abilitiesclone)
-
 			// loop over the permutations and test each one.  if at least one matches, add the ship to the output
 			let shipmatch = false
 			for (let j = 0; shipmatch === false && j < abilityPermutations.length; j++) {
@@ -535,9 +520,6 @@ const rows = computed(() => {  // All the rows to be shown
 					abilityRanks[3] > slotRanks[3]) {
 					continue
 				}
-
-				// sort abilities in descending order
-				abilityPermutation.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec))
 
 				for (let k = 0; shipmatch === false && k < seatPermutations.length; k++) {
 
@@ -589,7 +571,7 @@ const testShip = (abilities: AbilitySlotInterface[], seats: SeatInterface[]) => 
 		}
 	})
 
-	// NOTE TO SELF: sorting the slots at this point doesn't appear to make any difference at all
+	// NOTE TO SELF: sorting the slots at this point just makes it slower
 
 	// try to seat all the the non-spec abilities first
 	for (const ability of abilitiesNonSpec) {
