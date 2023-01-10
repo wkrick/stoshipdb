@@ -228,14 +228,33 @@ watch(newAbilityName, (selection, prevSelection) => {
 })
 
 watch(newAbilityLevel, (selection, prevSelection) => {
-	if (selection && selection !== "Any") {
-		newAbilityRank.value = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value && a.level === selection)[0].rank
-	} else if (selection) {
-		newAbilityRank.value = 0
+	if (selection) {
+		if (selection !== "Any") {
+			newAbilityRank.value = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value && a.level === selection)[0].rank
+		} else {
+			// for an "Any" ability, encode the possible ranks for later
+			let firstRank = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value)[0].rank
+			switch (firstRank) {
+				case 1: newAbilityRank.value = 123; break
+				case 2: newAbilityRank.value = 234; break
+				case 3: newAbilityRank.value = 34; break
+			}
+		}
 	} else {
 		newAbilityRank.value = undefined
 	}
 })
+// format the ability as a string for display in a chip
+const abilityString = (id: number) => {
+	let ability = abilities.value[id]
+	let string = `${ability.typespec} - ${ability.name}`
+	if (ability.rank > 4) {
+		string += ` (Any)`
+	} else {
+		string += ` ${ability.level} (${ability.rank})` 
+	}
+	return string
+}
 
 //***********************************************************************//
 // Columns
@@ -271,25 +290,16 @@ const columnNameOptions = computed(() => {
 // Ship filtering helper methods
 //***********************************************************************//
 
-// convert an array of user-selected abilities to a better format for filtering along with a map
+// convert an array of user-selected abilities from AbilityFilterInterface to AbilitySlotInterface
 const convertAbilityFilterToSlot = (abilities: AbilityFilterInterface[]) => {
 
 	let len = abilities.length
-	let array: AbilitySlotInterface[] = new Array(len)
-	let map = new Map()
+	let copy: AbilitySlotInterface[] = new Array(len)
 	let i = 0
-	let mapKey = -1 // keys for the map start at -1 and go backwards
 	while (i < len) {
-    	let ability = abilities[i]
-		let rank = ability.rank
-		if (rank === 0) {
-			rank = mapKey
-			let ranks = allAbilities.filter(a => a.name === ability.name).map(a => a.rank)
-			map.set(mapKey, ranks)
-			mapKey--
-		}
-		array[i] = {
-			rank: rank,
+		let ability = abilities[i]
+		copy[i] = {
+			rank: ability.rank,
 			type: ability.type,
 			spec: ability.spec,
 			matched: false
@@ -297,7 +307,7 @@ const convertAbilityFilterToSlot = (abilities: AbilityFilterInterface[]) => {
 		i++
 	}
 
-	return { array, map }
+	return copy
 }
 
 const copyAbilityFilterArray = (abilities: AbilityFilterInterface[]) => {
@@ -364,19 +374,24 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 
 	let permutations: AbilitySlotInterface[][] = []
 
-	// convert the abilities array and build a lookup map
-	let { array, map} = convertAbilityFilterToSlot(abilities)
+	let map = new Map()
+	map.set(123, [1,2,3])
+	map.set(234, [2,3,4])
+	map.set(34, [3,4])
+
+	// start with a deep copy of original ability array (converted to slot interface)
+	let array = convertAbilityFilterToSlot(abilities)
 
 	permutations.push(array)
 
-	// filter the list to just arrays of abilities that have at least one "Any"
-	let anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank < 0))
+	// filter the list to just arrays of abilities that have at least one "Any". Ranks over 4 === "Any"
+	let anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank > 4))
 
 	while (anyAbilities.length > 0) {
 		anyAbilities.forEach(array => {
-			const abilityIndex = array.findIndex(ability => ability.rank < 0)
+			const abilityIndex = array.findIndex(ability => ability.rank > 4)
 
-			// look up the levels and associated ranks for this ability
+			// decode actual ranks array from "any" rank code
 			let ranks = map.get(array[abilityIndex].rank)
 
 			// update the original array
@@ -394,7 +409,7 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 				permutations.push(arrayCopy2)
 			}
 		})
-		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank < 0))
+		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank > 4))
 	}
 
 	permutations.forEach( p => p.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
@@ -568,7 +583,7 @@ const testShip = (abilities: AbilitySlotInterface[], seats: SeatInterface[]) => 
 		// if this is a spec slot
 		if (slot.spec !== AbilityType.UNDEFINED) {
 			// see if the list of desired spec abilities contains something that could match this slot
-			// if not found, then we don't need this seat to have a spec
+			// if not found, then we don't need this slot to have a spec
 			if (!abilitiesSpec.find(a => a.spec === slot.spec && a.rank === slot.rank)) {
 				slot.spec = AbilityType.UNDEFINED
 			}
@@ -780,7 +795,7 @@ const getSeats = (shipIndex: number) => {
 					:key="ability.id"
 					removable
 					@remove="abilities.splice(index, 1)"
-				>{{ ability.typespec + " - " + ability.name + " " + (ability.rank > 0 ? ability.level + " (" + ability.rank + ")" : "(Any)") }}</Chip>
+				>{{ abilityString(index) }}</Chip>
 				</div>
 			</div>
 
