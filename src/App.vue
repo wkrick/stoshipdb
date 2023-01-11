@@ -196,6 +196,7 @@ const addNewAbility = () => {
 	newAbilityName.value = undefined
 	newAbilityLevel.value = undefined
 	newAbilityRank.value = undefined
+
 }
 
 const abilitytypeOptions = computed(() => {
@@ -244,6 +245,7 @@ watch(newAbilityLevel, (selection, prevSelection) => {
 		newAbilityRank.value = undefined
 	}
 })
+
 // format the ability as a string for display in a chip
 const abilityString = (id: number) => {
 	let ability = abilities.value[id]
@@ -495,14 +497,15 @@ const rows = computed(() => {  // All the rows to be shown
 
 			// gather stats on the ability slot ranks on this ship for optimization later
 			let slotRanks = [0,0,0,0]
-			seats.forEach ( seat => {
+			for (let ii = 0; ii < seats.length; ii++) {
+				let seat = seats[ii]
 				switch (seat.rank) {
 					case 4: slotRanks[3]++
 					case 3: slotRanks[2]++
 					case 2: slotRanks[1]++
 					case 1: slotRanks[0]++
 				}
-			})
+			}
 
 			// replace "Uni" with the desired ability types to get all the permutations of the ship seats
 			let seatPermutations = getSeatPermutations(seats, abilityTypes)
@@ -513,7 +516,7 @@ const rows = computed(() => {  // All the rows to be shown
 
 				let abilityPermutation = abilityPermutations[j]
 
-				// if this permutation of abilities cannot fit on this ship...
+				// compare this permutation of abilities against the ship seats
 				let abilityRanks = [0,0,0,0]
 				let done = false
 				for (let jj = 0; !done && jj < abilityPermutation.length; jj++) {
@@ -525,14 +528,47 @@ const rows = computed(() => {  // All the rows to be shown
 					}
 				}
 
-				// ...then skip this ship
+				// exit early if this ability permutation won't work
 				if (done) {
 					continue
 				}
 
 				for (let k = 0; !shipmatch && k < seatPermutations.length; k++) {
 
-					if (testShip(abilityPermutation, seatPermutations[k])) {
+					let seatPermutation = seatPermutations[k]
+
+					// gather stats on this seat permutation (max ranks of slot type/spec)
+					let maxTypes = [0,0,0,0,0,0,0,0,0]
+					for (let kk = 0; kk < seatPermutation.length; kk++) {
+						let seat = seatPermutation[kk]
+						let rank = seat.rank
+						let type = seat.type
+						let spec = seat.spec
+						if (rank > maxTypes[type]) {
+							maxTypes[type] = rank
+						}
+						if (rank > maxTypes[spec]) {
+							maxTypes[spec] = rank
+						}
+					}
+
+					// compare abilities against max slot type/spec
+					let done = false
+					for (let kk = 0; !done && kk < abilityPermutation.length; kk++ ) {
+						let ability = abilityPermutation[kk]
+						let rank = ability.rank
+						let spec = ability.spec
+						let index = spec ? spec : ability.type
+						if (rank > maxTypes[index]) {
+							done = true
+						}
+					}
+
+					// exit early if this seat permutation won't work
+					if (done) {
+						continue
+					}
+					if (testShip(abilityPermutation, seatPermutation)) {
 						filteredShips.push(ship)
 						shipmatch = true
 					}
