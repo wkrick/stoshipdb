@@ -400,10 +400,9 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 			array[abilityIndex].rank = rank % 10
 
 			// clone the array and use the remaining rank digits for the rank
-			const arrayCopy1 = copyAbilitySlotArray(array)
-			arrayCopy1[abilityIndex].rank = ~~(rank / 10)
-			permutations.push(arrayCopy1)
-
+			const arrayCopy = copyAbilitySlotArray(array)
+			arrayCopy[abilityIndex].rank = ~~(rank / 10)
+			permutations.push(arrayCopy)
 		})
 		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank > 4))
 	}
@@ -419,29 +418,40 @@ const getSeatPermutations = (seats: SeatInterface[], abilityTypes: AbilityType[]
 	let permutations: SeatInterface[][] = []
 
 	// start with a deep copy of original seat array
-	permutations.push(copySeatArray(seats))
+	let copy = copySeatArray(seats)
 
-	let universalSeats = permutations.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED))
+	// mash together the ability type codes into a single number
+	let num = parseInt(abilityTypes.join(''))
+
+	// replace the uni seat types with the new number
+	copy.forEach(seat => {
+		if (seat.type === AbilityType.UNDEFINED) {
+			seat.type = num
+		}
+	})
+
+	permutations.push(copy)
+
+	// filter the list to just arrays of seats that have at least one "Uni" (types over 3 are encoded types)
+	let universalSeats = permutations.filter(array => !!array.find(seat => seat.type > 3))
 
 	while (abilityTypes.length !== 0 && universalSeats.length > 0) {
 		universalSeats.forEach(array => {
-			const seatIndex = array.findIndex(seat => seat.type === AbilityType.UNDEFINED)
+			const seatIndex = array.findIndex(seat => seat.type > 3)
+
+			// the value in the type property of "Uni" seats are mashed together type codes
+			// each digit is the seat types of the abilities selected by the user
+			let type = array[seatIndex].type
 
 			// update the original array
-			array[seatIndex].type = abilityTypes[0]
+			array[seatIndex].type = type % 10
 
-			if (abilityTypes.length > 1) {
-				const arrayCopy1: SeatInterface[] = copySeatArray(array)
-				arrayCopy1[seatIndex].type = abilityTypes[1]
-				permutations.push(arrayCopy1)
-			}
-			if (abilityTypes.length > 2) {
-				const arrayCopy2: SeatInterface[] = copySeatArray(array) 
-				arrayCopy2[seatIndex].type = abilityTypes[2]
-				permutations.push(arrayCopy2)
-			}
+			// clone the array and use the remaining type digits for the type
+			const arrayCopy = copySeatArray(array)
+			arrayCopy[seatIndex].type = ~~(type / 10)
+			permutations.push(arrayCopy)
 		})
-		universalSeats = permutations.filter(array => !!array.find(seat => seat.type === AbilityType.UNDEFINED))
+		universalSeats = permutations.filter(array => !!array.find(seat => seat.type > 3))
 	}
 
 	permutations.forEach( p => p.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
@@ -506,21 +516,20 @@ const rows = computed(() => {  // All the rows to be shown
 					case 2: slotRanks[2]++
 					case 1: slotRanks[1]++
 				}
-				if (type === AbilityType.UNDEFINED) { // a universal seat so update tac/eng/sci seat max too
-					if (rank > maxSeats[AbilityType.TAC]) {
-						maxSeats[AbilityType.TAC] = rank
+				// a universal seat so update tac/eng/sci seat max as needed
+				if (type === AbilityType.UNDEFINED) {
+					for (let iii = 0; iii < abilityTypes.length; iii++) {
+						let aType = abilityTypes[iii]
+						if (rank > maxSeats[aType]) {
+							maxSeats[aType] = rank
+						}
 					}
-					if (rank > maxSeats[AbilityType.ENG]) {
-						maxSeats[AbilityType.ENG] = rank
-					}
-					if (rank > maxSeats[AbilityType.SCI]) {
-						maxSeats[AbilityType.SCI] = rank
+				} else { // not a universal seat
+					if (rank > maxSeats[type]) {
+						maxSeats[type] = rank
 					}
 				}
-				if (rank > maxSeats[type]) {
-					maxSeats[type] = rank
-				}
-				if (rank > maxSeats[spec]) {
+				if (spec !== AbilityType.UNDEFINED && rank > maxSeats[spec]) {
 					maxSeats[spec] = rank
 				}
 			}
