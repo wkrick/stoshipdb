@@ -407,8 +407,6 @@ const getAbilityPermutations = (abilities: AbilityFilterInterface[]) => {
 		anyAbilities = permutations.filter(array => !!array.find(ability => ability.rank > 4))
 	}
 
-	permutations.forEach( p => p.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
-
 	return permutations
 }
 
@@ -453,8 +451,6 @@ const getSeatPermutations = (seats: SeatInterface[], abilityTypes: AbilityType[]
 		})
 		universalSeats = permutations.filter(array => !!array.find(seat => seat.type > 3))
 	}
-
-	permutations.forEach( p => p.sort((a, b) => (b.rank - a.rank || b.type - a.type || b.spec - a.spec)) )
 
 	return permutations
 }
@@ -553,14 +549,8 @@ const rows = computed(() => {  // All the rows to be shown
 						done = true
 						continue
 					}
-					
 
-					switch (rank) {
-						case 4: done = (++abilityRanks[4] > slotRanks[4]); break
-						case 3: done = (++abilityRanks[3] > slotRanks[3]); break
-						case 2: done = (++abilityRanks[2] > slotRanks[2]); break
-						case 1: done = (++abilityRanks[1] > slotRanks[1]); break
-					}
+					done = (++abilityRanks[rank] > slotRanks[rank])
 				}
 
 				// exit early if this ability permutation won't work
@@ -697,9 +687,10 @@ const getSeats = (shipIndex: number) => {
 	let result = ""
 	let separator = ""
 	seats.forEach( s => {
-		result += separator + s.rank + " " + typeMap.get(s.type)
-		if (s.spec !== 0) {
-			result += "/" + typeMap.get(s.spec)
+		if (s.spec === AbilityType.UNDEFINED) {
+			result += `${separator}${s.rank} ${typeMap.get(s.type)}`
+		} else {
+			result += `${separator}${s.rank} ${typeMap.get(s.type)}/${typeMap.get(s.spec)}`
 		}
 		separator = ", "
 	})
