@@ -495,15 +495,33 @@ const rows = computed(() => {  // All the rows to be shown
 				continue
 			}
 
-			// gather stats on the ability slot ranks on this ship for optimization later
-			let slotRanks = [0,0,0,0]
+			// gather stats on the slot ranks and max seats for each type/spec (including Uni) on this ship
+			let slotRanks = [0,0,0,0,0]
+			let maxSeats = [0,0,0,0,0,0,0,0,0]
 			for (let ii = 0; ii < seats.length; ii++) {
-				let seat = seats[ii]
-				switch (seat.rank) {
-					case 4: slotRanks[3]++
-					case 3: slotRanks[2]++
-					case 2: slotRanks[1]++
-					case 1: slotRanks[0]++
+				const { rank, type, spec } = seats[ii]
+				switch (rank) {
+					case 4: slotRanks[4]++
+					case 3: slotRanks[3]++
+					case 2: slotRanks[2]++
+					case 1: slotRanks[1]++
+				}
+				if (type === AbilityType.UNDEFINED) { // a universal seat so update tac/eng/sci seat max too
+					if (rank > maxSeats[AbilityType.TAC]) {
+						maxSeats[AbilityType.TAC] = rank
+					}
+					if (rank > maxSeats[AbilityType.ENG]) {
+						maxSeats[AbilityType.ENG] = rank
+					}
+					if (rank > maxSeats[AbilityType.SCI]) {
+						maxSeats[AbilityType.SCI] = rank
+					}
+				}
+				if (rank > maxSeats[type]) {
+					maxSeats[type] = rank
+				}
+				if (rank > maxSeats[spec]) {
+					maxSeats[spec] = rank
 				}
 			}
 
@@ -517,14 +535,22 @@ const rows = computed(() => {  // All the rows to be shown
 				let abilityPermutation = abilityPermutations[j]
 
 				// compare this permutation of abilities against the ship seats
-				let abilityRanks = [0,0,0,0]
+				let abilityRanks = [0,0,0,0,0]
 				let done = false
 				for (let jj = 0; !done && jj < abilityPermutation.length; jj++) {
-					switch (abilityPermutation[jj].rank) {
-						case 4: done = (++abilityRanks[3] > slotRanks[3]); break
-						case 3: done = (++abilityRanks[2] > slotRanks[2]); break
-						case 2: done = (++abilityRanks[1] > slotRanks[1]); break
-						case 1: done = (++abilityRanks[0] > slotRanks[0]); break
+					const { rank, type, spec } = abilityPermutation[jj]
+					const index = spec ? spec : type
+					if (rank > maxSeats[index]) {
+						done = true
+						continue
+					}
+					
+
+					switch (rank) {
+						case 4: done = (++abilityRanks[4] > slotRanks[4]); break
+						case 3: done = (++abilityRanks[3] > slotRanks[3]); break
+						case 2: done = (++abilityRanks[2] > slotRanks[2]); break
+						case 1: done = (++abilityRanks[1] > slotRanks[1]); break
 					}
 				}
 
@@ -540,10 +566,7 @@ const rows = computed(() => {  // All the rows to be shown
 					// gather stats on this seat permutation (max ranks of slot type/spec)
 					let maxTypes = [0,0,0,0,0,0,0,0,0]
 					for (let kk = 0; kk < seatPermutation.length; kk++) {
-						let seat = seatPermutation[kk]
-						let rank = seat.rank
-						let type = seat.type
-						let spec = seat.spec
+						const { rank, type, spec } = seatPermutation[kk]
 						if (rank > maxTypes[type]) {
 							maxTypes[type] = rank
 						}
@@ -555,10 +578,8 @@ const rows = computed(() => {  // All the rows to be shown
 					// compare abilities against max slot type/spec
 					let done = false
 					for (let kk = 0; !done && kk < abilityPermutation.length; kk++ ) {
-						let ability = abilityPermutation[kk]
-						let rank = ability.rank
-						let spec = ability.spec
-						let index = spec ? spec : ability.type
+						const { rank, type, spec } = abilityPermutation[kk]
+						let index = spec ? spec : type
 						if (rank > maxTypes[index]) {
 							done = true
 						}
@@ -600,16 +621,15 @@ const testShip = (abilities: AbilitySlotInterface[], seats: SeatInterface[]) => 
 	// remove the spec from any spec slot that we definitely don't need	
 	let slots: AbilitySlotInterface[] = []
 	for (let i = 0; i < seats.length; i++) {
-		let seat = seats[i]
-		let rank = seat.rank
-		let type = seat.type
-		while (rank) {
-			let spec = seat.spec
-			if (spec !== AbilityType.UNDEFINED && !abilitiesSpec.find(a => a.rank === rank && a.spec === spec)) {
-				spec = AbilityType.UNDEFINED
+		const { rank, type, spec } = seats[i]
+		let j = rank
+		while (j) {
+			if (spec !== AbilityType.UNDEFINED && !abilitiesSpec.find(a => a.rank === j && a.spec === spec)) {
+				slots.push({rank: j, type: type, spec: AbilityType.UNDEFINED, matched: false})
+			} else {
+				slots.push({rank: j, type: type, spec: spec, matched: false})
 			}
-			slots.push({rank: rank, type: type, spec: spec, matched: false})
-			rank--
+			j--
 		}
 	}
 
