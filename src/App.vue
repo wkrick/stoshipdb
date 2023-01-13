@@ -460,6 +460,8 @@ const rows = computed(() => {  // All the rows to be shown
 	let ships = allShips
 
 	// filter ships based on the attributes chosen
+	// a.value is an array of strings so we need to convert ship[a.key] to a string
+	// TODO: come up with a less hacky way of handling that
 	attributes.value.forEach( a => {
 		if (a.operator === "=") {
 			ships = ships.filter(ship => a.value.includes(""+ship[a.key]))
