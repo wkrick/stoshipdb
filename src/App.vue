@@ -503,32 +503,35 @@ const rows = computed(() => {  // All the rows to be shown
 				continue
 			}
 
-			// gather stats on the slot ranks and max seats for each type/spec (including Uni) on this ship
-			const slotRanks = [0,0,0,0,0]
+			// initialize the max seats for each type/spec (including Uni) on this ship
 			const maxSeats = [0,0,0,0,0,0,0,0,0]
+			maxSeats[1] = ship.mxt
+			maxSeats[2] = ship.mxe
+			maxSeats[3] = ship.mxs
+			maxSeats[4] = ship.mxi
+			maxSeats[5] = ship.mxc
+			maxSeats[6] = ship.mxp
+			maxSeats[7] = ship.mxo
+			maxSeats[8] = ship.mxm
+			// if this ship has a universal seat, it could be used as any type requested by user
+			// so overwrite the tac/eng/sci max with the uni max if applicable
+			if (ship.mxu) {
+				for (let ii = 0; ii < abilityTypes.length; ii++) {
+					const aType = abilityTypes[ii]
+					if (ship.mxu > maxSeats[aType]) {
+						maxSeats[aType] = ship.mxu
+					}
+				}
+			}
+
+			// gather stats on the slot ranks for this ship
+			const slotRanks = [0,0,0,0,0]
 			for (let ii = 0; ii < seats.length; ii++) {
-				const { rank, type, spec } = seats[ii]
-				switch (rank) {
+				switch (seats[ii].rank) {
 					case 4: slotRanks[4]++
 					case 3: slotRanks[3]++
 					case 2: slotRanks[2]++
 					case 1: slotRanks[1]++
-				}
-				// a universal seat so update tac/eng/sci seat max as needed
-				if (type === AbilityType.UNDEFINED) {
-					for (let iii = 0; iii < abilityTypes.length; iii++) {
-						const aType = abilityTypes[iii]
-						if (rank > maxSeats[aType]) {
-							maxSeats[aType] = rank
-						}
-					}
-				} else { // not a universal seat
-					if (rank > maxSeats[type]) {
-						maxSeats[type] = rank
-					}
-				}
-				if (spec !== AbilityType.UNDEFINED && rank > maxSeats[spec]) {
-					maxSeats[spec] = rank
 				}
 			}
 
