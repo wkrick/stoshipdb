@@ -284,8 +284,8 @@ $count = 0
 
 $rowseparator = ''
 
-$list_null_to_empty_string = "rel", "y", "m", "bun", "str", "fac", "fam", "trt", "trs"
-$list_null_to_zero = "mxt", "mxe", "mxs", "mxu", "mxi", "mxc", "mxp", "mxo", "mxm", "bw", "bs", "be","ba", "hng", "cu"
+$list_null_to_none = "rel", "bun", "str", "fac", "fam", "trt", "trs"
+$list_null_to_zero = "mxt", "mxe", "mxs", "mxu", "mxi", "mxc", "mxp", "mxo", "mxm", "bw", "bs", "be","ba", "hng", "cu", "y", "m"
 $list_null_to_no = "dhc", "exp", "flt", "ccw", "ccs", "cce", "cct", "sd", "st", "sa", "tm", "sng",  "clk", "flk"
 
 # helper function to convert seat type/spec into a numeric code
@@ -322,8 +322,8 @@ $csvData | Foreach-Object {
             if ($value -match "^[+-]?((\d+(\.\d*)?)|(\.\d+))$") {
                 $shipdata += "$colseparator`"$name`"`:$value"
             } elseif ($value -eq "") {
-                if ($list_null_to_empty_string -contains $name) {
-                    $shipdata += "$colseparator`"$name`"`:`"`""
+                if ($list_null_to_none -contains $name) {
+                    $shipdata += "$colseparator`"$name`"`:`"(None)`""
                 } elseif ($list_null_to_zero -contains $name) {
                     $shipdata += "$colseparator`"$name`"`:0"
                 } elseif ($list_null_to_no -contains $name) {

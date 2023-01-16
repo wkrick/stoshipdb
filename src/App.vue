@@ -87,38 +87,28 @@ const addNewAttribute = () => {
 	newAttributeValue.value = undefined
 }
 
-const isNumeric = (n: any) => {
-	if (!n || Array.isArray(n)) {
-		return false
-	}
-	return !isNaN(parseFloat(String(n)))
-}
-
-const hasValue = (n: string|number|null) => {
-	if (n === undefined || n === null || n === '') {
-		return false
-	}
-	return true
+const isNumeric = (s: string) => {
+	return    /^-?\d+\.?\d*$|^\d*\.?\d+$/.test(s)
 }
 
 const getOpts = (key: keyof ShipInterface) => {
-	let result: (string|number|null|SeatInterface[])[] = [...new Set(allShips.map(item => item[key]))].sort((a, b) => {
-		if (a === b) {
-			return 0
-		} else if (a === null) {
-			return 1
-		} else if (b === null) {
-			return -1
-		} else {
-			return a < b ? -1 : 1
-		}
-	})
 
 	// PrimeVue handles "0" strangely when the options are numbers
 	// so make sure result is always an array of strings
 	// TODO: revisit this later
-	let opts: String[] = result.map(String)
 
+	let values = [...new Set(allShips.map(item => item[key]))]
+	let opts: string[]
+
+	// if the option values are numbers, sort them as numbers, then convert to strings
+	if (isNumeric(String(values[0]))) {
+		const temp = values as number[]
+		opts = temp.sort((a, b) => a - b).map(String)
+	} else {
+		const temp = values as string[]
+		opts = temp.sort()
+	}
+		
 	return opts
 }
 
@@ -168,15 +158,16 @@ const newAbilityName = ref()
 const newAbilityLevel = ref()
 const newAbilityRank = ref()
 
-const typeLookup = new Map()
-	.set('Tactical', AbilityType.TAC)
-	.set('Engineering', AbilityType.ENG)
-	.set('Science', AbilityType.SCI)
-	.set('Intelligence', AbilityType.INT)
-	.set('Command', AbilityType.CMD)
-	.set('Pilot', AbilityType.PIL)
-	.set('Temporal', AbilityType.TMP)
-	.set('Miracle Worker', AbilityType.MWR)
+const typeLookup = new Map([
+	['Tactical', AbilityType.TAC],
+	['Engineering', AbilityType.ENG],
+	['Science', AbilityType.SCI],
+	['Intelligence', AbilityType.INT],
+	['Command', AbilityType.CMD],
+	['Pilot', AbilityType.PIL],
+	['Temporal', AbilityType.TMP],
+	['Miracle Worker', AbilityType.MWR]
+])
 
 const addNewAbility = () => {
 	abilities.value.push({
@@ -185,7 +176,7 @@ const addNewAbility = () => {
 		name: newAbilityName.value,
 		level: newAbilityLevel.value,
 		rank: newAbilityRank.value,
-		typeorspec: typeLookup.get(newAbilityTypeSpec.value)
+		typeorspec: typeLookup.get(newAbilityTypeSpec.value) as AbilityType
 	})
 	newAbilityTypeSpec.value = undefined
 	newAbilityName.value = undefined
@@ -741,7 +732,7 @@ const getSeats = (shipIndex: number) => {
 					</template>
 					<Button
 						@click="addNewAttribute()"
-						:disabled="!hasValue(newAttributeValue)"
+						:disabled="!newAttributeValue"
 						icon="pi pi-plus-circle"
 					/>
 				</div>
