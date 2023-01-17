@@ -9,6 +9,8 @@ import Button from 'primevue/button'
 import Chip from 'primevue/chip'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import BlockUI from 'primevue/blockui';
+import ProgressSpinner from 'primevue/progressspinner';
 
 import "primevue/resources/themes/fluent-light/theme.css"
 import "primevue/resources/primevue.min.css"
@@ -25,4 +27,6 @@ app.component('Button', Button)
 app.component('Chip', Chip)
 app.component('DataTable', DataTable)
 app.component('Column', Column)
+app.component('BlockUI', BlockUI)
+app.component('ProgressSpinner', ProgressSpinner)
 app.mount('#app')
