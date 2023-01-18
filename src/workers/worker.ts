@@ -1,4 +1,3 @@
-import AttributeFilterInterface from '../types/AttributeFilter.interface'
 import AbilityFilterInterface from '../types/AbilityFilter.interface'
 import ShipInterface from '../types/Ship.interface'
 import ShipSeatsInterface from '../types/ShipSeats.interface'
@@ -10,169 +9,146 @@ import allShipsJSON from '../assets/shipdata.json'
 import allSeatsJSON from '../assets/seatdata.json'
 
 self.addEventListener('message', e => {
-    filterShips(e.data.attributes, e.data.abilities)
+	const start = Date.now()
+	let shipIds = filterShips(e.data)
+	const stop = Date.now()
+	//console.log(`Filtering took ${(stop - start)/1000} seconds`)
+	self.postMessage(shipIds)
 })
 
 const allShips = allShipsJSON as ShipInterface[]
 const allSeats = allSeatsJSON as ShipSeatsInterface[]
 
-const filterShips = (attributes: AttributeFilterInterface[], abilities: AbilityFilterInterface[] ) => {
+const filterShips = (abilities: AbilityFilterInterface[] ) => {
 	
-	let ships = allShips
+	let ships = allShips 
 
-	// filter ships based on the attributes chosen
-	// a.value is an array of strings so we need to convert ship[a.key] to a string
-	// TODO: come up with a less hacky way of handling that
-	attributes.forEach( a => {
-		if (a.operator === "=") {
-			ships = ships.filter(ship => a.value.includes(""+ship[a.key]))
-		} else if (a.operator === "!=") {
-			ships = ships.filter(ship => !a.value.includes(""+ship[a.key]))
-		} else if (a.operator === ">=") {
-			ships = ships.filter(ship => ship[a.key] >= a.value[0])
-		} else if (a.operator === "<=") {
-			ships = ships.filter(ship => ship[a.key] <= a.value[0])
+	if (abilities.length === 0) {
+		// return an array of the ship ids
+		return ships.map(s => s.id)
+	}
+
+	const NONSPECS = [AbilityType.TAC, AbilityType.ENG, AbilityType.SCI]
+	const SPECS = [AbilityType.INT, AbilityType.CMD, AbilityType.PIL, AbilityType.TMP, AbilityType.MWR]
+
+	const abilitiesclone = getAbilitiesFromFilterArray(abilities)
+	const abilitySpecs = [...new Set(abilitiesclone.filter(a => SPECS.includes(a.typeorspec)).map(a => a.typeorspec))]
+	const abilityTypes = [...new Set(abilitiesclone.filter(a => NONSPECS.includes(a.typeorspec)).map(a => a.typeorspec))]
+
+	// replace "any" with each of the possible ability ranks to get all permutations of the desired abilities
+	const abilityPermutations = getAbilityPermutations(abilitiesclone)
+
+	// for each ship, test the corresponding array of seats against the list of abilities
+	const shipIds: number[] = []
+	for (let i = 0; i < ships.length; i++) {
+
+		const ship = ships[i]
+
+		// if the user selected more abilities than this ship can support, then skip it
+		if (abilities.length > ship.tab) {
+			continue
 		}
-	})
 
-	const abilityCount = abilities.length;
-	if (ships.length > 0 && abilityCount > 0) {
+		const seats = allSeats[ship.id].seats // seats for this ship
 
-		const NONSPECS = [AbilityType.TAC, AbilityType.ENG, AbilityType.SCI]
-		const SPECS = [AbilityType.INT, AbilityType.CMD, AbilityType.PIL, AbilityType.TMP, AbilityType.MWR]
+		// if this ship doesn't have the desired specs, we can skip over it
+		const shipSpecs = [...new Set(seats.map(s => s.spec))]
+		const unmatchedSpecs = abilitySpecs.filter( spec => !shipSpecs.includes(spec) )
+		if (unmatchedSpecs.length > 0) {
+			continue
+		}
 
-		const abilitiesclone = getAbilitiesFromFilterArray(abilities)
-		const abilitySpecs = [...new Set(abilitiesclone.filter(a => SPECS.includes(a.typeorspec)).map(a => a.typeorspec))]
-		const abilityTypes = [...new Set(abilitiesclone.filter(a => NONSPECS.includes(a.typeorspec)).map(a => a.typeorspec))]
+		// initialize the max seats for each type/spec (including Uni) on this ship
+		const maxSeats = [0, ship.mxt, ship.mxe, ship.mxs, ship.mxi, ship.mxc, ship.mxp, ship.mxo, ship.mxm]
 
-		// replace "any" with each of the possible ability ranks to get all permutations of the desired abilities
-		const abilityPermutations = getAbilityPermutations(abilitiesclone)
+		// if this ship has a universal seat, it could be used as any type requested by user
+		// so overwrite the tac/eng/sci max with the uni max if applicable
+		if (ship.mxu) {
+			for (let ii = 0; ii < abilityTypes.length; ii++) {
+				const aType = abilityTypes[ii]
+				if (ship.mxu > maxSeats[aType]) {
+					maxSeats[aType] = ship.mxu
+				}
+			}
+		}
 
-		// for each ship, test the corresponding array of seats against the list of abilities
-		const filteredShips: ShipInterface[] = []
-		for (let i = 0; i < ships.length; i++) {
+		// gather stats on the slot ranks for this ship
+		const slotRanks = [0,0,0,0,0]
+		for (let ii = 0; ii < seats.length; ii++) {
+			switch (seats[ii].rank) {
+				case 4: slotRanks[4]++
+				case 3: slotRanks[3]++
+				case 2: slotRanks[2]++
+				case 1: slotRanks[1]++
+			}
+		}
 
-			const ship = ships[i]
+		// replace "Uni" with the desired ability types to get all the permutations of the ship seats
+		let seatPermutations = getSeatPermutations(seats, abilityTypes)
 
-			// if the user selected more abilities than this ship can support, then skip it
-			if (abilityCount > ship.tab) {
+		// loop over the permutations and test each one.  if at least one matches, add the ship to the output
+		let shipmatch = false
+		for (let j = 0; !shipmatch && j < abilityPermutations.length; j++) {
+
+			const abilityPermutation = abilityPermutations[j]
+
+			// compare this permutation of abilities against the ship seats
+			const abilityRanks = [0,0,0,0,0]
+			let done = false
+			for (let jj = 0; !done && jj < abilityPermutation.length; jj++) {
+				const { rank, typeorspec } = abilityPermutation[jj]
+				if (rank > maxSeats[typeorspec]) {
+					done = true
+					continue
+				}
+				done = (++abilityRanks[rank] > slotRanks[rank])
+			}
+
+			// exit early if this ability permutation won't work
+			if (done) {
 				continue
 			}
 
-			const seats = allSeats[ship.id].seats // seats for this ship
+			for (let k = 0; !shipmatch && k < seatPermutations.length; k++) {
 
-			// if this ship doesn't have the desired specs, we can skip over it
-			const shipSpecs = [...new Set(seats.map(s => s.spec))]
-			const unmatchedSpecs = abilitySpecs.filter( spec => !shipSpecs.includes(spec) )
-			if (unmatchedSpecs.length > 0) {
-				continue
-			}
+				const seatPermutation = seatPermutations[k]
 
-			// initialize the max seats for each type/spec (including Uni) on this ship
-			const maxSeats = [0,0,0,0,0,0,0,0,0]
-			maxSeats[1] = ship.mxt
-			maxSeats[2] = ship.mxe
-			maxSeats[3] = ship.mxs
-			maxSeats[4] = ship.mxi
-			maxSeats[5] = ship.mxc
-			maxSeats[6] = ship.mxp
-			maxSeats[7] = ship.mxo
-			maxSeats[8] = ship.mxm
-			// if this ship has a universal seat, it could be used as any type requested by user
-			// so overwrite the tac/eng/sci max with the uni max if applicable
-			if (ship.mxu) {
-				for (let ii = 0; ii < abilityTypes.length; ii++) {
-					const aType = abilityTypes[ii]
-					if (ship.mxu > maxSeats[aType]) {
-						maxSeats[aType] = ship.mxu
+				// gather stats on this seat permutation (max ranks of slot type/spec)
+				const maxTypes = [0,0,0,0,0,0,0,0,0]
+				for (let kk = 0; kk < seatPermutation.length; kk++) {
+					const { rank, type, spec } = seatPermutation[kk]
+					if (rank > maxTypes[type]) {
+						maxTypes[type] = rank
+					}
+					if (rank > maxTypes[spec]) {
+						maxTypes[spec] = rank
 					}
 				}
-			}
 
-			// gather stats on the slot ranks for this ship
-			const slotRanks = [0,0,0,0,0]
-			for (let ii = 0; ii < seats.length; ii++) {
-				switch (seats[ii].rank) {
-					case 4: slotRanks[4]++
-					case 3: slotRanks[3]++
-					case 2: slotRanks[2]++
-					case 1: slotRanks[1]++
-				}
-			}
-
-			// replace "Uni" with the desired ability types to get all the permutations of the ship seats
-			let seatPermutations = getSeatPermutations(seats, abilityTypes)
-
-			// loop over the permutations and test each one.  if at least one matches, add the ship to the output
-			let shipmatch = false
-			for (let j = 0; !shipmatch && j < abilityPermutations.length; j++) {
-
-				const abilityPermutation = abilityPermutations[j]
-
-				// compare this permutation of abilities against the ship seats
-				const abilityRanks = [0,0,0,0,0]
+				// compare abilities against max slot type/spec
 				let done = false
-				for (let jj = 0; !done && jj < abilityPermutation.length; jj++) {
-					const { rank, typeorspec } = abilityPermutation[jj]
-					if (rank > maxSeats[typeorspec]) {
+				for (let kk = 0; !done && kk < abilityPermutation.length; kk++ ) {
+					const { rank, typeorspec } = abilityPermutation[kk]
+					if (rank > maxTypes[typeorspec]) {
 						done = true
-						continue
 					}
-					done = (++abilityRanks[rank] > slotRanks[rank])
 				}
 
-				// exit early if this ability permutation won't work
+				// exit early if this seat permutation won't work
 				if (done) {
 					continue
 				}
 
-				for (let k = 0; !shipmatch && k < seatPermutations.length; k++) {
-
-					const seatPermutation = seatPermutations[k]
-
-					// gather stats on this seat permutation (max ranks of slot type/spec)
-					const maxTypes = [0,0,0,0,0,0,0,0,0]
-					for (let kk = 0; kk < seatPermutation.length; kk++) {
-						const { rank, type, spec } = seatPermutation[kk]
-						if (rank > maxTypes[type]) {
-							maxTypes[type] = rank
-						}
-						if (rank > maxTypes[spec]) {
-							maxTypes[spec] = rank
-						}
-					}
-
-					// compare abilities against max slot type/spec
-					let done = false
-					for (let kk = 0; !done && kk < abilityPermutation.length; kk++ ) {
-						const { rank, typeorspec } = abilityPermutation[kk]
-						if (rank > maxTypes[typeorspec]) {
-							done = true
-						}
-					}
-
-					// exit early if this seat permutation won't work
-					if (done) {
-						continue
-					}
-
-					if (testShip(abilityPermutation, seatPermutation)) {
-						filteredShips.push(ship)
-						shipmatch = true
-					}
+				if (testShip(abilityPermutation, seatPermutation)) {
+					shipIds.push(ship.id)
+					shipmatch = true
 				}
 			}
 		}
-
-		ships = filteredShips
 	}
 
-    // send back a message with an array of ship ids
-    let shipIds: number[] = []
-    ships.forEach(ship => {
-        shipIds.push(ship.id)
-    })
-    self.postMessage(shipIds)
+	// return an array of ship ids
+	return shipIds
 }
 
 // the rank of an ability could be "any" so we need to generate all of the possible permutations

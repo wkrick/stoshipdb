@@ -27,10 +27,9 @@ const allAbilities = allAbilitiesJSON as BoffAbilityInterface[]
 const worker = new Worker(new URL('./workers/worker.ts', import.meta.url))
 
 worker.addEventListener("message", (e) => {
-	console.log('we got back', e.data)
 	const filteredShipIds = e.data as number[]
 	const filteredShips = allShips.filter(ship => filteredShipIds.includes(ship.id))
-	rows.value = filteredShips
+	shipsFilteredByAbilities.value = filteredShips
 	isLoading.value = false
 })
 
@@ -38,7 +37,8 @@ const openURL = (url: string) => {
 	window.open(url)
 }
 
-const rows = ref(allShips)
+// initial state is all ships
+const shipsFilteredByAbilities = ref(allShips)
 
 const isLoading = ref(false)
 
@@ -152,7 +152,7 @@ watch(newAttributeName, (selection, prevSelection) => {
 	} else {
 		newAttributeKey.value = undefined
 	}
-		newAttributeOperator.value = "="
+	newAttributeOperator.value = "="
 	newAttributeValue.value = undefined
 })
 
@@ -160,14 +160,6 @@ watch(newAttributeOperator, (selection, prevSelection) => {
 	newAttributeValue.value = undefined
 })
 
-watch(attributes, (newValue, oldValue) => {
-  const obj = {
-	attributes: JSON.parse(JSON.stringify(attributes.value)),
-	abilities: JSON.parse(JSON.stringify(abilities.value))
-  }
-  isLoading.value = true
-  worker.postMessage( obj );
-},{ deep: true })
 //***********************************************************************//
 // ABILITIES
 //***********************************************************************//
@@ -253,13 +245,10 @@ watch(newAbilityLevel, (selection, prevSelection) => {
 	}
 })
 
+// when abilities change, have the web worker re-filter the list of ships
 watch(abilities, (newValue, oldValue) => {
-  const obj = {
-	attributes: JSON.parse(JSON.stringify(attributes.value)),
-	abilities: JSON.parse(JSON.stringify(abilities.value))
-  }
-  isLoading.value = true
-  worker.postMessage( obj );
+	isLoading.value = true
+	worker.postMessage( JSON.parse(JSON.stringify(abilities.value)) )
 },{ deep: true })
 
 // format the ability as a string for display in a chip
@@ -302,6 +291,29 @@ const addNewColumn = () => {
 
 const columnNameOptions = computed(() => {
 	return allAttributes.map(a => a.label)
+})
+
+const rows = computed(() => {  // All the rows to be shown
+
+	// rows to display start with the list of ships filtered by chosen abilities
+	let ships = shipsFilteredByAbilities.value
+
+	// filter ships based on the attributes chosen
+	// a.value is an array of strings so we need to convert ship[a.key] to a string
+	// TODO: come up with a less hacky way of handling that
+	attributes.value.forEach( a => {
+		if (a.operator === "=") {
+			ships = ships.filter(ship => a.value.includes(""+ship[a.key]))
+		} else if (a.operator === "!=") {
+			ships = ships.filter(ship => !a.value.includes(""+ship[a.key]))
+		} else if (a.operator === ">=") {
+			ships = ships.filter(ship => ship[a.key] >= a.value[0])
+		} else if (a.operator === "<=") {
+			ships = ships.filter(ship => ship[a.key] <= a.value[0])
+		}
+	})
+
+	return ships
 })
 
 // get the seats for a specific ship as a string for display in the table
