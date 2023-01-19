@@ -2,7 +2,6 @@
 import { ref, computed, watch } from 'vue'
 import AbilityFilterInterface from './types/AbilityFilter.interface'
 import AttributeFilterInterface from './types/AttributeFilter.interface'
-import BoffAbilityInterface from './types/BoffAbility.interface'
 import ColumnFilterInterface from './types/ColumnFilter.interface'
 import ShipInterface from './types/Ship.interface'
 import ShipAttributeInterface from './types/ShipAttribute.interface'
@@ -22,7 +21,6 @@ import allAbilitiesJSON from './assets/abilitydata.json'
 const allShips = allShipsJSON as ShipInterface[]
 const allSeats = allSeatsJSON as ShipSeatsInterface[]
 const allAttributes = allAttributesJSON as ShipAttributeInterface[]
-const allAbilities = allAbilitiesJSON as BoffAbilityInterface[]
 
 const worker = new Worker(new URL('./workers/worker.ts', import.meta.url))
 
@@ -165,12 +163,15 @@ watch(newAttributeOperator, (selection, prevSelection) => {
 //***********************************************************************//
 
 const abilities = ref<AbilityFilterInterface[]>([])
-
 const nextAbilityId = ref(1)
+const allAbilities: any = allAbilitiesJSON
+const abilityTypeSpecs = Object.keys(allAbilities)
 const newAbilityTypeSpec = ref()
+const abilityNames = ref()
 const newAbilityName = ref()
+const abilityLevels = ref()
 const newAbilityLevel = ref()
-const newAbilityRank = ref()
+let newAbilityRank = 0
 
 const typeLookup = new Map([
 	['Tactical', AbilityType.TAC],
@@ -189,64 +190,54 @@ const addNewAbility = () => {
 		typespec: newAbilityTypeSpec.value,
 		name: newAbilityName.value,
 		level: newAbilityLevel.value,
-		rank: newAbilityRank.value,
+		rank: newAbilityRank,
 		typeorspec: typeLookup.get(newAbilityTypeSpec.value) as AbilityType
 	})
 	newAbilityTypeSpec.value = undefined
 	newAbilityName.value = undefined
 	newAbilityLevel.value = undefined
-	newAbilityRank.value = undefined
+	newAbilityRank = 0
 }
 
-const abilitytypeOptions = computed(() => {
-	return [...new Set(allAbilities.map(a => a.typespec))]
-})
-
-const abilitynameOptions = computed(() => {
-	if (!newAbilityTypeSpec.value) {
-		return []
-	}
-	return [...new Set(allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value).map(a => a.name))]
-})
-
-const abilitylevelOptions = computed(() => {
-	if (!newAbilityTypeSpec.value || !newAbilityName.value) {
-		return []
-	}
-
-	let list = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value).map(a => a.level)
-	list.push("Any")
-	return list
-})
-
-watch(newAbilityTypeSpec, (selection, prevSelection) => {
+watch(newAbilityTypeSpec, () => {
+	abilityNames.value = undefined
 	newAbilityName.value = undefined
-})
-
-watch(newAbilityName, (selection, prevSelection) => {
+	abilityLevels.value = undefined
 	newAbilityLevel.value = undefined
+	if (newAbilityTypeSpec.value) {
+		abilityNames.value = Object.keys(allAbilities[newAbilityTypeSpec.value])
+	}
 })
 
-watch(newAbilityLevel, (selection, prevSelection) => {
-	if (selection) {
-		if (selection !== "Any") {
-			newAbilityRank.value = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value && a.level === selection)[0].rank
+watch(newAbilityName, () => {
+	abilityLevels.value = undefined
+	newAbilityLevel.value = undefined
+	if (newAbilityName.value) {
+		const opts = Object.keys(allAbilities[newAbilityTypeSpec.value][newAbilityName.value])
+		opts.push("Any")
+		abilityLevels.value = opts 
+	}
+})
+
+watch(newAbilityLevel, () => {
+	newAbilityRank = 0
+	if (newAbilityLevel.value) {
+		if (newAbilityLevel.value !== "Any") {
+			newAbilityRank = allAbilities[newAbilityTypeSpec.value][newAbilityName.value][newAbilityLevel.value].rank
 		} else {
 			// for an "Any" ability, encode the possible ranks for later expansion
-			let firstRank = allAbilities.filter(a => a.typespec === newAbilityTypeSpec.value && a.name === newAbilityName.value)[0].rank
+			const firstRank = allAbilities[newAbilityTypeSpec.value][newAbilityName.value]["I"].rank
 			switch (firstRank) {
-				case 1: newAbilityRank.value = 123; break
-				case 2: newAbilityRank.value = 234; break
-				case 3: newAbilityRank.value = 34; break
+				case 1: newAbilityRank = 123; break
+				case 2: newAbilityRank = 234; break
+				case 3: newAbilityRank = 34; break
 			}
 		}
-	} else {
-		newAbilityRank.value = undefined
 	}
 })
 
 // when abilities change, have the web worker re-filter the list of ships
-watch(abilities, (newValue, oldValue) => {
+watch(abilities, () => {
 	isLoading.value = true
 	worker.postMessage( JSON.parse(JSON.stringify(abilities.value)) )
 },{ deep: true })
@@ -446,7 +437,7 @@ const getSeats = (shipIndex: number) => {
 				<div>
 					<Dropdown
 						v-model="newAbilityTypeSpec"
-						:options="abilitytypeOptions"
+						:options="abilityTypeSpecs"
 						placeholder="Select Type"
 						scrollHeight="400px"
 					/>
@@ -454,7 +445,7 @@ const getSeats = (shipIndex: number) => {
 				<div>
 					<Dropdown
 						v-model="newAbilityName"
-						:options="abilitynameOptions"
+						:options="abilityNames"
 						placeholder="Select Name"
 						:disabled="!newAbilityTypeSpec"
 						scrollHeight="400px"
@@ -463,7 +454,7 @@ const getSeats = (shipIndex: number) => {
 				<div>
 					<Dropdown
 						v-model="newAbilityLevel"
-						:options="abilitylevelOptions"
+						:options="abilityLevels"
 						placeholder="Select Level"
 						:disabled="!newAbilityName"
 						scrollHeight="400px"
