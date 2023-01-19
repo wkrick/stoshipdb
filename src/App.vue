@@ -163,13 +163,13 @@ watch(newAttributeOperator, (selection, prevSelection) => {
 //***********************************************************************//
 
 const abilities = ref<AbilityFilterInterface[]>([])
-const nextAbilityId = ref(1)
+let nextAbilityId = 1
 const allAbilities: any = allAbilitiesJSON
 const abilityTypeSpecs = Object.keys(allAbilities)
 const newAbilityTypeSpec = ref()
-const abilityNames = ref()
+let abilityNames: string[] = []
 const newAbilityName = ref()
-const abilityLevels = ref()
+let abilityLevels: string[] = []
 const newAbilityLevel = ref()
 let newAbilityRank = 0
 
@@ -186,7 +186,7 @@ const typeLookup = new Map([
 
 const addNewAbility = () => {
 	abilities.value.push({
-		id: nextAbilityId.value++,
+		id: nextAbilityId++,
 		typespec: newAbilityTypeSpec.value,
 		name: newAbilityName.value,
 		level: newAbilityLevel.value,
@@ -200,22 +200,22 @@ const addNewAbility = () => {
 }
 
 watch(newAbilityTypeSpec, () => {
-	abilityNames.value = undefined
+	abilityNames = []
 	newAbilityName.value = undefined
-	abilityLevels.value = undefined
+	abilityLevels = []
 	newAbilityLevel.value = undefined
 	if (newAbilityTypeSpec.value) {
-		abilityNames.value = Object.keys(allAbilities[newAbilityTypeSpec.value])
+		abilityNames = Object.keys(allAbilities[newAbilityTypeSpec.value])
 	}
 })
 
 watch(newAbilityName, () => {
-	abilityLevels.value = undefined
+	abilityLevels = []
 	newAbilityLevel.value = undefined
 	if (newAbilityName.value) {
 		const opts = Object.keys(allAbilities[newAbilityTypeSpec.value][newAbilityName.value])
 		opts.push("Any")
-		abilityLevels.value = opts 
+		abilityLevels = opts 
 	}
 })
 
