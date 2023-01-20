@@ -177,6 +177,11 @@ $csvData = Import-Csv -Path "$PSScriptRoot/temp" -Header $header | ForEach-Objec
     $_.mp = $_.mp.replace('WB','Warbird')
     $_.mp = $_.mp.replace('Dread ', 'Dreadnought ') # trailing space is needed
 
+    # attempt to correct any missing URLs
+    if (-not ($_.url -like "https*")) {
+        $_.url = 'https://sto.fandom.com/wiki/' + [System.Web.HttpUtility]::UrlEncode($_.nm.replace(' ', '_'))
+    }
+
     # correct the Science Destroyers to actually be science mode
     if ($_.nm -eq 'Titan Science Destroyer') {
         $_.nm = $_.nm + ' (Science Mode)'
@@ -285,7 +290,7 @@ $count = 0
 $rowseparator = ''
 
 $list_null_to_none = "rel", "bun", "str", "fac", "fam", "trt", "trs"
-$list_null_to_zero = "mxt", "mxe", "mxs", "mxu", "mxi", "mxc", "mxp", "mxo", "mxm", "bw", "bs", "be","ba", "hng", "cu", "y", "m"
+$list_null_to_zero = "mxt", "mxe", "mxs", "mxu", "mxi", "mxc", "mxp", "mxo", "mxm", "bw", "bs", "be","ba", "hng", "cu", "y", "m", "hmd", "smd", "trn", "imp", "inr"
 $list_null_to_no = "dhc", "exp", "flt", "ccw", "ccs", "cce", "cct", "sd", "st", "sa", "tm", "sng",  "clk", "flk"
 
 # helper function to convert seat type/spec into a numeric code
@@ -319,7 +324,7 @@ $csvData | Foreach-Object {
             $name = $property.Name
             $value = $property.Value
 
-            if ($value -match "^[+-]?((\d+(\.\d*)?)|(\.\d+))$") {
+            if ($value -match "^[+-]?([0-9]*[.])?[0-9]+$") {
                 $shipdata += "$colseparator`"$name`"`:$value"
             } elseif ($value -eq "") {
                 if ($list_null_to_none -contains $name) {
