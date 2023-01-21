@@ -58,7 +58,8 @@ interface ShipInterface {
     trt: string,
     trs: string,
     url: string,
-    tab: number
+    tab: number,
+    seat: string
 }
 
 export default ShipInterface

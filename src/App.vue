@@ -297,29 +297,6 @@ const rows = computed(() => {  // All the rows to be shown
 	return ships
 })
 
-// get the seats for a specific ship as a string for display in the table
-const getSeats = (shipIndex: number) => {
-
-	const seats = allSeats[shipIndex].seats
-	const typeMap = new Map([
-		[0, "Uni"],[1, "Tac"],[2, "Eng"],[3, "Sci"],
-		[4, "Int"],[5, "Cmd"],[6, "Pil"],[7, "Tmp"],[8, "MW"]
-	])
-
-	let result = ""
-	let separator = ""
-	seats.forEach( s => {
-		if (s.spec === AbilityType.UNDEFINED) {
-			result += `${separator}${s.rank} ${typeMap.get(s.type)}`
-		} else {
-			result += `${separator}${s.rank} ${typeMap.get(s.type)}/${typeMap.get(s.spec)}`
-		}
-		separator = ", "
-	})
-
-	return result
-}
-
 </script>
 
 <template>
@@ -530,11 +507,7 @@ const getSeats = (shipIndex: number) => {
 					/>
 				</template>
 			</Column>
-			<Column header="Seating" :sortable="false">
-				<template #body="slotProps">
-					{{ getSeats(slotProps.data.id) }}
-				</template>
-			</Column>
+			<Column field="seat" header="Seating" :sortable="false"></Column>
 			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
 		</DataTable>
 	</fieldset>
