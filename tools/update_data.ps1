@@ -313,16 +313,18 @@ $csvData | Foreach-Object {
     $tcn = 0
     $tab = 0
     $colseparator = ''
+    $seat = ''
+    $seatseparator = ''
 
     # build the row for each ship
     $shipdata += "$rowseparator$return    {`"id`"`:$count,"
 
     foreach ($property in $_.PSObject.Properties)
     {
-        if (-not (($property.Name -like 'skip*') -or ($property.Name -like 'boff*'))) {
+        $name = $property.Name
+        $value = $property.Value
 
-            $name = $property.Name
-            $value = $property.Value
+        if (-not (($name -like 'skip*') -or ($name -like 'boff*'))) {
 
             if ($value -match "^[+-]?([0-9]*[.])?[0-9]+$") {
                 $shipdata += "$colseparator`"$name`"`:$value"
@@ -354,15 +356,33 @@ $csvData | Foreach-Object {
 
         }
 
-        if ($property.Name -like 'boff*rank') {
-            $tab += $property.Value
+        if ($name -like 'boff*rank') {
+            $tab += $value
+
+            if ($value) {
+                $seat += "$seatseparator$value"
+                $seatseparator = ', '
+            }
+        }
+        if ($name -like 'boff*type') {
+            if ($value) {
+                $seat += " $value"
+            }
+        }
+        if ($name -like 'boff*spec') {
+            if ($value) {
+                $seat += "/$value"
+            }
         }
         
     }
     # append total abilities to end of data
-    $shipdata += "$colseparator`"tab`"`:$tab}"
-    $tab = 0
+    $shipdata += "$colseparator`"tab`"`:$tab"
 
+    # append a string representation of the seating
+    $shipdata += "$colseparator`"seat`"`:`"$seat`""
+
+    $shipdata += '}'
 
     # dump seat data
     $seatdata += "$rowseparator$return    {`"id`"`:$count,`"seats`"`:["
