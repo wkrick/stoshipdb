@@ -20,7 +20,6 @@ import allAbilitiesJSON from './assets/abilitydata.json'
 
 const allShips = allShipsJSON as ShipInterface[]
 const allSeats = allSeatsJSON as ShipSeatsInterface[]
-const allAttributes = allAttributesJSON as ShipAttributeInterface[]
 
 const worker = new Worker(new URL('./workers/worker.ts', import.meta.url))
 
@@ -45,10 +44,13 @@ const isLoading = ref(false)
 //***********************************************************************//
 
 const attributes = ref<AttributeFilterInterface[]>([])
-const nextAttributeId = ref(1)
+let nextAttributeId = 1
+const allAttributes = allAttributesJSON as ShipAttributeInterface[]
 const newAttributeName = ref()
-const newAttributeKey = ref()
+let newAttributeKey = ""
+let attributeOperators: string[] = ["=", "!="]
 const newAttributeOperator = ref("=")
+let attributeValues: string[]
 const newAttributeValue = ref()
 
 const addNewAttribute = () => {
@@ -71,7 +73,7 @@ const addNewAttribute = () => {
 	//        if greater-than-equals - remove any =, !=
 
 	// check if we already have a filter for this attribute/operator combination
-	var matchingAttribute = attributes.value.find(a => a.key === newAttributeKey.value && a.operator === newAttributeOperator.value)
+	var matchingAttribute = attributes.value.find(a => a.key === newAttributeKey && a.operator === newAttributeOperator.value)
 	if (matchingAttribute) {
 
 		// if operator is equals or not equals merge it.
@@ -84,9 +86,9 @@ const addNewAttribute = () => {
 
 	} else {
 		attributes.value.push({
-			id: nextAttributeId.value++,
+			id: nextAttributeId++,
 			name: newAttributeName.value,
-			key: newAttributeKey.value,
+			key: newAttributeKey as keyof ShipInterface,
 			operator: newAttributeOperator.value,
 			value: value
 		})
@@ -124,37 +126,25 @@ const getOpts = (key: keyof ShipInterface) => {
 	return opts
 }
 
-const attributeNameOptions = computed(() => {
-	return [...new Set(allAttributes.map(a => a.label))]
-})
-
-const attributeOperatorOptions = computed(() => {
-	if (attributeValueOptions.value[0] && isNumeric(attributeValueOptions.value[0]) ) {
-		return ["=", "!=", "<=", ">="]
-	} else {
-		return ["=", "!="]
-	}
-})
-
-const attributeValueOptions = computed(() => {
-	if (!newAttributeName.value) {
-		return []
-	}
-	return getOpts(newAttributeKey.value)
-})
-
-watch(newAttributeName, (selection, prevSelection) => {
-	// update the key whenever the name changes
-	if (selection)  {
-		newAttributeKey.value = allAttributes.filter(a => a.label === selection)[0].key
-	} else {
-		newAttributeKey.value = undefined
-	}
+watch(newAttributeName, () => {
+	newAttributeKey = ""
+	attributeOperators = ["=", "!="]
 	newAttributeOperator.value = "="
+	attributeValues = []
 	newAttributeValue.value = undefined
+	if (newAttributeName.value) {
+		// update the key
+		newAttributeKey = allAttributes.filter(a => a.label === newAttributeName.value)[0].key
+		// update the list of values
+		attributeValues = getOpts(newAttributeKey as keyof ShipInterface)
+		// update the operators if values are numeric
+		if (isNumeric(attributeValues[0])) {
+			attributeOperators = ["=", "!=", "<=", ">="]
+		}
+	}
 })
 
-watch(newAttributeOperator, (selection, prevSelection) => {
+watch(newAttributeOperator, () => {
 	newAttributeValue.value = undefined
 })
 
@@ -260,29 +250,29 @@ const abilityString = (id: number) => {
 
 const columns = ref<ColumnFilterInterface[]>([])
 const newColumnNames = ref<string[]>([])
-const nextColumnId = ref(1)
+let nextColumnId = 1
 
 const addNewColumn = () => {
-	newColumnNames.value.forEach(n => {
+	// make a deep copy of the list of columns
+	let cols: ColumnFilterInterface[] = JSON.parse(JSON.stringify(columns.value))
 
+	// loop over the new columns and add any new ones we find
+	newColumnNames.value.forEach(n => {
 		// check for duplicates
-		let result = columns.value.filter(c => c.label === n)
+		let result = cols.filter(c => c.label === n)
 		if (result.length === 0) {
 			// look up key
 			let key = allAttributes.filter(a => a.label === n)[0].key
-			columns.value.push({
-				id: nextColumnId.value++,
+			cols.push({
+				id: nextColumnId++,
 				label: n,
 				key: key
 			})
 		}
 	})
+	columns.value = cols
 	newColumnNames.value = []
 }
-
-const columnNameOptions = computed(() => {
-	return allAttributes.map(a => a.label)
-})
 
 const rows = computed(() => {  // All the rows to be shown
 
@@ -372,7 +362,9 @@ const getSeats = (shipIndex: number) => {
 				<div>
 					<Dropdown
 						v-model="newAttributeName"
-						:options="attributeNameOptions"
+						:options="allAttributes"
+						optionLabel="label"
+						optionValue="label"
 						placeholder="Select Attribute"
 						scrollHeight="400px"
 					/>
@@ -380,7 +372,7 @@ const getSeats = (shipIndex: number) => {
 				<div>
 					<Dropdown
 						v-model="newAttributeOperator"
-						:options="attributeOperatorOptions"
+						:options="attributeOperators"
 						:disabled="!newAttributeName"
 						scrollHeight="400px"
 					/>
@@ -389,7 +381,7 @@ const getSeats = (shipIndex: number) => {
 					<template v-if="newAttributeOperator==='='||newAttributeOperator==='!='">
 						<MultiSelect
 							v-model="newAttributeValue"
-							:options="attributeValueOptions"
+							:options="attributeValues"
 							placeholder="Select Value"
 							:disabled="!newAttributeName"
 							scrollHeight="400px"
@@ -398,7 +390,7 @@ const getSeats = (shipIndex: number) => {
 					<template v-else>
 						<Dropdown
 							v-model="newAttributeValue"
-							:options="attributeValueOptions"
+							:options="attributeValues"
 							placeholder="Select Value"
 							:disabled="!newAttributeName"
 							scrollHeight="400px"
@@ -490,7 +482,9 @@ const getSeats = (shipIndex: number) => {
 				<div>
 					<MultiSelect
 						v-model="newColumnNames"
-						:options="columnNameOptions"
+						:options="allAttributes"
+						optionLabel="label"
+						optionValue="label"
 						placeholder="Select Attribute"
 						scrollHeight="400px"
 					/>
