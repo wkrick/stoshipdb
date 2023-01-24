@@ -6,7 +6,8 @@ interface AbilityFilterInterface {
     name: string,
     level: string,
     rank: number,
-    typeorspec: AbilityType
+    typeorspec: AbilityType,
+    displayString: string
 }
 
 export default AbilityFilterInterface

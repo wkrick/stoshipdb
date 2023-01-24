@@ -175,13 +175,22 @@ const typeLookup = new Map([
 ])
 
 const addNewAbility = () => {
+	// format the ability as a string for display in a chip later
+	let displayString = `${newAbilityTypeSpec.value} - ${newAbilityName.value}`
+	if (newAbilityRank > 4) {
+		displayString += ` (Any)`
+	} else {
+		displayString += ` ${newAbilityLevel.value} (${newAbilityRank})` 
+	}
+
 	abilities.value.push({
 		id: nextAbilityId++,
 		typespec: newAbilityTypeSpec.value,
 		name: newAbilityName.value,
 		level: newAbilityLevel.value,
 		rank: newAbilityRank,
-		typeorspec: typeLookup.get(newAbilityTypeSpec.value) as AbilityType
+		typeorspec: typeLookup.get(newAbilityTypeSpec.value) as AbilityType,
+		displayString: displayString
 	})
 	newAbilityTypeSpec.value = undefined
 	newAbilityName.value = undefined
@@ -231,18 +240,6 @@ watch(abilities, () => {
 	isLoading.value = true
 	worker.postMessage( JSON.parse(JSON.stringify(abilities.value)) )
 },{ deep: true })
-
-// format the ability as a string for display in a chip
-const abilityString = (id: number) => {
-	let ability = abilities.value[id]
-	let string = `${ability.typespec} - ${ability.name}`
-	if (ability.rank > 4) {
-		string += ` (Any)`
-	} else {
-		string += ` ${ability.level} (${ability.rank})` 
-	}
-	return string
-}
 
 //***********************************************************************//
 // Columns
@@ -440,10 +437,11 @@ const rows = computed(() => {  // All the rows to be shown
 				<Chip
 					v-for="(ability, index) in abilities"
 					class="mr-2 mb-2"
+					:label="ability.displayString"
 					:key="ability.id"
 					removable
 					@remove="abilities.splice(index, 1)"
-				>{{ abilityString(index) }}</Chip>
+				/>
 				</div>
 			</div>
 
