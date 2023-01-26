@@ -1,25 +1,30 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import AbilityFilterInterface from './types/AbilityFilter.interface'
+import AttributePicker from './components/AttributePicker.vue'
 import AttributeFilterInterface from './types/AttributeFilter.interface'
+import AttributePickerInterface from './types/AttributePicker.interface'
+import AbilityPicker from './components/AbilityPicker.vue'
+import AbilityFilterInterface from './types/AbilityFilter.interface'
+import AbilityPickerInterface from './types/AbilityPicker.interface'
+import ColumnPicker from './components/ColumnPicker.vue'
 import ColumnFilterInterface from './types/ColumnFilter.interface'
+
 import ShipInterface from './types/Ship.interface'
 import ShipAttributeInterface from './types/ShipAttribute.interface'
-import ShipSeatsInterface from './types/ShipSeats.interface'
 import AbilityType from './types/AbilityType.enum'
 
 // data source: https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing
 // created by Reddit user u/Fleffle
-import lastUpdated from './assets/lastupdated.json'
 import allShipsJSON from './assets/shipdata.json'
-import allSeatsJSON from './assets/seatdata.json'
 import allAttributesJSON from './assets/attributedata.json'
+import lastUpdated from './assets/lastupdated.json'
 
 // data source: https://sto.fandom.com/wiki/Bridge_officer_and_kit_abilities
 import allAbilitiesJSON from './assets/abilitydata.json'
 
 const allShips = allShipsJSON as ShipInterface[]
-const allSeats = allSeatsJSON as ShipSeatsInterface[]
+const allAttributes = allAttributesJSON as ShipAttributeInterface[]
+const allAbilities: any = allAbilitiesJSON
 
 const worker = new Worker(new URL('./workers/worker.ts', import.meta.url))
 
@@ -45,22 +50,20 @@ const isLoading = ref(false)
 
 const attributes = ref<AttributeFilterInterface[]>([])
 let nextAttributeId = 1
-const allAttributes = allAttributesJSON as ShipAttributeInterface[]
-const newAttributeName = ref()
-let newAttributeKey = ""
-let attributeOperators: string[] = ["=", "!="]
-const newAttributeOperator = ref("=")
-let attributeValues: string[]
-const newAttributeValue = ref()
 
-const addNewAttribute = () => {
+const addAttribute = (a: AttributePickerInterface) => {
 
-	let value: string[] = []
-	if (!Array.isArray(newAttributeValue.value)) {
-		value = [newAttributeValue.value]
+	const {name, key, operator, value} = a
+
+	let values: string[] = []
+	if (!Array.isArray(value)) {
+		values = [value]
 	} else {
-		value = newAttributeValue.value
+		values = value
 	}
+
+	// format the attribute as a string for display in a chip later
+	let displayString = `${name} ${operator} ${values.join(', ')}`
 
 	// TODO:
 	// check if we already have a filter on this key
@@ -73,80 +76,30 @@ const addNewAttribute = () => {
 	//        if greater-than-equals - remove any =, !=
 
 	// check if we already have a filter for this attribute/operator combination
-	var matchingAttribute = attributes.value.find(a => a.key === newAttributeKey && a.operator === newAttributeOperator.value)
-	if (matchingAttribute) {
+	var match = attributes.value.find(a => a.key === key && a.operator === operator)
+	if (match) {
 
 		// if operator is equals or not equals merge it.
 		// if less-than equals or greater-than equals replace it.
-		if (newAttributeOperator.value === "=" || newAttributeOperator.value === "!=") {
-			matchingAttribute.value = [...new Set([...matchingAttribute.value ,...value])].sort()
-		} else if (newAttributeOperator.value === "<=" || newAttributeOperator.value === ">=") {
-			matchingAttribute.value = value
+		if (operator === "=" || operator === "!=") {
+			match.value = [...new Set([...match.value ,...values])].sort()
+		} else if (operator === "<=" || operator === ">=") {
+			match.value = values
 		}
+
+		match.displayString = `${match.name} ${match.operator} ${match.value.join(', ')}`
 
 	} else {
 		attributes.value.push({
 			id: nextAttributeId++,
-			name: newAttributeName.value,
-			key: newAttributeKey as keyof ShipInterface,
-			operator: newAttributeOperator.value,
-			value: value
+			name: name,
+			key: key,
+			operator: operator,
+			value: values,
+			displayString: displayString
 		})
 	}
-
-	newAttributeName.value = undefined
-	newAttributeOperator.value = "="
-	newAttributeValue.value = undefined
 }
-
-const isNumeric = (s: string) => {
-	// match numbers:  1, .1, 1.1, etc... with optional positive/negative prefix
-	// Note: does not handle exponents/NaN/Inf
-	// source: https://stackoverflow.com/questions/12643009/regular-expression-for-floating-point-numbers
-	return /^[+-]?([0-9]*[.])?[0-9]+$/.test(s)
-}
-
-const getOpts = (key: keyof ShipInterface) => {
-	// PrimeVue handles "0" strangely when the options are numbers
-	// so make sure result is always an array of strings
-	// TODO: revisit this later
-
-	let values = [...new Set(allShips.map(item => item[key]))]
-	let opts: string[]
-
-	// if the option values are numbers, sort them as numbers, then convert to strings.  Otherwise just sort.
-	if (isNumeric(String(values[0]))) {
-		const temp = values as number[]
-		opts = temp.sort((a, b) => a - b).map(String)
-	} else {
-		const temp = values as string[]
-		opts = temp.sort()
-	}
-		
-	return opts
-}
-
-watch(newAttributeName, () => {
-	newAttributeKey = ""
-	attributeOperators = ["=", "!="]
-	newAttributeOperator.value = "="
-	attributeValues = []
-	newAttributeValue.value = undefined
-	if (newAttributeName.value) {
-		// update the key
-		newAttributeKey = allAttributes.filter(a => a.label === newAttributeName.value)[0].key
-		// update the list of values
-		attributeValues = getOpts(newAttributeKey as keyof ShipInterface)
-		// update the operators if values are numeric
-		if (isNumeric(attributeValues[0])) {
-			attributeOperators = ["=", "!=", "<=", ">="]
-		}
-	}
-})
-
-watch(newAttributeOperator, () => {
-	newAttributeValue.value = undefined
-})
 
 //***********************************************************************//
 // ABILITIES
@@ -154,15 +107,6 @@ watch(newAttributeOperator, () => {
 
 const abilities = ref<AbilityFilterInterface[]>([])
 let nextAbilityId = 1
-const allAbilities: any = allAbilitiesJSON
-const abilityTypeSpecs = Object.keys(allAbilities)
-const newAbilityTypeSpec = ref()
-let abilityNames: string[] = []
-const newAbilityName = ref()
-let abilityLevels: string[] = []
-const newAbilityLevel = ref()
-let newAbilityRank = 0
-
 const typeLookup = new Map([
 	['Tactical', AbilityType.TAC],
 	['Engineering', AbilityType.ENG],
@@ -174,66 +118,23 @@ const typeLookup = new Map([
 	['Miracle Worker', AbilityType.MWR]
 ])
 
-const addNewAbility = () => {
+const addNewAbility = (a: AbilityPickerInterface) => {
+
+	const { typespec, name, level, rank } = a
+
 	// format the ability as a string for display in a chip later
-	let displayString = `${newAbilityTypeSpec.value} - ${newAbilityName.value}`
-	if (newAbilityRank > 4) {
-		displayString += ` (Any)`
-	} else {
-		displayString += ` ${newAbilityLevel.value} (${newAbilityRank})` 
-	}
+	let displayString = `${typespec} - ${name} ${ rank > 4 ? `(Any)` : `${level} (${rank})`}`
 
 	abilities.value.push({
 		id: nextAbilityId++,
-		typespec: newAbilityTypeSpec.value,
-		name: newAbilityName.value,
-		level: newAbilityLevel.value,
-		rank: newAbilityRank,
-		typeorspec: typeLookup.get(newAbilityTypeSpec.value) as AbilityType,
+		typespec: typespec,
+		name: name,
+		level: level,
+		rank: rank,
+		typeorspec: typeLookup.get(typespec) as AbilityType,
 		displayString: displayString
 	})
-	newAbilityTypeSpec.value = undefined
-	newAbilityName.value = undefined
-	newAbilityLevel.value = undefined
-	newAbilityRank = 0
 }
-
-watch(newAbilityTypeSpec, () => {
-	abilityNames = []
-	newAbilityName.value = undefined
-	abilityLevels = []
-	newAbilityLevel.value = undefined
-	if (newAbilityTypeSpec.value) {
-		abilityNames = Object.keys(allAbilities[newAbilityTypeSpec.value])
-	}
-})
-
-watch(newAbilityName, () => {
-	abilityLevels = []
-	newAbilityLevel.value = undefined
-	if (newAbilityName.value) {
-		const opts = Object.keys(allAbilities[newAbilityTypeSpec.value][newAbilityName.value])
-		opts.push("Any")
-		abilityLevels = opts 
-	}
-})
-
-watch(newAbilityLevel, () => {
-	newAbilityRank = 0
-	if (newAbilityLevel.value) {
-		if (newAbilityLevel.value !== "Any") {
-			newAbilityRank = allAbilities[newAbilityTypeSpec.value][newAbilityName.value][newAbilityLevel.value].rank
-		} else {
-			// for an "Any" ability, encode the possible ranks for later expansion
-			const firstRank = allAbilities[newAbilityTypeSpec.value][newAbilityName.value]["I"].rank
-			switch (firstRank) {
-				case 1: newAbilityRank = 123; break
-				case 2: newAbilityRank = 234; break
-				case 3: newAbilityRank = 34; break
-			}
-		}
-	}
-})
 
 // when abilities change, have the web worker re-filter the list of ships
 watch(abilities, () => {
@@ -246,29 +147,28 @@ watch(abilities, () => {
 //***********************************************************************//
 
 const columns = ref<ColumnFilterInterface[]>([])
-const newColumnNames = ref<string[]>([])
 let nextColumnId = 1
 
-const addNewColumn = () => {
+const addNewColumn = (keys: Array<keyof ShipInterface>) => {
+
 	// make a deep copy of the list of columns
 	let cols: ColumnFilterInterface[] = JSON.parse(JSON.stringify(columns.value))
 
-	// loop over the new columns and add any new ones we find
-	newColumnNames.value.forEach(n => {
+	// loop over the column keys and add any new ones we find
+	keys.forEach(key => {
 		// check for duplicates
-		let result = cols.filter(c => c.label === n)
+		let result = cols.filter(c => c.key === key)
 		if (result.length === 0) {
-			// look up key
-			let key = allAttributes.filter(a => a.label === n)[0].key
+			// look up column name
+			let label = allAttributes.filter(a => a.key === key)[0].label
 			cols.push({
 				id: nextColumnId++,
-				label: n,
+				label: label,
 				key: key
 			})
 		}
 	})
 	columns.value = cols
-	newColumnNames.value = []
 }
 
 const rows = computed(() => {  // All the rows to be shown
@@ -332,61 +232,18 @@ const rows = computed(() => {  // All the rows to be shown
 		<fieldset class="fieldset">
 			<legend class="legend">Ship Attributes</legend>
 			<p>Choose the attributes that you would like your ship to have.</p>
-			<div>
-				<div>
-					<Dropdown
-						v-model="newAttributeName"
-						:options="allAttributes"
-						optionLabel="label"
-						optionValue="label"
-						placeholder="Select Attribute"
-						scrollHeight="400px"
-					/>
-				</div>
-				<div>
-					<Dropdown
-						v-model="newAttributeOperator"
-						:options="attributeOperators"
-						:disabled="!newAttributeName"
-						scrollHeight="400px"
-					/>
-				</div>
-				<div>
-					<template v-if="newAttributeOperator==='='||newAttributeOperator==='!='">
-						<MultiSelect
-							v-model="newAttributeValue"
-							:options="attributeValues"
-							placeholder="Select Value"
-							:disabled="!newAttributeName"
-							scrollHeight="400px"
-						/>
-					</template>
-					<template v-else>
-						<Dropdown
-							v-model="newAttributeValue"
-							:options="attributeValues"
-							placeholder="Select Value"
-							:disabled="!newAttributeName"
-							scrollHeight="400px"
-						/>
-					</template>
-					<Button
-						@click="addNewAttribute()"
-						:disabled="!newAttributeValue"
-						icon="pi pi-plus-circle"
-					/>
-				</div>
-			</div>
+			<AttributePicker :all-ships="allShips" :all-attributes="allAttributes" @add-attribute="addAttribute" />
 			<div v-show="attributes.length">
 				<hr>
 				<div>
 					<Chip
 						v-for="(attribute, index) in attributes"
 						class="mr-2 mb-2"
+						:label="attribute.displayString"
 						:key="attribute.id"
 						removable
 						@remove="attributes.splice(index, 1)"
-					>{{ attribute.name + ' ' + attribute.operator + ' ' + attribute.value?.join(', ') }}</Chip>
+					/>
 				</div>
 			</div>
 
@@ -399,38 +256,7 @@ const rows = computed(() => {  // All the rows to be shown
 		<fieldset class="fieldset">
 			<legend class="legend">Bridge Officer Abilities</legend>
 			<p>Choose which bridge officer abilities you would like to use on your ship.</p>
-			<div>
-				<div>
-					<Dropdown
-						v-model="newAbilityTypeSpec"
-						:options="abilityTypeSpecs"
-						placeholder="Select Type"
-						scrollHeight="400px"
-					/>
-				</div>
-				<div>
-					<Dropdown
-						v-model="newAbilityName"
-						:options="abilityNames"
-						placeholder="Select Name"
-						:disabled="!newAbilityTypeSpec"
-						scrollHeight="400px"
-					/>
-				</div>
-				<div>
-					<Dropdown
-						v-model="newAbilityLevel"
-						:options="abilityLevels"
-						placeholder="Select Level"
-						:disabled="!newAbilityName"
-						scrollHeight="400px"
-					/>
-					<Button @click="addNewAbility()"
-						:disabled="!newAbilityLevel"
-						icon="pi pi-plus-circle"
-					/>
-				</div>
-			</div>
+			<AbilityPicker :all-abilities="allAbilities" @add-ability="addNewAbility" />
 			<div v-show="abilities.length">
 				<hr>
 				<div>
@@ -453,34 +279,18 @@ const rows = computed(() => {  // All the rows to be shown
 		<fieldset class="fieldset">
 			<legend class="legend">Additional Result Details</legend>
 			<p>Choose additional information about each ship to display in the results.</p>
-			<div>
-				<div>
-					<MultiSelect
-						v-model="newColumnNames"
-						:options="allAttributes"
-						optionLabel="label"
-						optionValue="label"
-						placeholder="Select Attribute"
-						scrollHeight="400px"
-					/>
-					<Button
-						@click="addNewColumn()"
-						:disabled="!newColumnNames"
-						icon="pi pi-plus-circle"
-					/>
-				</div>
-
+			<ColumnPicker :all-attributes="allAttributes" @add-columns="addNewColumn" />
 				<div v-show="columns.length">
 					<hr>
 					<div>
 					<Chip
 						v-for="(column, index) in columns"
 						class="mr-2 mb-2"
+						:label="column.label"
 						:key="column.id"
 						removable
 						@remove="columns.splice(index, 1)"
-					>{{ column.label }}</Chip>
-					</div>
+					/>
 				</div>
 			</div>
 		</fieldset>
@@ -516,5 +326,3 @@ const rows = computed(() => {  // All the rows to be shown
 <style>
 
 </style>
-
-

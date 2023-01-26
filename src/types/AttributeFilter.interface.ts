@@ -5,7 +5,8 @@ interface AttributeFilterInterface {
     name: string,
     key: keyof ShipInterface,
     operator: string,
-    value: Array<string>
+    value: Array<string>,
+    displayString: string
 }
 
 export default AttributeFilterInterface

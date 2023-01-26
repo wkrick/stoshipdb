@@ -9,12 +9,12 @@ import Button from 'primevue/button'
 import Chip from 'primevue/chip'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import BlockUI from 'primevue/blockui';
-import ProgressSpinner from 'primevue/progressspinner';
+import BlockUI from 'primevue/blockui'
+import ProgressSpinner from 'primevue/progressspinner'
 
 import"primevue/resources/themes/nova/theme.css"
 import "primevue/resources/primevue.min.css"
-//import "primeflex/primeflex.css" // not currently using this
+import "primeflex/primeflex.css"
 import "primeicons/primeicons.css"
 
 import './assets/global.css'
