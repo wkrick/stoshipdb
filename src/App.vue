@@ -310,13 +310,25 @@ const rows = computed(() => {  // All the rows to be shown
 				<template #body="slotProps">
 					<Button
 						:label=slotProps.data.nm
-						class="p-button-link p-link selectable"
+						class="p-button-link p-link selectable table-ship-name"
 						@click="openURL(slotProps.data.url)"
 					/>
 				</template>
 			</Column>
-			<Column field="seat" header="Seats" :sortable="false"></Column>
-			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
+			<Column field="seat" header="Seats" :sortable="false">
+				<template #body="slotProps">
+					<div class="table-other">
+						<span>{{ slotProps.data.seat }}</span>
+					</div>
+				</template>
+			</Column>
+			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true">
+				<template #body="slotProps">
+					<div class="table-other">
+						<span>{{ slotProps.data[col.key] }}</span>
+					</div>
+				</template>
+			</Column>
 		</DataTable>
 	</fieldset>
 

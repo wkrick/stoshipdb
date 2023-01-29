@@ -28,3 +28,15 @@ html {
 	height:100% !important;
 	z-index:100;
 }
+
+ /* makes text align to right side on mobile which looks better */
+@media screen and (max-width: 769px) {
+	.table-ship-name {
+		text-align: right;
+	}
+	
+	.table-other {
+		display:inline-flex;
+		text-align: right;
+	}
+}

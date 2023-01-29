@@ -51,5 +51,5 @@
     { "label": "Singularity", "key": "sng"},
     { "label": "Cloak", "key": "clk"},
     { "label": "Flanking", "key": "flk" },
-    { "label": "Starhip Trait", "key": "trt" }
+    { "label": "Trait", "key": "trt" }
 ]
