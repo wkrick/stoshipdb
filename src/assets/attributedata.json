@@ -15,6 +15,7 @@
     { "label": "Max Pilot Seat", "key": "mxp"},
     { "label": "Max Temporal Seat", "key": "mxo"},
     { "label": "Max Miracle Worker Seat", "key": "mxm"},
+    { "label": "Total Seats", "key": "ts"},
     { "label": "Hull", "key": "hul"},
     { "label": "Hull Modifier", "key": "hmd"},
     { "label": "Shield Modifier", "key": "smd"},
