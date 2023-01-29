@@ -306,7 +306,7 @@ const rows = computed(() => {  // All the rows to be shown
 			<template #loading>
 				Loading ship data....
 			</template>
-			<Column field="nm" header="Ship Name" :sortable="true">
+			<Column field="nm" header="Name" :sortable="true">
 				<template #body="slotProps">
 					<Button
 						:label=slotProps.data.nm
@@ -315,7 +315,7 @@ const rows = computed(() => {  // All the rows to be shown
 					/>
 				</template>
 			</Column>
-			<Column field="seat" header="Seating" :sortable="false"></Column>
+			<Column field="seat" header="Seats" :sortable="false"></Column>
 			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true"></Column>
 		</DataTable>
 	</fieldset>
