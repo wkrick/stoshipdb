@@ -20,14 +20,14 @@ const operator = ref("=")
 let values: string[]
 const value = ref()
 
-const isNumeric = (s: string) => {
+function isNumeric(s: string) {
 	// match numbers:  1, .1, 1.1, etc... with optional positive/negative prefix
 	// Note: does not handle exponents/NaN/Inf
 	// source: https://stackoverflow.com/questions/12643009/regular-expression-for-floating-point-numbers
 	return /^[+-]?([0-9]*[.])?[0-9]+$/.test(s)
 }
 
-const getOpts = (key: keyof ShipInterface) => {
+function getOpts(key: keyof ShipInterface) {
 	// PrimeVue handles "0" strangely when the options are numbers
 	// so make sure result is always an array of strings
 	// TODO: revisit this later

@@ -19,7 +19,7 @@ self.addEventListener('message', e => {
 const allShips = allShipsJSON as ShipInterface[]
 const allSeats = allSeatsJSON as ShipSeatsInterface[]
 
-const filterShips = (abilities: AbilityFilterInterface[] ) => {
+function filterShips(abilities: AbilityFilterInterface[]) {
 	
 	let ships = allShips 
 
@@ -152,7 +152,7 @@ const filterShips = (abilities: AbilityFilterInterface[] ) => {
 }
 
 // the rank of an ability could be "any" so we need to generate all of the possible permutations
-const getAbilityPermutations = (abilities: AbilityInterface[]) => {
+function getAbilityPermutations(abilities: AbilityInterface[]) {
 
 	let permutations: AbilityInterface[][] = []
 
@@ -191,7 +191,7 @@ const getAbilityPermutations = (abilities: AbilityInterface[]) => {
 }
 
 // the type of a seat can be "Uni" so we need to generate all the possible permutations
-const getSeatPermutations = (seats: SeatInterface[], abilityTypes: AbilityType[]) => {
+function getSeatPermutations(seats: SeatInterface[], abilityTypes: AbilityType[]) {
 
 	let permutations: SeatInterface[][] = []
 
@@ -231,7 +231,7 @@ const getSeatPermutations = (seats: SeatInterface[], abilityTypes: AbilityType[]
 	return permutations
 }
 
-const testShip = (abilities: AbilityInterface[], seats: SeatInterface[]) => {
+function testShip(abilities: AbilityInterface[], seats: SeatInterface[]) {
 
 	// partition the abilities into spec and non-spec
 	const abilitiesSpec: AbilityInterface[] = []
@@ -305,7 +305,7 @@ const testShip = (abilities: AbilityInterface[], seats: SeatInterface[]) => {
 }
 
 // convert an array of user-selected abilities from AbilityFilterInterface to AbilitySlotInterface
-const getAbilitiesFromFilterArray = (abilities: AbilityFilterInterface[]) => {
+function getAbilitiesFromFilterArray(abilities: AbilityFilterInterface[]) {
 
 	const len = abilities.length
 	const copy = new Array<AbilityInterface>(len)
@@ -322,7 +322,7 @@ const getAbilitiesFromFilterArray = (abilities: AbilityFilterInterface[]) => {
 	return copy
 }
 
-const copyAbilityArray = (abilities: AbilityInterface[]) => {
+function copyAbilityArray(abilities: AbilityInterface[]) {
 
 	const len = abilities.length
 	const copy = new Array<AbilityInterface>(len)
@@ -339,7 +339,7 @@ const copyAbilityArray = (abilities: AbilityInterface[]) => {
 	return copy
 }
 
-const copySeatArray = (seats: SeatInterface[]) => {
+function copySeatArray(seats: SeatInterface[]) {
 
 	const len = seats.length
 	const copy = new Array<SeatInterface>(len)

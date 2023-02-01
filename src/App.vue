@@ -35,7 +35,7 @@ worker.addEventListener("message", (e) => {
 	isLoading.value = false
 })
 
-const openURL = (url: string) => {
+function openURL(url: string) {
 	window.open(url)
 }
 
@@ -51,7 +51,7 @@ const isLoading = ref(false)
 const attributes = ref<AttributeFilterInterface[]>([])
 let nextAttributeId = 1
 
-const addAttribute = (a: AttributePickerInterface) => {
+function addAttribute(a: AttributePickerInterface) {
 
 	const {name, key, operator, value} = a
 
@@ -118,7 +118,7 @@ const typeLookup = new Map([
 	['Miracle Worker', AbilityType.MWR]
 ])
 
-const addNewAbility = (a: AbilityPickerInterface) => {
+function addNewAbility(a: AbilityPickerInterface) {
 
 	const { typespec, name, level, rank } = a
 
@@ -149,7 +149,7 @@ watch(abilities, () => {
 const columns = ref<ColumnFilterInterface[]>([])
 let nextColumnId = 1
 
-const addNewColumn = (keys: Array<keyof ShipInterface>) => {
+function addNewColumn(keys: Array<keyof ShipInterface>) {
 
 	// make a deep copy of the list of columns
 	let cols: ColumnFilterInterface[] = JSON.parse(JSON.stringify(columns.value))
