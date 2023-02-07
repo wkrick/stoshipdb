@@ -50,7 +50,7 @@
 "Attack Pattern Beta":{"I":2,"II":3,"III":4},
 "Attack Pattern Delta":{"I":2,"II":3,"III":4},
 "Attack Pattern Omega":{"I":3,"II/III":4},
-"Augment Boarding Party":{"II":2,"III":3},
+"Augment Boarding Party":{"I":1,"II":2,"III":3},
 "Beams: Fire at Will":{"I":1,"II":2,"III":3},
 "Beams: Overload":{"I":1,"II":2,"III":3},
 "Best Served Cold":{"I":1,"II":2,"III":3},
