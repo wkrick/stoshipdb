@@ -30,21 +30,27 @@ watch(name, () => {
 	levels = []
 	level.value = undefined
 	if (name.value) {
-		const opts = Object.keys(props.allAbilities[typeSpec.value][name.value])
-		opts.sort()
-		opts.push("Any")
-		levels = opts
+		const firstRank = props.allAbilities[typeSpec.value][name.value]
+		switch (firstRank) {
+			case 1: 
+			case 2: levels = ["I","II","III","Any"]; break
+			case 3: levels = ["I","II/III","Any"]; break
+		}
 	}
 })
 
 watch(level, () => {
 	rank = 0
 	if (level.value) {
-		if (level.value !== "Any") {
-			rank = props.allAbilities[typeSpec.value][name.value][level.value]
+		const firstRank = props.allAbilities[typeSpec.value][name.value]
+		if (level.value === "I") {
+			rank = firstRank
+		} else if (level.value === "II" || level.value === "II/III") {
+			rank = firstRank + 1
+		} else if (level.value === "III") {
+			rank = firstRank + 2
 		} else {
 			// for an "Any" ability, encode the possible ranks for later expansion
-			const firstRank = props.allAbilities[typeSpec.value][name.value]["I"]
 			switch (firstRank) {
 				case 1: rank = 123; break
 				case 2: rank = 234; break
