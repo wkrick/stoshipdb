@@ -138,8 +138,12 @@ function addNewAbility(a: AbilityPickerInterface) {
 
 // when abilities change, have the web worker re-filter the list of ships
 watch(abilities, () => {
-	isLoading.value = true
-	worker.postMessage( JSON.parse(JSON.stringify(abilities.value)) )
+	if (abilities.value.length === 0) {
+		shipsFilteredByAbilities.value = allShips
+	} else {
+		isLoading.value = true
+		worker.postMessage( JSON.parse(JSON.stringify(abilities.value)) )
+	}
 },{ deep: true })
 
 //***********************************************************************//

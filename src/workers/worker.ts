@@ -1,9 +1,7 @@
 import AbilityFilterInterface from '../types/AbilityFilter.interface'
-import ShipInterface from '../types/Ship.interface'
 import AbilityInterface from '../types/Ability.interface'
 import AbilitySlotInterface from '../types/AbilitySlot.interface'
 import AbilityType from '../types/AbilityType.enum'
-import allShipsJSON from '../assets/shipdata.json'
 import allSeatsJSON from '../assets/seatdata.json'
 
 self.addEventListener('message', e => {
@@ -14,7 +12,7 @@ self.addEventListener('message', e => {
 	self.postMessage(shipIds)
 })
 
-const allShips = allShipsJSON as ShipInterface[]
+//const allShips = allShipsJSON as ShipInterface[]
 const allSeats = allSeatsJSON
 
 // helper to make indexing the seat array values more intuitive
@@ -25,13 +23,6 @@ const Seat = {
 } as const
 
 function filterShips(abilities: AbilityFilterInterface[]) {
-	
-	let ships = allShips 
-
-	if (abilities.length === 0) {
-		// return an array of the ship ids
-		return ships.map(s => s.id)
-	}
 
 	const NONSPECS = [AbilityType.TAC, AbilityType.ENG, AbilityType.SCI]
 	const SPECS = [AbilityType.INT, AbilityType.CMD, AbilityType.PIL, AbilityType.TMP, AbilityType.MWR]
@@ -45,16 +36,9 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 
 	// for each ship, test the corresponding array of seats against the list of abilities
 	const shipIds: number[] = []
-	for (let i = 0; i < ships.length; i++) {
+	for (let i = 0; i < allSeats.length; i++) {
 
-		const ship = ships[i]
-
-		// if the user selected more abilities than this ship can support, then skip it
-		if (abilities.length > ship.tab) {
-			continue
-		}
-
-		const seats = allSeats[ship.id] // seats for this ship
+		const seats = allSeats[i] // seats for this ship
 
 		// if this ship doesn't have the desired specs, we can skip over it
 		const shipSpecs = [...new Set(seats.map(s => s[Seat.spec]))]
@@ -63,16 +47,33 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 			continue
 		}
 
+		let tab = 0
 		// initialize the max seats for each type/spec (including Uni) on this ship
-		const maxSeats = [0, ship.mxt, ship.mxe, ship.mxs, ship.mxi, ship.mxc, ship.mxp, ship.mxo, ship.mxm]
+		const maxSeats = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+		seats.forEach(s => {
+			const [rank, type, spec] = s
+			if (rank > maxSeats[type]) {
+				maxSeats[type] = rank
+			}
+			if (spec && rank > maxSeats[spec]) {
+				maxSeats[spec] = rank
+			}
+			tab += rank
+		})
+
+		// if the user selected more abilities than this ship can support, we can skip this ship
+		if (abilities.length > tab) {
+			continue
+		}
 
 		// if this ship has a universal seat, it could be used as any type requested by user
 		// so overwrite the tac/eng/sci max with the uni max if applicable
-		if (ship.mxu) {
+		const mxu = maxSeats[AbilityType.UNDEFINED]
+		if (mxu) {
 			for (let ii = 0; ii < abilityTypes.length; ii++) {
 				const aType = abilityTypes[ii]
-				if (ship.mxu > maxSeats[aType]) {
-					maxSeats[aType] = ship.mxu
+				if (mxu > maxSeats[aType]) {
+					maxSeats[aType] = mxu
 				}
 			}
 		}
@@ -145,7 +146,7 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 				}
 
 				if (testShip(abilityPermutation, seatPermutation)) {
-					shipIds.push(ship.id)
+					shipIds.push(i)
 					shipmatch = true
 				}
 			}
