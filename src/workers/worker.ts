@@ -1,9 +1,7 @@
 import AbilityFilterInterface from '../types/AbilityFilter.interface'
 import ShipInterface from '../types/Ship.interface'
-import ShipSeatsInterface from '../types/ShipSeats.interface'
 import AbilityInterface from '../types/Ability.interface'
 import AbilitySlotInterface from '../types/AbilitySlot.interface'
-import SeatInterface from '../types/Seat.interface'
 import AbilityType from '../types/AbilityType.enum'
 import allShipsJSON from '../assets/shipdata.json'
 import allSeatsJSON from '../assets/seatdata.json'
@@ -17,7 +15,14 @@ self.addEventListener('message', e => {
 })
 
 const allShips = allShipsJSON as ShipInterface[]
-const allSeats = allSeatsJSON as ShipSeatsInterface[]
+const allSeats = allSeatsJSON
+
+// helper to make indexing the seat array values more intuitive
+const Seat = {
+	rank: 0,
+	type: 1,
+	spec: 2
+} as const
 
 function filterShips(abilities: AbilityFilterInterface[]) {
 	
@@ -49,10 +54,10 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 			continue
 		}
 
-		const seats = allSeats[ship.id].seats // seats for this ship
+		const seats = allSeats[ship.id] // seats for this ship
 
 		// if this ship doesn't have the desired specs, we can skip over it
-		const shipSpecs = [...new Set(seats.map(s => s.spec))]
+		const shipSpecs = [...new Set(seats.map(s => s[Seat.spec]))]
 		const unmatchedSpecs = abilitySpecs.filter( spec => !shipSpecs.includes(spec) )
 		if (unmatchedSpecs.length > 0) {
 			continue
@@ -75,7 +80,7 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 		// gather stats on the slot ranks for this ship
 		const slotRanks = [0,0,0,0,0]
 		for (let ii = 0; ii < seats.length; ii++) {
-			switch (seats[ii].rank) {
+			switch (seats[ii][Seat.rank]) {
 				case 4: slotRanks[4]++
 				case 3: slotRanks[3]++
 				case 2: slotRanks[2]++
@@ -116,7 +121,7 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 				// gather stats on this seat permutation (max ranks of slot type/spec)
 				const maxTypes = [0,0,0,0,0,0,0,0,0]
 				for (let kk = 0; kk < seatPermutation.length; kk++) {
-					const { rank, type, spec } = seatPermutation[kk]
+					const [rank, type, spec] = seatPermutation[kk]
 					if (rank > maxTypes[type]) {
 						maxTypes[type] = rank
 					}
@@ -191,9 +196,9 @@ function getAbilityPermutations(abilities: AbilityInterface[]) {
 }
 
 // the type of a seat can be "Uni" so we need to generate all the possible permutations
-function getSeatPermutations(seats: SeatInterface[], abilityTypes: AbilityType[]) {
+function getSeatPermutations(seats: number[][], abilityTypes: AbilityType[]) {
 
-	let permutations: SeatInterface[][] = []
+	let permutations: number[][][] = []
 
 	// start with a deep copy of original seat array
 	const copy = copySeatArray(seats)
@@ -202,36 +207,36 @@ function getSeatPermutations(seats: SeatInterface[], abilityTypes: AbilityType[]
 	const num = parseInt(abilityTypes.join(''), 10)
 
 	// replace the uni seat types with the new number
-	copy.filter(s => s.type === AbilityType.UNDEFINED).forEach(s => s.type = num)
+	copy.filter(s => s[Seat.type] === AbilityType.UNDEFINED).forEach(s => s[Seat.type] = num)
 
 	permutations.push(copy)
 
 	// filter the list to just arrays of seats that have at least one "Uni" (types over 3 are encoded types)
-	let universalSeats = permutations.filter(array => !!array.find(seat => seat.type > 3))
+	let universalSeats = permutations.filter(array => !!array.find(s => s[Seat.type] > 3))
 
 	while (universalSeats.length > 0) {
 		universalSeats.forEach(array => {
-			const seatIndex = array.findIndex(seat => seat.type > 3)
+			const seatIndex = array.findIndex(s => s[Seat.type] > 3)
 
 			// the value in the type property of "Uni" seats are mashed together type codes
 			// each digit is the seat types of the abilities selected by the user
-			const type = array[seatIndex].type
+			const type = array[seatIndex][Seat.type]
 
 			// update the original array
-			array[seatIndex].type = type % 10
+			array[seatIndex][Seat.type] = type % 10
 
 			// clone the array and use the remaining type digits for the type
 			const arrayCopy = copySeatArray(array)
-			arrayCopy[seatIndex].type = ~~(type / 10)
+			arrayCopy[seatIndex][Seat.type] = ~~(type / 10)
 			permutations.push(arrayCopy)
 		})
-		universalSeats = permutations.filter(array => !!array.find(seat => seat.type > 3))
+		universalSeats = permutations.filter(array => !!array.find(s => s[Seat.type] > 3))
 	}
 
 	return permutations
 }
 
-function testShip(abilities: AbilityInterface[], seats: SeatInterface[]) {
+function testShip(abilities: AbilityInterface[], seats: number[][]) {
 
 	// partition the abilities into spec and non-spec
 	const abilitiesSpec: AbilityInterface[] = []
@@ -249,7 +254,7 @@ function testShip(abilities: AbilityInterface[], seats: SeatInterface[]) {
 	// remove the spec from any spec slot that we definitely don't need	
 	const slots: AbilitySlotInterface[] = []
 	for (let i = 0; i < seats.length; i++) {
-		const { rank, type, spec } = seats[i]
+		const [rank, type, spec] = seats[i]
 		let j = rank
 		while (j) {
 			if (spec !== AbilityType.UNDEFINED && !abilitiesSpec.find(a => a.rank === j && a.typeorspec === spec)) {
@@ -339,20 +344,16 @@ function copyAbilityArray(abilities: AbilityInterface[]) {
 	return copy
 }
 
-function copySeatArray(seats: SeatInterface[]) {
+function copySeatArray(seats: number[][]) {
 
 	const len = seats.length
-	const copy = new Array<SeatInterface>(len)
+	const copy = new Array<number[]>(len)
 	let i = 0
 	while (i < len) {
-		const { rank, type, spec } = seats[i]
-		copy[i] = {
-			rank: rank,
-			type: type,
-			spec: spec
-		}
+		copy[i] = seats[i].slice()
 		i++
 	}
 
 	return copy
 }
+

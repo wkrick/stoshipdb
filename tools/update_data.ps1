@@ -390,18 +390,18 @@ $csvData | Foreach-Object {
 	$shipdata += '}'
 
 	# dump seat data
-	$seatdata += "$rowseparator$return    {`"id`"`:$count,`"seats`"`:["
-	$seatdata += "{`"rank`"`:$($_.boff1rank),`"type`"`:$(seatType $_.boff1type),`"spec`"`:$(seatType $_.boff1spec)}"
-	$seatdata += ",{`"rank`"`:$($_.boff2rank),`"type`"`:$(seatType $_.boff2type),`"spec`"`:$(seatType $_.boff2spec)}"
-	$seatdata += ",{`"rank`"`:$($_.boff3rank),`"type`"`:$(seatType $_.boff3type),`"spec`"`:$(seatType $_.boff3spec)}"
-	$seatdata += ",{`"rank`"`:$($_.boff4rank),`"type`"`:$(seatType $_.boff4type),`"spec`"`:$(seatType $_.boff4spec)}"
+	$seatdata += "$rowseparator$return    ["
+	$seatdata += "[$($_.boff1rank),$(seatType $_.boff1type),$(seatType $_.boff1spec)]"
+	$seatdata += ",[$($_.boff2rank),$(seatType $_.boff2type),$(seatType $_.boff2spec)]"
+	$seatdata += ",[$($_.boff3rank),$(seatType $_.boff3type),$(seatType $_.boff3spec)]"
+	$seatdata += ",[$($_.boff4rank),$(seatType $_.boff4type),$(seatType $_.boff4spec)]"
 	if ($_.boff5rank) {
-		$seatdata += ",{`"rank`"`:$($_.boff5rank),`"type`"`:$(seatType $_.boff5type),`"spec`"`:$(seatType $_.boff5spec)}"
+		$seatdata += ",[$($_.boff5rank),$(seatType $_.boff5type),$(seatType $_.boff5spec)]"
 	}
 	if ($_.boff6rank) {
-		$seatdata += ",{`"rank`"`:$($_.boff6rank),`"type`"`:$(seatType $_.boff6type),`"spec`"`:$(seatType $_.boff6spec)}"
+		$seatdata += ",[$($_.boff6rank),$(seatType $_.boff6type),$(seatType $_.boff6spec)]"
 	}
-	$seatdata += "]}"
+	$seatdata += "]"	
 
 	$rowseparator = ','
 	$count++
