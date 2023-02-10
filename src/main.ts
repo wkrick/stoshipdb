@@ -12,7 +12,7 @@ import Column from 'primevue/column'
 import BlockUI from 'primevue/blockui'
 import ProgressSpinner from 'primevue/progressspinner'
 
-import"primevue/resources/themes/nova/theme.css"
+import "primevue/resources/themes/nano/theme.css"
 import "primevue/resources/primevue.min.css"
 import "primeflex/primeflex.css"
 import "primeicons/primeicons.css"
