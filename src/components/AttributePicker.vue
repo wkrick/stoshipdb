@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import AttributePickerInterface from '../types/AttributePicker.interface'
-import ShipInterface from '../types/Ship.interface'
-import ShipAttributeInterface from '../types/ShipAttribute.interface'
+import AttributeInterface from '../types/Attribute.interface'
 
 const props = defineProps<{
-	allShips: ShipInterface[]
-	allAttributes: ShipAttributeInterface[]
+	allShips: (string | number)[][]
+	allAttributes: AttributeInterface[]
 }>()
 
 const emit = defineEmits<{
@@ -14,7 +13,7 @@ const emit = defineEmits<{
 }>()
 
 const name = ref()
-let key = ""
+const idx = ref()
 let operators: string[] = ["=", "!="]
 const operator = ref("=")
 let values: string[]
@@ -27,12 +26,12 @@ function isNumeric(s: string) {
 	return /^[+-]?([0-9]*[.])?[0-9]+$/.test(s)
 }
 
-function getOpts(key: keyof ShipInterface) {
+function getOpts(idx: number) {
 	// PrimeVue handles "0" strangely when the options are numbers
 	// so make sure result is always an array of strings
 	// TODO: revisit this later
 
-	let values = [...new Set(props.allShips.map(item => item[key]))]
+	let values = [...new Set(props.allShips.map(item => item[idx]))]
 	let opts: string[]
 
 	// if the option values are numbers, sort them as numbers, then convert to strings.  Otherwise just sort.
@@ -48,16 +47,16 @@ function getOpts(key: keyof ShipInterface) {
 }
 
 watch(name, () => {
-	key = ""
+	idx.value = undefined
 	operators = ["=", "!="]
 	operator.value = "="
 	values = []
 	value.value = undefined
 	if (name.value) {
-		// update the key
-		key = props.allAttributes.filter(a => a.label === name.value)[0].key
+		// update the idx
+		idx.value = props.allAttributes.filter(a => a.label === name.value)[0].idx
 		// update the list of values
-		values = getOpts(key as keyof ShipInterface)
+		values = getOpts(idx.value)
 		// update the operators if values are numeric
 		if (isNumeric(values[0])) {
 			operators = ["=", "!=", "<=", ">="]
@@ -111,12 +110,12 @@ watch(operator, () => {
 				/>
 			</template>
 			<Button
-					@click="emit('addAttribute', {
-						name: name,
-						key: key as keyof ShipInterface,
-						operator: operator,
-						value: value
-					}); name = undefined"
+				@click="emit('addAttribute', {
+					name: name,
+					idx: idx,
+					operator: operator,
+					value: value
+				}); name = undefined"
 				:disabled="!value"
 				icon="pi pi-plus-circle"
 			/>

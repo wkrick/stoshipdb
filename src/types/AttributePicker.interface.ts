@@ -1,8 +1,6 @@
-import ShipInterface from "./Ship.interface"
-
 interface AttributePickerInterface {
     name: string,
-    key: keyof ShipInterface,
+    idx: number,
     operator: string,
     value: string | Array<string>
 }

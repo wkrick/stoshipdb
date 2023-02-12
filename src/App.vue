@@ -9,8 +9,7 @@ import AbilityPickerInterface from './types/AbilityPicker.interface'
 import ColumnPicker from './components/ColumnPicker.vue'
 import ColumnFilterInterface from './types/ColumnFilter.interface'
 
-import ShipInterface from './types/Ship.interface'
-import ShipAttributeInterface from './types/ShipAttribute.interface'
+import AttributeInterface from './types/Attribute.interface'
 import AbilityType from './types/AbilityType.enum'
 
 // data source: https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing
@@ -22,15 +21,15 @@ import lastUpdated from './assets/lastupdated.json'
 // data source: https://sto.fandom.com/wiki/Bridge_officer_and_kit_abilities
 import allAbilitiesJSON from './assets/abilitydata.json'
 
-const allShips = allShipsJSON as ShipInterface[]
-const allAttributes = allAttributesJSON as ShipAttributeInterface[]
+const allShips = allShipsJSON
+const allAttributes = allAttributesJSON as AttributeInterface[]
 const allAbilities: any = allAbilitiesJSON
 
 const worker = new Worker(new URL('./workers/worker.ts', import.meta.url))
 
 worker.addEventListener("message", (e) => {
 	const filteredShipIds = e.data as number[]
-	const filteredShips = allShips.filter(ship => filteredShipIds.includes(ship.id))
+	const filteredShips = allShips.filter((ship, index) => filteredShipIds.includes(index))
 	shipsFilteredByAbilities.value = filteredShips
 	isLoading.value = false
 })
@@ -53,7 +52,7 @@ let nextAttributeId = 1
 
 function addAttribute(a: AttributePickerInterface) {
 
-	const {name, key, operator, value} = a
+	const {name, idx, operator, value} = a
 
 	let values: string[] = []
 	if (!Array.isArray(value)) {
@@ -76,7 +75,7 @@ function addAttribute(a: AttributePickerInterface) {
 	//        if greater-than-equals - remove any =, !=
 
 	// check if we already have a filter for this attribute/operator combination
-	var match = attributes.value.find(a => a.key === key && a.operator === operator)
+	var match = attributes.value.find(a => a.idx === idx && a.operator === operator)
 	if (match) {
 
 		// if operator is equals or not equals merge it.
@@ -93,7 +92,7 @@ function addAttribute(a: AttributePickerInterface) {
 		attributes.value.push({
 			id: nextAttributeId++,
 			name: name,
-			key: key,
+			idx: idx,
 			operator: operator,
 			value: values,
 			displayString: displayString
@@ -150,25 +149,29 @@ watch(abilities, () => {
 // Columns
 //***********************************************************************//
 
+const IDCOL = 0
+const NAMECOL = 1
+const URLCOL = 58
+const SEATSCOL = 61
 const columns = ref<ColumnFilterInterface[]>([])
 let nextColumnId = 1
 
-function addNewColumn(keys: Array<keyof ShipInterface>) {
+function addNewColumn(indexes: Array<number>) {
 
 	// make a deep copy of the list of columns
 	let cols: ColumnFilterInterface[] = JSON.parse(JSON.stringify(columns.value))
 
 	// loop over the column keys and add any new ones we find
-	keys.forEach(key => {
+	indexes.forEach(idx => {
 		// check for duplicates
-		let result = cols.filter(c => c.key === key)
+		let result = cols.filter(c => c.idx === idx)
 		if (result.length === 0) {
 			// look up column name
-			let label = allAttributes.filter(a => a.key === key)[0].label
+			let label = allAttributes.filter(a => a.idx === idx)[0].label
 			cols.push({
 				id: nextColumnId++,
 				label: label,
-				key: key
+				idx: idx
 			})
 		}
 	})
@@ -185,17 +188,17 @@ const rows = computed(() => {  // All the rows to be shown
 	// TODO: come up with a less hacky way of handling that
 	attributes.value.forEach( a => {
 		if (a.operator === "=") {
-			ships = ships.filter(ship => a.value.includes(""+ship[a.key]))
+			ships = ships.filter(ship => a.value.includes(""+ship[a.idx]))
 		} else if (a.operator === "!=") {
-			ships = ships.filter(ship => !a.value.includes(""+ship[a.key]))
+			ships = ships.filter(ship => !a.value.includes(""+ship[a.idx]))
 		} else if (a.operator === ">=") {
-			ships = ships.filter(ship => ship[a.key] >= a.value[0])
+			ships = ships.filter(ship => ship[a.idx] >= a.value[0])
 		} else if (a.operator === "<=") {
-			ships = ships.filter(ship => ship[a.key] <= a.value[0])
+			ships = ships.filter(ship => ship[a.idx] <= a.value[0])
 		}
 	})
 
-	return ships
+	return ships.map(row => Object.assign({},row))
 })
 
 </script>
@@ -259,7 +262,7 @@ const rows = computed(() => {  // All the rows to be shown
 
 		<fieldset class="fieldset">
 			<legend class="legend">Bridge Officer Abilities</legend>
-			<p>Choose which bridge officer abilities you would like to use on your ship.</p>
+			<p>Choose the bridge officer abilities you would like to use on your ship.</p>
 			<AbilityPicker :all-abilities="allAbilities" @add-ability="addNewAbility" />
 			<div v-show="abilities.length">
 				<hr>
@@ -303,34 +306,30 @@ const rows = computed(() => {  // All the rows to be shown
 
 	<fieldset class="fieldset">
 		<legend class="legend">Ships Matched ({{ rows.length }} of {{ allShips.length }})</legend>
-		<DataTable :value="rows" dataKey="id">
+		<DataTable :value="rows" :dataKey="String(IDCOL)">
 			<template #empty>
 				No ships found.
 			</template>
 			<template #loading>
 				Loading ship data....
 			</template>
-			<Column field="nm" header="Name" :sortable="true">
+			<Column :field="String(NAMECOL)" header="Name" sortable>
 				<template #body="slotProps">
 					<Button
-						:label=slotProps.data.nm
+						:label="slotProps.data[NAMECOL]"
 						class="p-button-link p-link selectable table-ship-name"
-						@click="openURL(slotProps.data.url)"
+						@click="openURL(slotProps.data[URLCOL])"
 					/>
 				</template>
 			</Column>
-			<Column field="seat" header="Seats" :sortable="false">
+			<Column :field="String(SEATSCOL)" header="Seats">
 				<template #body="slotProps">
-					<div class="table-other">
-						<span>{{ slotProps.data.seat }}</span>
-					</div>
+					<span class="table-other">{{ slotProps.data[SEATSCOL] }}</span>
 				</template>
 			</Column>
-			<Column v-for="col of columns" :field="col.key" :header="col.label" :key="col.key" :sortable="true">
+			<Column v-for="col of columns" :key="col.id" :field="String(col.idx)" :header="col.label" sortable>
 				<template #body="slotProps">
-					<div class="table-other">
-						<span>{{ slotProps.data[col.key] }}</span>
-					</div>
+					<span class="table-other">{{ slotProps.data[col.idx] }}</span>
 				</template>
 			</Column>
 		</DataTable>

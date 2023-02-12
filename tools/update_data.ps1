@@ -318,7 +318,7 @@ $csvData | Foreach-Object {
 	$seatseparator = ''
 
 	# build the row for each ship
-	$shipdata += "$rowseparator$return    {`"id`"`:$count,"
+	$shipdata += "$rowseparator$return[$count,"
 
 	foreach ($property in $_.PSObject.Properties) {
 
@@ -328,20 +328,20 @@ $csvData | Foreach-Object {
 		if (-not (($name -like 'skip*') -or ($name -like 'boff*'))) {
 
 			if ($value -match "^[+-]?([0-9]*[.])?[0-9]+$") {
-				$shipdata += "$colseparator`"$name`"`:$value"
+				$shipdata += "$colseparator$value"
 			} elseif ($value -eq "") {
 				if ($list_null_to_none -contains $name) {
-					$shipdata += "$colseparator`"$name`"`:`"(None)`""
+					$shipdata += "$colseparator`"(None)`""
 				} elseif ($list_null_to_zero -contains $name) {
-					$shipdata += "$colseparator`"$name`"`:0"
+					$shipdata += "$colseparator"+"0"
 				} elseif ($list_null_to_no -contains $name) {
-					$shipdata += "$colseparator`"$name`"`:`"No`""
+					$shipdata += "$colseparator`"No`""
 				} else {
 					# found something we didn't expect
 					"unexpected null value in: $name"
 				}
 			} else {
-				$shipdata += "$colseparator`"$name`"`:`"$value`""
+				$shipdata += "$colseparator`"$value`""
 			}
 			$colseparator = ','
 
@@ -352,9 +352,8 @@ $csvData | Foreach-Object {
 
 			# insert the total consoles after universal consoles
 			if ($name -eq "cu") {
-				$shipdata += "$colseparator`"tcn`"`:$tcn"
+				$shipdata += "$colseparator$tcn"
 			}
-
 		}
 
 		if ($name -like 'boff*rank') {
@@ -378,16 +377,16 @@ $csvData | Foreach-Object {
 		}
 
 	}
-	# append total abilities to end of data
-	$shipdata += "$colseparator`"tab`"`:$tab"
-
 	# append total seats to end of data
-	$shipdata += "$colseparator`"ts`"`:$ts"
+	$shipdata += "$colseparator$ts"
+
+	# append total abilities to end of data
+	$shipdata += "$colseparator$tab"
 
 	# append a string representation of the seating
-	$shipdata += "$colseparator`"seat`"`:`"$seat`""
+	$shipdata += "$colseparator`"$seat`""
 
-	$shipdata += '}'
+	$shipdata += ']'
 
 	# dump seat data
 	$seatdata += "$rowseparator$return    ["

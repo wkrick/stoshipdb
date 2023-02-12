@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import ShipInterface from '../types/Ship.interface';
-import ShipAttributeInterface from '../types/ShipAttribute.interface'
+import AttributeInterface from '../types/Attribute.interface'
 
 const props = defineProps<{
-	allAttributes: ShipAttributeInterface[]
+	allAttributes: AttributeInterface[]
 }>()
 
 const emit = defineEmits<{
-	(e: 'addColumns', columns: Array<keyof ShipInterface>): void
+	(e: 'addColumns', columns: Array<number>): void
 }>()
 
 const columns = ref()
@@ -22,7 +21,7 @@ const columns = ref()
                 v-model="columns"
                 :options="allAttributes"
                 optionLabel="label"
-                optionValue="key"
+                optionValue="idx"
                 placeholder="Select Attribute"
                 scrollHeight="400px"
             />

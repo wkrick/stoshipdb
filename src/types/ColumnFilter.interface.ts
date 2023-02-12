@@ -1,9 +1,7 @@
-import ShipInterface from "./Ship.interface"
-
 interface ColumnFilterInterface {
     id: number,
     label: string,
-    key: keyof ShipInterface
+    idx: number
 }
 
 export default ColumnFilterInterface
