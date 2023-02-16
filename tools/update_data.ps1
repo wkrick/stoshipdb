@@ -389,7 +389,7 @@ $csvData | Foreach-Object {
 	$shipdata += ']'
 
 	# dump seat data
-	$seatdata += "$rowseparator$return    ["
+	$seatdata += "$rowseparator$return["
 	$seatdata += "[$($_.boff1rank),$(seatType $_.boff1type),$(seatType $_.boff1spec)]"
 	$seatdata += ",[$($_.boff2rank),$(seatType $_.boff2type),$(seatType $_.boff2spec)]"
 	$seatdata += ",[$($_.boff3rank),$(seatType $_.boff3type),$(seatType $_.boff3spec)]"
