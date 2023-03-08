@@ -148,6 +148,7 @@ $header = @(
 # Cruiser Command Analysis
 "skipcca1"
 "skipcca2"
+"skipdisplayname"
 "url"
 )
 
