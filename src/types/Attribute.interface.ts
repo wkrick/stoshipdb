@@ -1,5 +1,5 @@
 interface AttributeInterface {
-    label: string,
+    label: string
     idx: number
 }
 

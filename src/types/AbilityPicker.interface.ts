@@ -1,7 +1,7 @@
 interface AbilityPickerInterface {
-    typespec: string,
-    name: string,
-    level: string,
+    typespec: string
+    name: string
+    level: string
     rank: number
 }
 
