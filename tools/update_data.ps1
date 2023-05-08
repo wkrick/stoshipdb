@@ -180,7 +180,7 @@ $csvData = Import-Csv -Path "$PSScriptRoot/temp" -Header $header | ForEach-Objec
 
 	# attempt to correct any missing URLs
 	if (-not ($_.url -like "https*")) {
-		$_.url = 'https://sto.fandom.com/wiki/' + [System.Web.HttpUtility]::UrlEncode($_.nm.replace(' ', '_'))
+		$_.url = 'https://stowiki.net/wiki/' + [System.Web.HttpUtility]::UrlEncode($_.nm.replace(' ', '_'))
 	}
 
 	# correct the Science Destroyers to actually be science mode
