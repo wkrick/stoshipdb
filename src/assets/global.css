@@ -29,6 +29,12 @@ html {
 	z-index:100;
 }
 
+/* add additional size constraints to fix the PrimeVue Chip remove icon */
+.p-chip-remove-icon {
+	min-width: 1rem;
+	min-height: 1rem;
+}
+
  /* makes text align to right side on mobile which looks better */
 @media screen and (max-width: 769px) {
 	.table-ship-name {
