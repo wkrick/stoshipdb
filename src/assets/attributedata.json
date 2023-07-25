@@ -15,7 +15,7 @@
 {"label":"Max Pilot Seat","idx":19},
 {"label":"Max Temporal Seat","idx":20},
 {"label":"Max Miracle Worker Seat","idx":21},
-{"label":"Total Seats","idx":59},
+{"label":"Total BOff Stations","idx":59},
 {"label":"Total BOff Abilities","idx":60},
 {"label":"Hull","idx":22},
 {"label":"Hull Modifier","idx":23},
