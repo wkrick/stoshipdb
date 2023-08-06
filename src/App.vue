@@ -316,8 +316,9 @@ const rows = computed(() => {  // All the rows to be shown
 			<Column :field="String(NAMECOL)" header="Name" sortable>
 				<template #body="slotProps">
 					<Button
+						class="p-button-link p-link table-ship-name" 
 						:label="slotProps.data[NAMECOL]"
-						class="p-button-link p-link selectable table-ship-name"
+						:pt="{ label: { class: 'selectable' } }"
 						@click="openURL(slotProps.data[URLCOL])"
 					/>
 				</template>
