@@ -211,22 +211,26 @@ const rows = computed(() => {  // All the rows to be shown
 	<ProgressSpinner v-show="isLoading" class="overlay"/>
 
 	<p>Filter ships by attributes and bridge officer abilities to find your perfect ship in the <Button
-			label="Star Trek Online"
 			class="p-button-link p-link"
+			label="Star Trek Online"
+			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://www.arcgames.com/en/games/star-trek-online')"
 		/> game.</p>
 
 	<p>Created by Reddit user <Button
-			label="u/wkrick"
 			class="p-button-link p-link"
+			label="u/wkrick"
+			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://www.reddit.com/user/wkrick')"
 		/> using data from the <Button
-			label="Sortable/Filterable T6 Ship List"
 			class="p-button-link p-link"
+			label="Sortable/Filterable T6 Ship List"
+			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing')"
 		/> by Reddit user <Button
-			label="u/Fleffle"
 			class="p-button-link p-link"
+			label="u/Fleffle"
+			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://www.reddit.com/user/Fleffle')"
 		/>.</p>
 
