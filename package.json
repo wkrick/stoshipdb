@@ -11,13 +11,13 @@
   "dependencies": {
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",
-    "primevue": "^3.47.2",
-    "vue": "^3.4.15"
+    "primevue": "^3.48.1",
+    "vue": "^3.4.19"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.0.3",
+    "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12",
+    "vite": "^5.1.2",
     "vue-tsc": "^1.8.27"
   }
 }
