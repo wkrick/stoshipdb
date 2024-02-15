@@ -35,7 +35,13 @@ html {
 	min-height: 1rem;
 }
 
- /* makes text align to right side on mobile which looks better */
+/* button links shouldn't have padding or a focus shadow */
+.p-button.p-button-link {
+	padding: 0;
+	box-shadow: none;
+}
+
+/* makes text align to right side on mobile which looks better */
 @media screen and (max-width: 769px) {
 	.table-ship-name {
 		text-align: right;

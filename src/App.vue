@@ -211,24 +211,24 @@ const rows = computed(() => {  // All the rows to be shown
 	<ProgressSpinner v-show="isLoading" class="overlay"/>
 
 	<p>Filter ships by attributes and bridge officer abilities to find your perfect ship in the <Button
-			class="p-button-link p-link"
+			link
 			label="Star Trek Online"
 			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://www.arcgames.com/en/games/star-trek-online')"
 		/> game.</p>
 
 	<p>Created by Reddit user <Button
-			class="p-button-link p-link"
+			link
 			label="u/wkrick"
 			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://www.reddit.com/user/wkrick')"
 		/> using data from the <Button
-			class="p-button-link p-link"
+			link
 			label="Sortable/Filterable T6 Ship List"
 			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing')"
 		/> by Reddit user <Button
-			class="p-button-link p-link"
+			link
 			label="u/Fleffle"
 			:pt="{ label: { class: 'selectable' } }"
 			@click="openURL('https://www.reddit.com/user/Fleffle')"
@@ -320,7 +320,8 @@ const rows = computed(() => {  // All the rows to be shown
 			<Column :field="String(NAMECOL)" header="Name" sortable>
 				<template #body="slotProps">
 					<Button
-						class="p-button-link p-link table-ship-name" 
+						class="table-ship-name" 
+						link
 						:label="slotProps.data[NAMECOL]"
 						:pt="{ label: { class: 'selectable' } }"
 						@click="openURL(slotProps.data[URLCOL])"
