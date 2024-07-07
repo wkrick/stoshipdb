@@ -21,11 +21,13 @@ import lastUpdated from './assets/lastupdated.json'
 // data source: https://sto.fandom.com/wiki/Bridge_officer_and_kit_abilities
 import allAbilitiesJSON from './assets/abilitydata.json'
 
+import MyWorker from './workers/worker.ts?worker'
+
 const allShips = allShipsJSON
 const allAttributes = allAttributesJSON as AttributeInterface[]
 const allAbilities: any = allAbilitiesJSON
 
-const worker = new Worker(new URL('./workers/worker.ts', import.meta.url))
+const worker = new MyWorker()
 
 worker.addEventListener("message", (e) => {
 	const filteredShipIds = e.data as number[]
