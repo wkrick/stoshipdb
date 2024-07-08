@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, toRaw} from 'vue'
 import AttributePicker from './components/AttributePicker.vue'
 import AttributeFilterInterface from './types/AttributeFilter.interface'
 import AttributePickerInterface from './types/AttributePicker.interface'
@@ -143,7 +143,7 @@ watch(abilities, () => {
 		shipsFilteredByAbilities.value = allShips
 	} else {
 		isLoading.value = true
-		worker.postMessage( JSON.parse(JSON.stringify(abilities.value)) )
+		worker.postMessage( toRaw(abilities.value) )
 	}
 },{ deep: true })
 
