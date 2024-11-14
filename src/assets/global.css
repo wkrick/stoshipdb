@@ -4,6 +4,10 @@ html {
 }
 */
 
+body {
+	font-family: "Arial", "Helvetica", sans-serif;
+}
+
 .fieldset {
 	border: solid;
 	border-radius: 0.5em;
@@ -29,11 +33,12 @@ html {
 	z-index:100;
 }
 
-/* add additional size constraints to fix the PrimeVue Chip remove icon */
+/* add additional size constraints to fix the PrimeVue Chip remove icon
 .p-chip-remove-icon {
 	min-width: 1rem;
 	min-height: 1rem;
 }
+ */
 
 /* button links shouldn't have padding or a focus shadow */
 .p-button.p-button-link {

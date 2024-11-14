@@ -15,8 +15,8 @@ const columns = ref()
 </script>
 
 <template>
-    <div>
-        <div>
+    <div class="fit-content">
+        <InputGroup>
             <MultiSelect
                 v-model="columns"
                 :options="allAttributes"
@@ -30,9 +30,12 @@ const columns = ref()
                 :disabled="!columns"
                 icon="pi pi-plus-circle"
             />
-        </div>
+        </InputGroup>
     </div>
 </template>
 
 <style scoped>
+.fit-content {
+	width: fit-content;
+}
 </style>

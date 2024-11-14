@@ -71,9 +71,9 @@ watch(operator, () => {
 </script>
 
 <template>
-	<div>
+	<div class="fit-content">
 		<div>
-			<Dropdown
+			<Select
 				v-model="name"
 				:options="allAttributes"
 				optionLabel="label"
@@ -83,14 +83,14 @@ watch(operator, () => {
 			/>
 		</div>
 		<div>
-			<Dropdown
+			<Select
 				v-model="operator"
 				:options="operators"
 				:disabled="!name"
 				scrollHeight="400px"
 			/>
 		</div>
-		<div>
+		<InputGroup>
 			<template v-if="operator==='='||operator==='!='">
 				<MultiSelect
 					v-model="value"
@@ -101,7 +101,7 @@ watch(operator, () => {
 				/>
 			</template>
 			<template v-else>
-				<Dropdown
+				<Select
 					v-model="value"
 					:options="values"
 					placeholder="Select Value"
@@ -119,9 +119,12 @@ watch(operator, () => {
 				:disabled="!value"
 				icon="pi pi-plus-circle"
 			/>
-		</div>
+		</InputGroup>
 	</div>
 </template>
 
 <style scoped>
+.fit-content {
+	width: fit-content;
+}
 </style>

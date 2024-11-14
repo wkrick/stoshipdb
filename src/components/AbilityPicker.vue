@@ -63,9 +63,9 @@ watch(level, () => {
 </script>
 
 <template>
-	<div>
+	<div class="fit-content">
 		<div>
-			<Dropdown
+			<Select
 				v-model="typeSpec"
 				:options="typeSpecs"
 				placeholder="Select Type"
@@ -73,7 +73,7 @@ watch(level, () => {
 			/>
 		</div>
 		<div>
-			<Dropdown
+			<Select
 				v-model="name"
 				:options="names"
 				placeholder="Select Name"
@@ -81,8 +81,8 @@ watch(level, () => {
 				scrollHeight="400px"
 			/>
 		</div>
-		<div>
-			<Dropdown
+		<InputGroup>
+			<Select
 				v-model="level"
 				:options="levels"
 				placeholder="Select Level"
@@ -99,9 +99,12 @@ watch(level, () => {
 				:disabled="!level"
 				icon="pi pi-plus-circle"
 			/>
-		</div>
+		</InputGroup>
 	</div>
 </template>
 
 <style scoped>
+.fit-content {
+	width: fit-content;
+}
 </style>
