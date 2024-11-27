@@ -75,7 +75,7 @@ watch(operator, () => {
 		<div>
 			<Select
 				v-model="name"
-				:options="allAttributes"
+				:options="props.allAttributes"
 				optionLabel="label"
 				optionValue="label"
 				placeholder="Select Attribute"

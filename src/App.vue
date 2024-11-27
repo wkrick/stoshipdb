@@ -31,7 +31,7 @@ const worker = new MyWorker()
 
 worker.addEventListener("message", (e) => {
 	const filteredShipIds = e.data as number[]
-	const filteredShips = allShips.filter((ship, index) => filteredShipIds.includes(index))
+	const filteredShips = allShips.filter((_, index) => filteredShipIds.includes(index))
 	shipsFilteredByAbilities.value = filteredShips
 	isLoading.value = false
 })

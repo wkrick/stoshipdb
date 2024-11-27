@@ -19,7 +19,7 @@ const columns = ref()
         <InputGroup>
             <MultiSelect
                 v-model="columns"
-                :options="allAttributes"
+                :options="props.allAttributes"
                 optionLabel="label"
                 optionValue="idx"
                 placeholder="Select Attribute"

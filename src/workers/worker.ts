@@ -5,9 +5,9 @@ import AbilityType from '../types/AbilityType.enum'
 import allSeatsJSON from '../assets/seatdata.json'
 
 self.addEventListener('message', e => {
-	const start = Date.now()
+	//const start = Date.now()
 	let shipIds = filterShips(e.data)
-	const stop = Date.now()
+	//const stop = Date.now()
 	//console.log(`Filtering took ${(stop - start)/1000} seconds`)
 	self.postMessage(shipIds)
 })
@@ -82,10 +82,10 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 		const slotRanks = [0,0,0,0,0]
 		for (let ii = 0; ii < seats.length; ii++) {
 			switch (seats[ii][Seat.rank]) {
-				case 4: slotRanks[4]++
-				case 3: slotRanks[3]++
-				case 2: slotRanks[2]++
-				case 1: slotRanks[1]++
+				case 4: slotRanks[4]++; slotRanks[3]++; slotRanks[2]++; slotRanks[1]++; break
+				case 3: slotRanks[3]++; slotRanks[2]++; slotRanks[1]++; break
+				case 2: slotRanks[2]++; slotRanks[1]++; break
+				case 1: slotRanks[1]++; break
 			}
 		}
 
