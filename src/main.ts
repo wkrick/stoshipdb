@@ -20,7 +20,6 @@ import { definePreset } from '@primevue/themes';
 import Nora from '@primevue/themes/nora'
 //import Material from '@primevue/themes/material'
 
-import "primeflex/primeflex.css"
 import "primeicons/primeicons.css"
 
 import './assets/global.css'

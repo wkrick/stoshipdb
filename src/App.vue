@@ -251,7 +251,6 @@ const rows = computed(() => {  // All the rows to be shown
 				<div>
 					<Chip
 						v-for="(attribute, index) in attributes"
-						class="mr-2 mb-2"
 						:label="attribute.displayString"
 						:key="attribute.id"
 						removable
@@ -275,7 +274,6 @@ const rows = computed(() => {  // All the rows to be shown
 				<div>
 				<Chip
 					v-for="(ability, index) in abilities"
-					class="mr-2 mb-2"
 					:label="ability.displayString"
 					:key="ability.id"
 					removable
@@ -298,7 +296,6 @@ const rows = computed(() => {  // All the rows to be shown
 					<div>
 					<Chip
 						v-for="(column, index) in columns"
-						class="mr-2 mb-2"
 						:label="column.label"
 						:key="column.id"
 						removable

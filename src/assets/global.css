@@ -38,7 +38,14 @@ body {
 	min-width: 1rem;
 	min-height: 1rem;
 }
- */
+*/
+
+/* give the chips the same border as the select for better visibility and add some spacing between them */
+.p-chip {
+	border: 1px solid var(--p-select-border-color);
+	margin-right: 0.25rem;
+	margin-bottom: 0.25rem;
+}
 
 /* button links shouldn't have padding or a focus shadow */
 .p-button.p-button-link {
