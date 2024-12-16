@@ -3,7 +3,6 @@
 This project uses the following:
 - [Vue 3](https://vuejs.org/)
 - [PrimeVue](https://www.primefaces.org/primevue/)
-- [PrimeFlex](https://www.primefaces.org/primeflex/)
 - [Vite](https://vitejs.dev/)
 - [VS Code](https://code.visualstudio.com/)
 - [TypeScript](https://www.typescriptlang.org/)
