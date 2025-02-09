@@ -12,7 +12,7 @@ import ColumnFilterInterface from './types/ColumnFilter.interface'
 import AttributeInterface from './types/Attribute.interface'
 import AbilityType from './types/AbilityType.enum'
 
-// data source: https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing
+// data source: https://docs.google.com/spreadsheets/d/1SSsxWmE8Oz35D6MvLheFNUfhWerHNkUGOGtjxLlrTuA
 // created by Reddit user u/Fleffle
 import allShipsJSON from './assets/shipdata.json'
 import allAttributesJSON from './assets/attributedata.json'
@@ -38,6 +38,10 @@ worker.addEventListener("message", (e) => {
 
 function openURL(url: string) {
 	window.open(url)
+}
+
+function openWikiURL(url: string) {
+	window.open(`https://stowiki.net/wiki/${url}`)
 }
 
 // initial state is all ships
@@ -153,8 +157,8 @@ watch(abilities, () => {
 
 const IDCOL = 0
 const NAMECOL = 1
-const URLCOL = 58
-const SEATSCOL = 61
+const URLCOL = 59
+const SEATSCOL = 64
 const columns = ref<ColumnFilterInterface[]>([])
 let nextColumnId = 1
 
@@ -226,9 +230,9 @@ const rows = computed(() => {  // All the rows to be shown
 			@click="openURL('https://www.reddit.com/user/wkrick')"
 		/> using data from the <Button
 			link
-			label="Sortable/Filterable T6 Ship List"
+			label="Sortable/Filterable T6 Ship List v2"
 			:pt="{ label: { class: 'selectable' } }"
-			@click="openURL('https://docs.google.com/spreadsheets/d/1-5Nmp_vycD2VpLbuqWnnQL1Lvx-nPy-cGYLPIckGRLk/edit?usp=sharing')"
+			@click="openURL('https://docs.google.com/spreadsheets/d/1SSsxWmE8Oz35D6MvLheFNUfhWerHNkUGOGtjxLlrTuA')"
 		/> by Reddit user <Button
 			link
 			label="u/Fleffle"
@@ -323,7 +327,7 @@ const rows = computed(() => {  // All the rows to be shown
 						link
 						:label="slotProps.data[NAMECOL]"
 						:pt="{ label: { class: 'selectable' } }"
-						@click="openURL(slotProps.data[URLCOL])"
+						@click="openWikiURL(slotProps.data[URLCOL])"
 					/>
 				</template>
 			</Column>
