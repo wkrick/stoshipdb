@@ -13,12 +13,12 @@ import BlockUI from 'primevue/blockui'
 import ProgressSpinner from 'primevue/progressspinner'
 import InputGroup from 'primevue/inputgroup';
 
-import { definePreset } from '@primevue/themes';
+import { definePreset } from '@primeuix/themes';
 
-//import Aura from '@primevue/themes/aura'
-//import Lara from '@primevue/themes/lara'
-import Nora from '@primevue/themes/nora'
-//import Material from '@primevue/themes/material'
+//import Aura from '@primeuix/themes/aura'
+//import Lara from '@primeuix/themes/lara'
+import Nora from '@primeuix/themes/nora'
+//import Material from '@primeuix/themes/material'
 
 import "primeicons/primeicons.css"
 
