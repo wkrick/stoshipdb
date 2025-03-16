@@ -1,10 +1,8 @@
-import AbilityType from "./AbilityType.enum"
+import type { AbilityType } from './Ability.type'
 
-interface AbilitySlotInterface {
+export interface AbilitySlotInterface {
     rank: number
     type: AbilityType
     spec: AbilityType
     matched: boolean
 }
-
-export default AbilitySlotInterface

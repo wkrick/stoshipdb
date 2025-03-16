@@ -1,8 +1,6 @@
-import AbilityType from "./AbilityType.enum"
+import type { AbilityType } from './Ability.type'
 
-interface AbilityInterface {
+export interface AbilityInterface {
     rank: number
     typeorspec: AbilityType
 }
-
-export default AbilityInterface

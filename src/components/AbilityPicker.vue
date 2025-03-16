@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import AbilityPickerInterface from '../types/AbilityPicker.interface'
+import type { AbilityPickerInterface } from '../types/AbilityPicker.interface'
 
 const props = defineProps<{
 	allAbilities: any

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import AttributePickerInterface from '../types/AttributePicker.interface'
-import AttributeInterface from '../types/Attribute.interface'
+import type { AttributePickerInterface } from '../types/AttributePicker.interface'
+import type { AttributeInterface } from '../types/Attribute.interface'
 
 const props = defineProps<{
 	allShips: (string | number)[][]

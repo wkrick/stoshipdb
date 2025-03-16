@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, watch, toRaw} from 'vue'
 import AttributePicker from './components/AttributePicker.vue'
-import AttributeFilterInterface from './types/AttributeFilter.interface'
-import AttributePickerInterface from './types/AttributePicker.interface'
+import type { AttributeFilterInterface } from './types/AttributeFilter.interface'
+import type { AttributePickerInterface } from './types/AttributePicker.interface'
 import AbilityPicker from './components/AbilityPicker.vue'
-import AbilityFilterInterface from './types/AbilityFilter.interface'
-import AbilityPickerInterface from './types/AbilityPicker.interface'
+import type { AbilityFilterInterface } from './types/AbilityFilter.interface'
+import type { AbilityPickerInterface } from './types/AbilityPicker.interface'
 import ColumnPicker from './components/ColumnPicker.vue'
-import ColumnFilterInterface from './types/ColumnFilter.interface'
+import type { ColumnFilterInterface } from './types/ColumnFilter.interface'
 
-import AttributeInterface from './types/Attribute.interface'
-import AbilityType from './types/AbilityType.enum'
+import type { AttributeInterface } from './types/Attribute.interface'
+import { AbilityType } from './types/Ability.type'
 
 // data source: https://docs.google.com/spreadsheets/d/1SSsxWmE8Oz35D6MvLheFNUfhWerHNkUGOGtjxLlrTuA
 // created by Reddit user u/Fleffle

@@ -1,7 +1,7 @@
-import AbilityFilterInterface from '../types/AbilityFilter.interface'
-import AbilityInterface from '../types/Ability.interface'
-import AbilitySlotInterface from '../types/AbilitySlot.interface'
-import AbilityType from '../types/AbilityType.enum'
+import type { AbilityFilterInterface } from '../types/AbilityFilter.interface'
+import type { AbilityInterface } from '../types/Ability.interface'
+import type { AbilitySlotInterface } from '../types/AbilitySlot.interface'
+import { AbilityType } from '../types/Ability.type'
 import allSeatsJSON from '../assets/seatdata.json'
 
 self.addEventListener('message', e => {
@@ -24,8 +24,8 @@ const Seat = {
 
 function filterShips(abilities: AbilityFilterInterface[]) {
 
-	const NONSPECS = [AbilityType.TAC, AbilityType.ENG, AbilityType.SCI]
-	const SPECS = [AbilityType.INT, AbilityType.CMD, AbilityType.PIL, AbilityType.TMP, AbilityType.MWR]
+	const NONSPECS: AbilityType[] = [AbilityType.TAC, AbilityType.ENG, AbilityType.SCI]
+	const SPECS: AbilityType[] = [AbilityType.INT, AbilityType.CMD, AbilityType.PIL, AbilityType.TMP, AbilityType.MWR]
 
 	const abilitiesclone = getAbilitiesFromFilterArray(abilities)
 	const abilitySpecs = [...new Set(abilitiesclone.filter(a => SPECS.includes(a.typeorspec)).map(a => a.typeorspec))]
@@ -255,7 +255,11 @@ function testShip(abilities: AbilityInterface[], seats: number[][]) {
 	// remove the spec from any spec slot that we definitely don't need	
 	const slots: AbilitySlotInterface[] = []
 	for (let i = 0; i < seats.length; i++) {
-		const [rank, type, spec] = seats[i]
+		//const [rank, type, spec] = seats[i]
+		let rank = seats[i][0]
+		let type = seats[i][1] as AbilityType
+		let spec = seats[i][2] as AbilityType
+
 		let j = rank
 		while (j) {
 			if (spec !== AbilityType.UNDEFINED && !abilitiesSpec.find(a => a.rank === j && a.typeorspec === spec)) {

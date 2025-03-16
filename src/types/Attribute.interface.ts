@@ -1,6 +1,4 @@
-interface AttributeInterface {
+export interface AttributeInterface {
     label: string
     idx: number
 }
-
-export default AttributeInterface

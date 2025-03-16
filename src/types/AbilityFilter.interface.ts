@@ -1,6 +1,6 @@
-import AbilityType from "./AbilityType.enum"
+import type { AbilityType } from './Ability.type'
 
-interface AbilityFilterInterface {
+export interface AbilityFilterInterface {
     id: number
     typespec: string
     name: string
@@ -9,5 +9,3 @@ interface AbilityFilterInterface {
     typeorspec: AbilityType
     displayString: string
 }
-
-export default AbilityFilterInterface

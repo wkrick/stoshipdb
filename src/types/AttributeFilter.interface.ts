@@ -1,4 +1,4 @@
-interface AttributeFilterInterface {
+export interface AttributeFilterInterface {
     id: number
     name: string
     idx: number
@@ -6,5 +6,3 @@ interface AttributeFilterInterface {
     value: Array<string>
     displayString: string
 }
-
-export default AttributeFilterInterface

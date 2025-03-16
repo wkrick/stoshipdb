@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import AttributeInterface from '../types/Attribute.interface'
+import type { AttributeInterface }  from '../types/Attribute.interface'
 
 const props = defineProps<{
 	allAttributes: AttributeInterface[]
