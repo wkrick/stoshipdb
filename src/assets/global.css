@@ -40,10 +40,10 @@
 	box-shadow: none;
 }
 
-/* makes text align to right side on mobile which looks better */
+/* custom alignment on mobile */
 @media screen and (max-width: 769px) {
 	.table-ship-name {
-		text-align: right;
+		text-align: left;
 	}
 	
 	.table-other {
