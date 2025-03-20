@@ -6,7 +6,7 @@ import allSeatsJSON from '../assets/seatdata.json'
 
 self.addEventListener('message', e => {
 	//const start = Date.now()
-	let shipIds = filterShips(e.data)
+	const shipIds = filterShips(e.data as AbilityFilterInterface[])
 	//const stop = Date.now()
 	//console.log(`Filtering took ${(stop - start)/1000} seconds`)
 	self.postMessage(shipIds)
@@ -70,8 +70,7 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 		// so overwrite the tac/eng/sci max with the uni max if applicable
 		const mxu = maxSeats[AbilityType.UNDEFINED]
 		if (mxu) {
-			for (let ii = 0; ii < abilityTypes.length; ii++) {
-				const aType = abilityTypes[ii]
+			for (const aType of abilityTypes) {
 				if (mxu > maxSeats[aType]) {
 					maxSeats[aType] = mxu
 				}
@@ -80,8 +79,8 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 
 		// gather stats on the slot ranks for this ship
 		const slotRanks = [0,0,0,0,0]
-		for (let ii = 0; ii < seats.length; ii++) {
-			switch (seats[ii][Seat.rank]) {
+		for (const seat of seats) {
+			switch (seat[Seat.rank]) {
 				case 4: slotRanks[4]++; slotRanks[3]++; slotRanks[2]++; slotRanks[1]++; break
 				case 3: slotRanks[3]++; slotRanks[2]++; slotRanks[1]++; break
 				case 2: slotRanks[2]++; slotRanks[1]++; break
@@ -90,7 +89,7 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 		}
 
 		// replace "Uni" with the desired ability types to get all the permutations of the ship seats
-		let seatPermutations = getSeatPermutations(seats, abilityTypes)
+		const seatPermutations = getSeatPermutations(seats, abilityTypes)
 
 		// loop over the permutations and test each one.  if at least one matches, add the ship to the output
 		let shipmatch = false
@@ -121,8 +120,8 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 
 				// gather stats on this seat permutation (max ranks of slot type/spec)
 				const maxTypes = [0,0,0,0,0,0,0,0,0]
-				for (let kk = 0; kk < seatPermutation.length; kk++) {
-					const [rank, type, spec] = seatPermutation[kk]
+				for (const seat of seatPermutation) {
+					const [rank, type, spec] = seat
 					if (rank > maxTypes[type]) {
 						maxTypes[type] = rank
 					}
@@ -160,14 +159,14 @@ function filterShips(abilities: AbilityFilterInterface[]) {
 // the rank of an ability could be "any" so we need to generate all of the possible permutations
 function getAbilityPermutations(abilities: AbilityInterface[]) {
 
-	let permutations: AbilityInterface[][] = []
+	const permutations: AbilityInterface[][] = []
 
 	// start with a deep copy of original ability array
-	let array = copyAbilityArray(abilities)
+	const array = copyAbilityArray(abilities)
 
 	// sort the abilites by rank descending but use an ASCII sort
 	// this puts the "Any" abilities in the right spot and speeds up sorting at the end
-	array.sort((a, b) => (a.rank+'' > b.rank+'' ? -1 : 1))
+	array.sort((a, b) => (String(a.rank) > String(b.rank) ? -1 : 1))
 
 	permutations.push(array)
 
@@ -199,7 +198,7 @@ function getAbilityPermutations(abilities: AbilityInterface[]) {
 // the type of a seat can be "Uni" so we need to generate all the possible permutations
 function getSeatPermutations(seats: number[][], abilityTypes: AbilityType[]) {
 
-	let permutations: number[][][] = []
+	const permutations: number[][][] = []
 
 	// start with a deep copy of original seat array
 	const copy = copySeatArray(seats)
@@ -242,8 +241,7 @@ function testShip(abilities: AbilityInterface[], seats: number[][]) {
 	// partition the abilities into spec and non-spec
 	const abilitiesSpec: AbilityInterface[] = []
 	const abilitiesNonSpec: AbilityInterface[] = []
-	for (let i = 0; i < abilities.length; i++) {
-		const ability = abilities[i]
+	for (const ability of abilities) {
 		if (ability.typeorspec > 3) {
 			abilitiesSpec.push(ability)
 		} else {
@@ -254,11 +252,11 @@ function testShip(abilities: AbilityInterface[], seats: number[][]) {
 	// slice up the seats into ability slots
 	// remove the spec from any spec slot that we definitely don't need	
 	const slots: AbilitySlotInterface[] = []
-	for (let i = 0; i < seats.length; i++) {
-		//const [rank, type, spec] = seats[i]
-		let rank = seats[i][0]
-		let type = seats[i][1] as AbilityType
-		let spec = seats[i][2] as AbilityType
+	for (const seat of seats) {
+		//const [rank, type, spec] = seat
+		const rank = seat[0]
+		const type = seat[1] as AbilityType
+		const spec = seat[2] as AbilityType
 
 		let j = rank
 		while (j) {
@@ -274,8 +272,8 @@ function testShip(abilities: AbilityInterface[], seats: number[][]) {
 	// NOTE TO SELF: sorting the slots at this point just makes it slower
 
 	// try to seat all the the non-spec abilities first
-	for (let i = 0; i < abilitiesNonSpec.length; i++) {
-		const { rank, typeorspec } = abilitiesNonSpec[i]
+	for (const ability of abilitiesNonSpec) {
+		const { rank, typeorspec } = ability
 
 		// 1: search for specific slot type with no spec
 		let target = slots.find( slot => !slot.matched && slot.rank === rank && slot.type === typeorspec && slot.spec === AbilityType.UNDEFINED)
@@ -297,11 +295,11 @@ function testShip(abilities: AbilityInterface[], seats: number[][]) {
 	}
 
 	// then try to seat the spec abilities
-	for (let i = 0; i < abilitiesSpec.length; i++) {
-		const { rank, typeorspec } = abilitiesSpec[i]
+	for (const ability of abilitiesSpec) {
+		const { rank, typeorspec } = ability
 
 		// 3: search for slot with desired spec and any type
-		let target = slots.find( slot => !slot.matched && slot.rank === rank && slot.spec === typeorspec)
+		const target = slots.find( slot => !slot.matched && slot.rank === rank && slot.spec === typeorspec)
 
 		if (target) {
 			target.matched = true

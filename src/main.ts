@@ -11,9 +11,9 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import BlockUI from 'primevue/blockui'
 import ProgressSpinner from 'primevue/progressspinner'
-import InputGroup from 'primevue/inputgroup';
+import InputGroup from 'primevue/inputgroup'
 
-import { definePreset } from '@primeuix/themes';
+import { definePreset } from '@primeuix/themes'
 
 //import Aura from '@primeuix/themes/aura'
 //import Lara from '@primeuix/themes/lara'
@@ -42,7 +42,7 @@ const MyPreset = definePreset(Nora, {
     }
 });
 
-const app = createApp(App);
+const app = createApp(App)
 app.use(PrimeVue, {
     //unstyled: true
     theme: {
@@ -52,7 +52,7 @@ app.use(PrimeVue, {
             darkModeSelector: 'system'
         }
     }
-});
+})
 
 app.component('MultiSelect', MultiSelect)
 app.component('Select', Select)

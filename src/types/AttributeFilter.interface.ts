@@ -3,6 +3,6 @@ export interface AttributeFilterInterface {
     name: string
     idx: number
     operator: string
-    value: Array<string>
+    value: string[]
     displayString: string
 }
